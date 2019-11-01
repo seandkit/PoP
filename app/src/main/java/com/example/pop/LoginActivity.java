@@ -8,51 +8,70 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText name;
+    private EditText email;
     private EditText password;
-    private TextView info;
-    private Button login;
-    private int count = 5;
+    private TextView registerLink;
+    private TextView errorMsg;
+    private TextView attempts;
+    private Button loginBtn;
+    private int count = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        name = (EditText)findViewById(R.id.loginName);
-        password = (EditText)findViewById(R.id.loginPassword);
-        info = (TextView) findViewById(R.id.loginInfo);
-        login = (Button) findViewById(R.id.loginBtn);
+        email = findViewById(R.id.loginEmail);
+        password = findViewById(R.id.loginPassword);
+        loginBtn = findViewById(R.id.loginBtn);
+        registerLink = findViewById(R.id.regLink);
+        errorMsg = findViewById(R.id.loginErrorMsg);
+        attempts = findViewById(R.id.attempts);
 
-        login.setOnClickListener(new View.OnClickListener() {
+
+        loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validate(name.getText().toString(), password.getText().toString());
+                boolean loginDetailsMatch = validateMatch(email.getText().toString(), password.getText().toString());
+                if(loginDetailsMatch){
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
+
+            }
+        });
+
+        registerLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
             }
         });
     }
 
-    private void validate(String username, String userPassword)
-    {
-        if((username.equals("admin")) && (userPassword.equals("admin")))
-        {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
+    private boolean validateMatch(String username, String userPassword) {
+        if((username.equals("admin")) && (userPassword.equals("admin"))){
+            return true;
         }
-        else
+        else{
+            failedAttempt();
+            return false;
+        }
+    }
+
+    private void failedAttempt() {
+        count--;
+
+        errorMsg.setText("Wrong email or password!");
+        attempts.setText("No of attempts remaining: " + count);
+
+        if(count == 0)
         {
-            count--;
-
-            info.setText("No of attempts remaining: " + String.valueOf(count));
-
-            if(count == 0)
-            {
-                login.setEnabled(false);
-            }
+            loginBtn.setEnabled(false);
         }
     }
 }
