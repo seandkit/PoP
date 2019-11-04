@@ -38,7 +38,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void validate(String username, String userPassword)
     {
-        if((username.equals("admin")) && (userPassword.equals("admin")))
+        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
+        if(!db.findUserHandler(username, userPassword).equals(null))
         {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
