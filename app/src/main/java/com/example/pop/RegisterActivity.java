@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.pop.model.User;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -52,6 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
                 boolean validPassword = checkPassword(pass.getText().toString(), confirmPass.getText().toString());
 
                 if(validUsername && validEmail && validPassword) {
+                    addValidUser(username.getText().toString(), email.getText().toString(),confirmPass.getText().toString());
                     Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
@@ -87,11 +90,10 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean checkUsername(String username) {
         //Search db for username
-        //Return list named users
-        List<String> users = null;
+        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
 
         //Check if username is taken
-        if(users == null){
+        if(db.checkUsernameExist(username)){
             Toast toast = Toast.makeText(getApplicationContext(), "Username already taken!", Toast.LENGTH_LONG);
             toast.show();
             return false;
@@ -103,11 +105,10 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean checkEmail(String email) {
         //Search db for email
-        //Return list named users
-        List<String> users = null;
+        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
 
         //Check if email is taken
-        if(users == null) {
+        if(db.checkEmailExist(email)) {
             Toast toast = Toast.makeText(getApplicationContext(), "Email already taken!", Toast.LENGTH_LONG);
             toast.show();
             return false;
@@ -137,5 +138,11 @@ public class RegisterActivity extends AppCompatActivity {
         else {
             return true;
         }
+    }
+
+    private void addValidUser(String username, String email, String password){
+        User user = new User(username, email, password);
+        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
+        db.addUserHandler(user);
     }
 }
