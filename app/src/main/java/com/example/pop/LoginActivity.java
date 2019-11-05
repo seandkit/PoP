@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     private void validate(String username, String userPassword)
     {
         SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
-        if(!db.findUserHandler(username, userPassword).equals(null))
+        if(!db.findAccountHandler(username, userPassword).equals(null))
         {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
@@ -47,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
         else
         {
             count--;
-
             info.setText("No of attempts remaining: " + String.valueOf(count));
 
             if(count == 0)

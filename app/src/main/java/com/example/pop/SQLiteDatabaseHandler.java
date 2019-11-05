@@ -29,7 +29,11 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db){
         User testUser =  new User("admin","D00191063@student.dkit.ie","Password!1");
         db.execSQL("CREATE TABLE "+TABLE_NAME+" ( "+COLUMN_USERID+" INTEGER PRIMARY KEY, "+COLUMN_USERNAME+" TEXT,"+COLUMN_USEREMAIL+" TEXT, "+COLUMN_PASSWORD+" TEXT)");
-        addUserHandler(testUser);
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, testUser.getName());
+        values.put(COLUMN_USEREMAIL, testUser.getEmail());
+        values.put(COLUMN_PASSWORD, testUser.getPassword());
+        db.insert(TABLE_NAME, null, values);
     }
 
     @Override
@@ -39,18 +43,18 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void addUserHandler(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_USERNAME, user.getName());
         values.put(COLUMN_USEREMAIL, user.getEmail());
         values.put(COLUMN_PASSWORD, user.getPassword());
-        SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_NAME, null, values);
         db.close();
     }
 
-    public User findUserHandler(String username, String password){
-        String query = "Select "+COLUMN_USERNAME+", "+COLUMN_USEREMAIL+", " +COLUMN_PASSWORD+" FROM " + TABLE_NAME + " WHERE" + COLUMN_USERNAME + " = " + "'" + username + "'" + " AND " + COLUMN_PASSWORD + " = " + password + "'";
-        SQLiteDatabase db = this.getWritableDatabase();
+    public User findAccountHandler(String username, String password){
+        String query = "Select "+COLUMN_USERNAME+", "+COLUMN_USEREMAIL+", " +COLUMN_PASSWORD+" FROM " + TABLE_NAME + " WHERE " + COLUMN_USERNAME + " = " + "'" + username + "'" + " AND " + COLUMN_PASSWORD + " = '" + password + "'";
+        SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         User user = new User();
         if (cursor.moveToFirst()) {
