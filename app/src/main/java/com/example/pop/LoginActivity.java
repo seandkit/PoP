@@ -53,8 +53,9 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private boolean validateMatch(String username, String userPassword) {
-        if((username.equals("admin")) && (userPassword.equals("admin"))){
+    private boolean validateMatch(String email, String userPassword) {
+        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
+        if(!db.findAccountHandler(email, userPassword).equals(null)){
             return true;
         }
         else{
