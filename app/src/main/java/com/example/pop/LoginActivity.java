@@ -55,10 +55,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private boolean validateMatch(String email, String userPassword) {
         SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
-        if(!db.findAccountHandler(email, userPassword).equals(null)){
-            return true;
-        }
-        else{
+        try {
+            if (!db.findAccountHandler(email, userPassword).equals(null)) {
+                return true;
+            } else {
+                failedAttempt();
+                return false;
+            }
+        }catch(NullPointerException e){
             failedAttempt();
             return false;
         }
