@@ -1,10 +1,9 @@
-package com.example.pop;
+package com.example.pop.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,9 +12,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.pop.R;
+import com.example.pop.handler.SQLiteDatabaseHandler;
 import com.example.pop.model.User;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {

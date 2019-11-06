@@ -1,4 +1,4 @@
-package com.example.pop;
+package com.example.pop.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.example.pop.R;
+import com.example.pop.handler.SQLiteDatabaseHandler;
 
 public class LoginActivity extends AppCompatActivity {
 

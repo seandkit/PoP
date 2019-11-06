@@ -1,4 +1,4 @@
-package com.example.pop;
+package com.example.pop.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -6,8 +6,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 
+import com.example.pop.R;
+import com.example.pop.activity.adapter.ReceiptListAdapter;
+
 import java.util.LinkedList;
-import java.util.List;
 
 public class RecentTransactionsActivity extends AppCompatActivity {
 
