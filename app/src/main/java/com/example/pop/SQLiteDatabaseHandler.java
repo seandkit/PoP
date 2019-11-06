@@ -69,4 +69,36 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         db.close();
         return user;
     }
+
+    public boolean checkUsernameExist(String username){
+        String query = "Select count(*) FROM " + TABLE_NAME + " WHERE " + COLUMN_USERNAME + " = '" + username + "'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor mCount= db.rawQuery(query, null);
+        mCount.moveToFirst();
+        int count= mCount.getInt(0);
+        mCount.close();
+        if (count == 0) {
+            db.close();
+            return false;
+        } else {
+            db.close();
+            return true;
+        }
+    }
+
+    public boolean checkEmailExist(String email){
+        String query = "Select count(*) FROM " + TABLE_NAME + " WHERE " + COLUMN_USEREMAIL + " = '" + email + "'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor mCount= db.rawQuery(query, null);
+        mCount.moveToFirst();
+        int count= mCount.getInt(0);
+        mCount.close();
+        if (count == 0) {
+            db.close();
+            return false;
+        } else {
+            db.close();
+            return true;
+        }
+    }
 }
