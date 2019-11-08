@@ -115,6 +115,23 @@ public class SQLiteDatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
+    public Receipt findReceiptById(int id){
+        String query = "Select * FROM " + Constants.RECEIPTDATA
+                + "WHERE " + Constants.RECEIPTID + " = " + id;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        Receipt foundReceipt = new Receipt();
+        foundReceipt.setId(cursor.getInt(0));
+        foundReceipt.setDate(cursor.getString(1));
+        foundReceipt.setVendorName(cursor.getString(2));
+        foundReceipt.setCardTrans(cursor.getInt(3));
+        foundReceipt.setReceiptTotal(cursor.getDouble(4));
+        cursor.close();
+        db.close();
+        return foundReceipt;
+    }
+
     public LinkedList<String[]> findAllReceiptsForDisplayOnRecentTransaction(){
         String query = "Select "+Constants.DATE +", "
                 +Constants.VENDORNAME +", "
