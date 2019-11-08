@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.example.pop.R;
 import com.example.pop.activity.adapter.ReceiptListAdapter;
+import com.example.pop.handler.SQLiteDatabaseHandler;
 
 import java.util.LinkedList;
 
@@ -25,12 +26,7 @@ public class RecentTransactionsActivity extends AppCompatActivity {
         this.getSupportActionBar().hide();
         setContentView(R.layout.activity_recent_transactions);
 
-        //
-        for(int i = 0; i < 100; i++)
-        {
-            String[] a = {"06/11/19","Tesco","€6.99"};
-            mReceiptList.add(a);
-        }
+        populateReceipts();
 
         // Get a handle to the RecyclerView.
         mRecyclerView = findViewById(R.id.receiptList);
@@ -40,5 +36,10 @@ public class RecentTransactionsActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void populateReceipts(){
+        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
+        mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction();
     }
 }
