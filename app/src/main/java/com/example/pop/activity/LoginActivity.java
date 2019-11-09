@@ -10,10 +10,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.pop.R;
-import com.example.pop.handler.SQLiteDatabaseHandler;
+import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private SQLiteDatabaseAdapter db;
     private EditText email;
     private EditText password;
     private TextView registerLink;
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        db = new SQLiteDatabaseAdapter(this);
         email = findViewById(R.id.loginEmail);
         password = findViewById(R.id.loginPassword);
         loginBtn = findViewById(R.id.loginBtn);
@@ -57,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean validateMatch(String email, String userPassword) {
-        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
         try {
             if (!db.findAccountHandler(email, userPassword).equals(null)) {
                 return true;

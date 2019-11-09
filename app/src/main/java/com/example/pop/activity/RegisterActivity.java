@@ -13,13 +13,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pop.R;
-import com.example.pop.handler.SQLiteDatabaseHandler;
 import com.example.pop.model.User;
+import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 
 import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private SQLiteDatabaseAdapter db;
     private EditText username;
     private EditText email;
     private EditText pass;
@@ -33,6 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        db = new SQLiteDatabaseAdapter(this);
         username = findViewById(R.id.regUsername);
         email = findViewById(R.id.regEmail);
         pass = findViewById(R.id.regPassword);
@@ -89,8 +91,6 @@ public class RegisterActivity extends AppCompatActivity {
     };
 
     private boolean checkUsername(String username) {
-        //Search db for username
-        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
 
         //Check if username is taken
         if(db.checkUsernameExist(username)){
@@ -104,8 +104,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean checkEmail(String email) {
-        //Search db for email
-        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
 
         //Check if email is taken
         if(db.checkEmailExist(email)) {
@@ -142,7 +140,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void addValidUser(String username, String email, String password){
         User user = new User(username, email, password);
-        SQLiteDatabaseHandler db = new SQLiteDatabaseHandler(this);
         db.addUserHandler(user);
     }
 }

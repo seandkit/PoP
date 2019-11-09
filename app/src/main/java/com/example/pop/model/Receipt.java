@@ -7,24 +7,27 @@ public class Receipt {
     private String vendorName;
     private int cardTrans;
     private double receiptTotal;
+    private int userId;
 
     public Receipt(){
 
     }
 
-    public Receipt(String date, String vendorName, int cardTrans, double receiptTotal){
+    public Receipt(String date, String vendorName, int cardTrans, double receiptTotal, int userId){
         this.date = date;
         this.vendorName = vendorName;
         this.cardTrans = cardTrans;
         this.receiptTotal = receiptTotal;
+        this.userId = userId;
     }
 
-    public Receipt(int id, String date, String vendorName, int cardTrans, double receiptTotal){
+    public Receipt(int id, String date, String vendorName, int cardTrans, double receiptTotal, int userId){
         this.id = id;
         this.date = date;
         this.vendorName = vendorName;
         this.cardTrans = cardTrans;
         this.receiptTotal = receiptTotal;
+        this.userId = userId;
     }
 
     public int getId() {
@@ -47,6 +50,10 @@ public class Receipt {
         return receiptTotal;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -67,4 +74,7 @@ public class Receipt {
         this.receiptTotal = receiptTotal;
     }
 
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 }

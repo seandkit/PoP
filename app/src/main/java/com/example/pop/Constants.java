@@ -3,6 +3,11 @@ package com.example.pop;
 public final class Constants {
     public static final int DATABASE_VERSION = 1;
     public static final int DATABASE_VERSION2 = 2;
+    public static final int DATABASE_VERSION3 = 3;
+    public static final int DATABASE_VERSION4 = 4;
+    public static final int DATABASE_VERSION5 =5;
+    public static final int DATABASE_VERSION6 =6;
+    public static final int DATABASE_VERSION7 =7;
 
     public static final String DATABASE_NAME = "PoP.db";
 
@@ -11,6 +16,9 @@ public final class Constants {
     public static final String RECEIPTDATA = "receiptdata";
     public static final String ITEMDATA = "itemdata";
     public static final String RECEIPTITEMDATA = "receiptitemdata";
+
+    //generic column
+    public static final String ID = "id";
 
     //userdata columns
     public static final String USERID = "userid";
