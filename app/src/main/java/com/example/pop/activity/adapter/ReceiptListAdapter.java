@@ -10,12 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pop.R;
+import com.example.pop.model.Receipt;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.ReceiptListItemHolder> {
 
-    private LinkedList<String[]> mReceiptList;
+    private List<Receipt> mReceiptList;
     private LayoutInflater mInflater;
 
     @NonNull
@@ -27,10 +29,10 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
 
     @Override
     public void onBindViewHolder(ReceiptListItemHolder holder, int position) {
-        String[] mCurrent = mReceiptList.get(position);
-        holder.receiptDateView.setText(mCurrent[0]);
-        holder.receiptShopView.setText(mCurrent[1]);
-        holder.receiptTotalView.setText(mCurrent[2]);
+        Receipt receipt = mReceiptList.get(position);
+        holder.receiptDateView.setText(receipt.getDate());
+        holder.receiptShopView.setText(receipt.getVendorName());
+        holder.receiptTotalView.setText(""+receipt.getReceiptTotal());
     }
 
     @Override
@@ -38,7 +40,7 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         return mReceiptList.size();
     }
 
-    public ReceiptListAdapter(Context context, LinkedList<String[]> receiptList) {
+    public ReceiptListAdapter(Context context, List<Receipt> receiptList) {
         mInflater = LayoutInflater.from(context);
         this.mReceiptList = receiptList;
     }

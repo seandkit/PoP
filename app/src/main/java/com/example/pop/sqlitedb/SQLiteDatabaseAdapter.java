@@ -6,11 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.pop.Constants;
+import com.example.pop.DBConstants;
+import com.example.pop.TEST;
 import com.example.pop.model.Receipt;
 import com.example.pop.model.User;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class SQLiteDatabaseAdapter {
 
@@ -23,18 +26,18 @@ public class SQLiteDatabaseAdapter {
     public void addUserHandler(User user) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(Constants.USERNAME, user.getName());
-        values.put(Constants.EMAIL, user.getEmail());
-        values.put(Constants.PASSWORD, user.getPassword());
-        db.insert(Constants.USERDATA, null, values);
+        values.put(DBConstants.USERNAME, user.getName());
+        values.put(DBConstants.EMAIL, user.getEmail());
+        values.put(DBConstants.PASSWORD, user.getPassword());
+        db.insert(DBConstants.USERDATA, null, values);
     }
 
 
     public User findAccountHandler(String email, String password){
-        String query = "Select "+Constants.USERNAME +", "+Constants.EMAIL +", " +Constants.PASSWORD +" FROM "
-                +Constants.USERDATA + " WHERE "
-                +Constants.EMAIL + " = " + "'" + email + "'"
-                + " AND " + Constants.PASSWORD + " = '" + password + "'";
+        String query = "Select "+ DBConstants.USERNAME +", "+ DBConstants.EMAIL +", " + DBConstants.PASSWORD +" FROM "
+                + DBConstants.USERDATA + " WHERE "
+                + DBConstants.EMAIL + " = " + "'" + email + "'"
+                + " AND " + DBConstants.PASSWORD + " = '" + password + "'";
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         User user = new User();
@@ -52,8 +55,8 @@ public class SQLiteDatabaseAdapter {
 
     public boolean checkUsernameExist(String username){
         String query = "Select count(*) FROM "
-                +Constants.USERDATA + " WHERE "
-                +Constants.USERNAME + " = '" + username + "'";
+                + DBConstants.USERDATA + " WHERE "
+                + DBConstants.USERNAME + " = '" + username + "'";
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor mCount= db.rawQuery(query, null);
         mCount.moveToFirst();
@@ -68,8 +71,8 @@ public class SQLiteDatabaseAdapter {
 
     public boolean checkEmailExist(String email){
         String query = "Select count(*) FROM "
-                +Constants.USERDATA + " WHERE "
-                +Constants.EMAIL + " = '" + email + "'";
+                + DBConstants.USERDATA + " WHERE "
+                + DBConstants.EMAIL + " = '" + email + "'";
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor mCount= db.rawQuery(query, null);
         mCount.moveToFirst();
@@ -83,8 +86,8 @@ public class SQLiteDatabaseAdapter {
     }
 
     public Receipt findReceiptById(int id){
-        String query = "Select * FROM " + Constants.RECEIPTDATA
-                + "WHERE " + Constants.ID + " = " + id;
+        String query = "Select * FROM " + DBConstants.RECEIPTDATA
+                + "WHERE " + DBConstants.ID + " = " + id;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
@@ -98,20 +101,18 @@ public class SQLiteDatabaseAdapter {
         return foundReceipt;
     }
 
-    public LinkedList<String[]> findAllReceiptsForDisplayOnRecentTransaction(int id){
-        String query = "Select "+Constants.DATE +", "
-                +Constants.VENDORNAME +", "
-                +Constants.RECEIPTTOTAL
-                +" FROM " +Constants.RECEIPTDATA
-                +" WHERE " +Constants.USERID+ " = "+id;
+    public List<Receipt> findAllReceiptsForDisplayOnRecentTransaction(int id){
+        String query = "Select * FROM " + DBConstants.RECEIPTDATA
+                +" WHERE " + DBConstants.USERID+ " = "+id;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        LinkedList<String[]> receiptList = new LinkedList<>();
+        List<Receipt> receiptList = new ArrayList<>();
         if(cursor != null) {
             cursor.moveToNext();
             for (int i = 0; i < cursor.getCount(); i++) {
-                String[] receipts = {cursor.getString(0), cursor.getString(1), String.valueOf(cursor.getFloat(2))};
-                receiptList.add(receipts);
+                Receipt receipt = new Receipt(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
+                                              cursor.getInt(3), cursor.getFloat(4), cursor.getInt(5));
+                receiptList.add(receipt);
                 cursor.moveToNext();
             }
         }
@@ -124,66 +125,49 @@ public class SQLiteDatabaseAdapter {
         private Context context;
 
         public SQLiteDatabaseHelper(Context context) {
-            super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION7);
+            super(context, DBConstants.DATABASE_NAME, null, DBConstants.DATABASE_VERSION12);
             this.context = context;
         }
 
         @Override
         public void onCreate(SQLiteDatabase db) {
             User testUser = new User(1, "admin", "D00191063@student.dkit.ie", "Password!1");
-            Receipt testReceipt1 = new Receipt("2019-10-03","Tesco", 1, 103.59,1);
-            Receipt testReceipt2 = new Receipt("2019-10-11","Tesco", 0, 4.08,1);
-            Receipt testReceipt3 = new Receipt("2019-10-15","Tesco", 1, 55.55,1);
-            Receipt testReceipt4 = new Receipt("2019-10-20","Tesco", 0, 23.00,1);
-            Receipt testReceipt5 = new Receipt("2019-10-24","Tesco", 1, 77.531,1);
-            Receipt testReceipt6 = new Receipt("2019-10-29","Tesco", 1, 60.311,1);
-            Receipt testReceipt7 = new Receipt("2019-11-01","Tesco", 0, 12.961,1);
-            Receipt testReceipt8 = new Receipt("2019-11-03","Tesco", 1, 33.33,1);
-            Receipt testReceipt9 = new Receipt("2019-11-07","Tesco", 0, 201.68,1);
-            db.execSQL("CREATE TABLE " + Constants.USERDATA + " ( "
-                    + Constants.ID + " INTEGER PRIMARY KEY, "
-                    + Constants.USERNAME + " TEXT,"
-                    + Constants.EMAIL + " TEXT, "
-                    + Constants.PASSWORD + " TEXT)");
+            db.execSQL("CREATE TABLE " + DBConstants.USERDATA + " ( "
+                    + DBConstants.ID + " INTEGER PRIMARY KEY, "
+                    + DBConstants.USERNAME + " TEXT,"
+                    + DBConstants.EMAIL + " TEXT, "
+                    + DBConstants.PASSWORD + " TEXT)");
             ContentValues userValues = new ContentValues();
-            userValues.put(Constants.USERNAME, testUser.getName());
-            userValues.put(Constants.EMAIL, testUser.getEmail());
-            userValues.put(Constants.PASSWORD, testUser.getPassword());
-            db.insert(Constants.USERDATA, null, userValues);
-            db.execSQL("CREATE TABLE " + Constants.RECEIPTDATA + " ( "
-                    + Constants.ID + " INTEGER PRIMARY KEY, "
-                    + Constants.DATE + " TEXT,"
-                    + Constants.VENDORNAME + " TEXT, "
-                    + Constants.CARDTRANS + " INTEGER,"
-                    + Constants.RECEIPTTOTAL + " REAL,"
-                    + Constants.USERID + " INTEGER NOT NULL REFERENCES " + Constants.USERDATA + "(" + Constants.ID + "))");
-
-            insertReceiptToDB(db, testReceipt1);
-            insertReceiptToDB(db, testReceipt2);
-            insertReceiptToDB(db, testReceipt3);
-            insertReceiptToDB(db, testReceipt4);
-            insertReceiptToDB(db, testReceipt5);
-            insertReceiptToDB(db, testReceipt6);
-            insertReceiptToDB(db, testReceipt7);
-            insertReceiptToDB(db, testReceipt8);
-            insertReceiptToDB(db, testReceipt9);
+            userValues.put(DBConstants.USERNAME, testUser.getName());
+            userValues.put(DBConstants.EMAIL, testUser.getEmail());
+            userValues.put(DBConstants.PASSWORD, testUser.getPassword());
+            db.insert(DBConstants.USERDATA, null, userValues);
+            db.execSQL("CREATE TABLE " + DBConstants.RECEIPTDATA + " ( "
+                    + DBConstants.ID + " INTEGER PRIMARY KEY, "
+                    + DBConstants.DATE + " TEXT,"
+                    + DBConstants.VENDORNAME + " TEXT, "
+                    + DBConstants.CARDTRANS + " INTEGER,"
+                    + DBConstants.RECEIPTTOTAL + " REAL,"
+                    + DBConstants.USERID + " INTEGER NOT NULL REFERENCES " + DBConstants.USERDATA + "(" + DBConstants.ID + "))");
+            db.execSQL("CREATE TABLE "+ DBConstants.ITEMDATA + " ("
+                    + DBConstants.ID + " INTEGER PRIMARY KEY, "
+                    + DBConstants.ITEMNAME + " TEXT)");
+            db.execSQL("CREATE TABLE " + DBConstants.RECEIPTITEMDATA + "( "
+                    + DBConstants.RECEIPTITEMPK + " INTEGER PRIMARY KEY, "
+                    + DBConstants.RECEIPTID + " INTEGER NOT NULL REFERENCES " + DBConstants.RECEIPTDATA + "('" + DBConstants.ID +"'), "
+                    + DBConstants.ITEMID + " INTEGER NOT NULL REFERENCES " + DBConstants.ITEMDATA + "('" + DBConstants.ID +"'), "
+                    + DBConstants.PRICE + " INTEGER, "
+                    + DBConstants.QUANTITY+ " INTEGER)");
+            TEST.sampleTestReceipts(db);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + Constants.USERDATA);
-            db.execSQL("DROP TABLE IF EXISTS " + Constants.RECEIPTDATA);
+            db.execSQL("DROP TABLE IF EXISTS " + DBConstants.USERDATA + ";");
+            db.execSQL("DROP TABLE IF EXISTS " + DBConstants.RECEIPTDATA+ ";");
+            db.execSQL("DROP TABLE IF EXISTS " + DBConstants.ITEMDATA+ ";");
+            db.execSQL("DROP TABLE IF EXISTS " + DBConstants.RECEIPTITEMDATA+ ";");
             onCreate(db);
-        }
-
-        private void insertReceiptToDB(SQLiteDatabase db, Receipt r){
-            ContentValues receiptValues = new ContentValues();
-            receiptValues.put(Constants.DATE, r.getDate());
-            receiptValues.put(Constants.VENDORNAME, r.getVendorName());
-            receiptValues.put(Constants.CARDTRANS, r.isCardTrans());
-            receiptValues.put(Constants.RECEIPTTOTAL, r.getReceiptTotal());
-            receiptValues.put(Constants.USERID, r.getUserId());
-            db.insert(Constants.RECEIPTDATA, null, receiptValues);
         }
     }
 }

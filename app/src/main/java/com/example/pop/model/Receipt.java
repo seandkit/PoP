@@ -1,5 +1,7 @@
 package com.example.pop.model;
 
+import java.util.List;
+
 public class Receipt {
 
     private int id;
@@ -8,6 +10,7 @@ public class Receipt {
     private int cardTrans;
     private double receiptTotal;
     private int userId;
+    private List<Item> items;
 
     public Receipt(){
 
@@ -28,6 +31,25 @@ public class Receipt {
         this.cardTrans = cardTrans;
         this.receiptTotal = receiptTotal;
         this.userId = userId;
+    }
+
+    public Receipt( String date, String vendorName, int cardTrans, int userId, List<Item> items){
+        this.date = date;
+        this.vendorName = vendorName;
+        this.cardTrans = cardTrans;
+        this.receiptTotal = calculateTotalPrice(items);
+        this.userId = userId;
+        this.items = items;
+    }
+
+    public Receipt(int id, String date, String vendorName, int cardTrans,  int userId, List<Item> items){
+        this.id = id;
+        this.date = date;
+        this.vendorName = vendorName;
+        this.cardTrans = cardTrans;
+        this.receiptTotal = calculateTotalPrice(items);
+        this.userId = userId;
+        this.items = items;
     }
 
     public int getId() {
@@ -54,6 +76,10 @@ public class Receipt {
         return userId;
     }
 
+    public List<Item> getItems() {
+        return items;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -76,5 +102,17 @@ public class Receipt {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    private double calculateTotalPrice(List<Item> items){
+        double totalPrice = 0;
+        for(Item i:items){
+            totalPrice += i.getPrice();
+        }
+        return totalPrice;
     }
 }

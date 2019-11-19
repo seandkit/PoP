@@ -8,9 +8,12 @@ import android.os.Bundle;
 
 import com.example.pop.R;
 import com.example.pop.activity.adapter.ReceiptListAdapter;
+import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class RecentTransactionsActivity extends AppCompatActivity {
 
@@ -18,7 +21,7 @@ public class RecentTransactionsActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ReceiptListAdapter mAdapter;
 
-    private LinkedList<String[]> mReceiptList = new LinkedList<>();
+    private List<Receipt> mReceiptList = new ArrayList<>();
 
 
     @Override
