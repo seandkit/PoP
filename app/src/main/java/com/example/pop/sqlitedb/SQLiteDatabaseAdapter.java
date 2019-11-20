@@ -12,7 +12,6 @@ import com.example.pop.model.Receipt;
 import com.example.pop.model.User;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class SQLiteDatabaseAdapter {

@@ -27,9 +27,9 @@ public class TEST {
         Receipt testReceipt2 = new Receipt("2019-10-11", "Tesco", 0, 4.08, 1);
         Receipt testReceipt3 = new Receipt("2019-10-15", "Tesco", 1, 55.55, 1);
         Receipt testReceipt4 = new Receipt("2019-10-20", "Tesco", 0, 23.00, 1);
-        Receipt testReceipt5 = new Receipt("2019-10-24", "Tesco", 1, 77.531, 1);
-        Receipt testReceipt6 = new Receipt("2019-10-29", "Tesco", 1, 60.311, 1);
-        Receipt testReceipt7 = new Receipt("2019-11-01", "Tesco", 0, 12.961, 1);
+        Receipt testReceipt5 = new Receipt("2019-10-24", "Tesco", 1, 77.53, 1);
+        Receipt testReceipt6 = new Receipt("2019-10-29", "Tesco", 1, 60.31, 1);
+        Receipt testReceipt7 = new Receipt("2019-11-01", "Tesco", 0, 12.96, 1);
         Receipt testReceipt8 = new Receipt("2019-11-03", "Tesco", 1, 33.33, 1);
         Receipt testReceipt9 = new Receipt("2019-11-07", "Tesco", 0, 201.68, 1);
 
