@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PoP</string>
+    <string name="search_nav">search</string>
+    <string name="data_nav">data</string>
+    <string name="home_nav">home</string>
+
 </resources>
