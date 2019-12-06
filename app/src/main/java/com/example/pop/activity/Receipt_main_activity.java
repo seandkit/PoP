@@ -20,7 +20,7 @@ public class Receipt_main_activity extends AppCompatActivity {
     //fragments:
     private ReceiptFragment receiptFragment;
     private Search searchFragment;
-    private SearchByTag dataFragment;
+    private Data dataFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,7 @@ public class Receipt_main_activity extends AppCompatActivity {
         //Fragment initialization
         receiptFragment = new ReceiptFragment();
         searchFragment = new Search();
-        dataFragment = new SearchByTag();
+        dataFragment = new Data();
 
 
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {

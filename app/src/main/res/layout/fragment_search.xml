@@ -122,7 +122,11 @@
         android:layout_width="411dp"
         android:layout_height="495dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textboxtest"></androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@+id/textboxtest"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/layout_listitem"
+        >
+    </androidx.recyclerview.widget.RecyclerView>
 
 
     <Button

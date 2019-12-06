@@ -86,10 +86,12 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/receiptList"
-        android:layout_width="417dp"
-        android:layout_height="500dp"
+        android:layout_width="413dp"
+        android:layout_height="501dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textboxtest"></androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@+id/textboxtest"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/layout_listitem"></androidx.recyclerview.widget.RecyclerView>
 
 
     <Button

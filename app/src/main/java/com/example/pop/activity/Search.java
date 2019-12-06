@@ -17,6 +17,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,6 +57,7 @@ public class Search extends Fragment implements NavigationView.OnNavigationItemS
         drawer = v.findViewById(R.id.drawer_layout);
         NavigationView navigationView = v.findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener((toggle));
@@ -102,9 +104,11 @@ public class Search extends Fragment implements NavigationView.OnNavigationItemS
         switch(menuItem.getItemId()){
             case R.id.nav_search:
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Search()).commit();
+                Log.d("This is clicked", this.toString());
                 break;
             case R.id.nav_searchTag:
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SearchByTag()).commit();
+                Log.d("This is clicked", this.toString());
                 break;
 
         }
