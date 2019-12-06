@@ -33,8 +33,8 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.loginPassword);
         loginBtn = findViewById(R.id.loginBtn);
         registerLink = findViewById(R.id.regLink);
-        errorMsg = findViewById(R.id.loginErrorMsg);
-        attempts = findViewById(R.id.attempts);
+        //errorMsg = findViewById(R.id.loginErrorMsg);
+        //attempts = findViewById(R.id.attempts);
 
 
         loginBtn.setOnClickListener(new View.OnClickListener() {

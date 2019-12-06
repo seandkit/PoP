@@ -12,7 +12,7 @@ import android.widget.FrameLayout;
 import com.example.pop.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class receiptTransaction extends AppCompatActivity {
+public class Receipt_main_activity extends AppCompatActivity {
 
     FrameLayout frameLayout;
     BottomNavigationView navigation;
@@ -20,19 +20,19 @@ public class receiptTransaction extends AppCompatActivity {
     //fragments:
     private ReceiptFragment receiptFragment;
     private Search searchFragment;
-    private Data dataFragment;
+    private SearchByTag dataFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_receipt_transaction2);
+        setContentView(R.layout.activity_receipt_main_activity);
         navigation = findViewById(R.id.bottomNavigationView);
         frameLayout = findViewById(R.id.frameLayout);
 
         //Fragment initialization
         receiptFragment = new ReceiptFragment();
         searchFragment = new Search();
-        dataFragment = new Data();
+        dataFragment = new SearchByTag();
 
 
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
