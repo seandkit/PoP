@@ -13,17 +13,18 @@
         <activity
             android:name=".activity.Receipt_main_activity"
             android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".activity.ReceiptActivity" />
+        <activity android:name=".activity.RecentTransactionsActivity" />
+        <activity android:name=".activity.receiptTransaction" />
+        <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ReceiptActivity" />
-        <activity android:name=".activity.RecentTransactionsActivity" />
-        <activity android:name=".activity.receiptTransaction" />
-        <activity android:name=".activity.LoginActivity"></activity>
-        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.RegisterActivity" ></activity>
         <activity android:name=".activity.MainActivity" />
     </application>
 

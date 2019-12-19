@@ -1,10 +1,12 @@
-package com.example.pop;
+package com.example.pop.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.example.pop.R;
 
 public class ReceiptActivity extends AppCompatActivity {
 
