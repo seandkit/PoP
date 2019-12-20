@@ -3,7 +3,12 @@ package com.example.pop;
 public final class DBConstants {
     public static final int DATABASE_VERSION12 =12;
 
+    //SQLITE
     public static final String DATABASE_NAME = "PoP.db";
+
+    //PHP Web Server
+    public static final String BASE_URL = "http://10.108.159.16/";
+    public static final String DATA = "data";
 
     //Tables
     public static final String USERDATA = "userdata";
