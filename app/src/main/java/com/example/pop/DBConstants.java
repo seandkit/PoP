@@ -1,17 +1,6 @@
 package com.example.pop;
 
 public final class DBConstants {
-    public static final int DATABASE_VERSION = 1;
-    public static final int DATABASE_VERSION2 = 2;
-    public static final int DATABASE_VERSION3 = 3;
-    public static final int DATABASE_VERSION4 = 4;
-    public static final int DATABASE_VERSION5 =5;
-    public static final int DATABASE_VERSION6 =6;
-    public static final int DATABASE_VERSION7 =7;
-    public static final int DATABASE_VERSION8 =8;
-    public static final int DATABASE_VERSION9 =9;
-    public static final int DATABASE_VERSION10 =10;
-    public static final int DATABASE_VERSION11 =11;
     public static final int DATABASE_VERSION12 =12;
 
     public static final String DATABASE_NAME = "PoP.db";

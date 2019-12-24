@@ -75,8 +75,8 @@ public class LoginActivity extends AppCompatActivity {
     private void failedAttempt() {
         count--;
 
-        errorMsg.setText("Wrong email or password!");
-        attempts.setText("No of attempts remaining: " + count);
+        //errorMsg.setText("Wrong email or password!");
+        //attempts.setText("No of attempts remaining: " + count);
 
         if(count == 0)
         {
