@@ -3,6 +3,7 @@ package com.example.pop.activity;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.icu.util.Calendar;
 import android.os.Build;
@@ -22,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,8 +40,11 @@ import org.w3c.dom.Text;
 public class Search extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
-    private TextView mDisplayDate;
-    private DatePickerDialog.OnDateSetListener mDateSetListener;
+    private TextView mDisplayDateFrom;
+    private TextView mDisplayDateTo;
+    private DatePickerDialog.OnDateSetListener mDateSetListenerFrom;
+    private DatePickerDialog.OnDateSetListener mDateSetListenerTo;
+    private Button btn_export;
 
     public Search() {
         // Required empty public constructor
@@ -65,9 +70,11 @@ public class Search extends Fragment implements NavigationView.OnNavigationItemS
 
 
 
-        mDisplayDate = (TextView) v.findViewById(R.id.tvDate);
+        mDisplayDateFrom = (TextView) v.findViewById(R.id.tvDateFrom);
+        mDisplayDateTo = (TextView) v.findViewById(R.id.tvDateTo);
+        btn_export = (Button) v.findViewById(R.id.export_btn);
 
-        mDisplayDate.setOnClickListener(new View.OnClickListener(){
+        mDisplayDateFrom.setOnClickListener(new View.OnClickListener(){
             @SuppressLint("ResourceAsColor")
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -79,21 +86,59 @@ public class Search extends Fragment implements NavigationView.OnNavigationItemS
 
                 DatePickerDialog dialog = new DatePickerDialog(getActivity(),
                                                                 android.R.style.Theme_Black,
-                                                                mDateSetListener,
+                                                                mDateSetListenerFrom,
                                                                 year,month,day);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.R.color.transparent));
                 dialog.show();
             }
         });
 
-        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        mDateSetListenerFrom = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month+1;
                 String date = month + "/" + day + "/" + year;
-                mDisplayDate.setText(date);
+                mDisplayDateFrom.setText(date);
             }
         };
+
+        mDisplayDateTo.setOnClickListener(new View.OnClickListener(){
+            @SuppressLint("ResourceAsColor")
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View view) {
+                Calendar cal = Calendar.getInstance();
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(),
+                        android.R.style.Theme_Black,
+                        mDateSetListenerTo,
+                        year,month,day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.R.color.transparent));
+                dialog.show();
+            }
+        });
+
+        mDateSetListenerTo = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                month = month+1;
+                String date = month + "/" + day + "/" + year;
+                mDisplayDateTo.setText(date);
+            }
+        };
+
+
+        btn_export.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getContext(), ExportActivity.class);
+                startActivity(i);
+            }
+        });
+
 
         return v;
     }

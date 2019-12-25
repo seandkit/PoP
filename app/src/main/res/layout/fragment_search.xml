@@ -82,7 +82,7 @@
                 android:textColor="#000000"/>
 
             <TextView
-                android:id="@+id/tvDate"
+                android:id="@+id/tvDateFrom"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -99,10 +99,10 @@
                 />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/tvDateTo"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tvDate"
+                android:layout_below="@+id/tvDateFrom"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="20dp"
@@ -130,7 +130,7 @@
 
 
     <Button
-        android:id="@+id/signup_btn"
+        android:id="@+id/export_btn"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
