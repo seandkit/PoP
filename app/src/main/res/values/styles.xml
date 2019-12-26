@@ -19,7 +19,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    
+
     <style name="AppTheme.PopMe">
 
         <item name="android:windowIsTranslucent">true</item>

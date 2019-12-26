@@ -9,11 +9,12 @@
         android:layout_margin="12dp">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@drawable/backforbox">
 
 
             <TextView
-                android:id="@+id/item_quantity"
+                android:id="@+id/receiptDate"
                 android:layout_width="40dp"
                 android:layout_height="16dp"
                 android:layout_alignParentStart="true"
@@ -27,21 +28,21 @@
                 android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/item_name"
+                    android:id="@+id/receiptShop"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="30dp"
                     android:layout_marginTop="6dp"
-                    android:layout_toRightOf="@id/item_quantity"
+                    android:layout_toRightOf="@id/receiptDate"
                     android:text="Tesco"
 
                     android:textColor="#FF1D1D1D"
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/item_total"
+                    android:id="@+id/receiptTotal"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -51,8 +52,8 @@
                     android:layout_marginLeft="51dp"
                     android:layout_marginEnd="0dp"
                     android:layout_marginRight="0dp"
-                    android:layout_toEndOf="@+id/item_name"
-                    android:layout_toRightOf="@+id/item_name"
+                    android:layout_toEndOf="@+id/receiptShop"
+                    android:layout_toRightOf="@+id/receiptShop"
                     android:text="€ 67.50"
                     android:textColor="#1D1D1D"
                     android:textSize="17sp" />

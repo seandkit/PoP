@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 
@@ -20,7 +21,7 @@ public class Receipt_main_activity extends AppCompatActivity {
     //fragments:
     private ReceiptFragment receiptFragment;
     private Search searchFragment;
-    private Data dataFragment;
+    private SearchByTag tagFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,7 @@ public class Receipt_main_activity extends AppCompatActivity {
         //Fragment initialization
         receiptFragment = new ReceiptFragment();
         searchFragment = new Search();
-        dataFragment = new Data();
+        tagFragment = new SearchByTag();
 
 
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -53,7 +54,7 @@ public class Receipt_main_activity extends AppCompatActivity {
 
                     case R.id.nav_data :
                         //Code to be executed when item 1 selected.
-                        InitializeFragment(dataFragment);
+                        InitializeFragment(tagFragment);
                         return true;
 
                 }
@@ -68,5 +69,11 @@ public class Receipt_main_activity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        return true;
     }
 }

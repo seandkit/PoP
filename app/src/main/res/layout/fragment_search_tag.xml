@@ -65,22 +65,22 @@
             android:textSize="20sp"
             android:textColor="#000000"/>
 
-        <TextView
+        <SearchView
             android:id="@+id/tagInput"
             android:layout_width="250dp"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_marginTop="15dp"
 
+            android:layout_marginEnd="35dp"
             android:layout_marginRight="35dp"
             android:background="@drawable/backforbox"
-            android:text="Milk"
-            android:textSize="20sp"
             android:gravity="center"
+            android:hint="Tag"
             android:textColor="#000000"
-            />
+            android:textSize="20sp" />
 
     </RelativeLayout>
 
@@ -95,7 +95,7 @@
 
 
     <Button
-        android:id="@+id/signup_btn"
+        android:id="@+id/export_btn"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"

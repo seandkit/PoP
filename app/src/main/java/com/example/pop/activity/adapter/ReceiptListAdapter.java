@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pop.R;
 import com.example.pop.model.Receipt;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.ReceiptListItemHolder> {
+public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.ReceiptListItemHolder> implements Filterable {
 
     private List<Receipt> mReceiptList;
+    private List<Receipt> mReceiptListFull;
     private LayoutInflater mInflater;
 
     @NonNull
@@ -43,6 +47,7 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
     public ReceiptListAdapter(Context context, List<Receipt> receiptList) {
         mInflater = LayoutInflater.from(context);
         this.mReceiptList = receiptList;
+        mReceiptListFull = new ArrayList<>(receiptList);
     }
 
     class ReceiptListItemHolder extends RecyclerView.ViewHolder {
@@ -59,6 +64,44 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
             this.mAdapter = adapter;
         }
     }
+
+    @Override
+    public Filter getFilter() {
+        return receiptFilter;
+    }
+
+    private Filter receiptFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            List<Receipt> filteredList = new ArrayList<>();
+
+            if (charSequence == null || charSequence.length() == 0){
+
+                filteredList.addAll(mReceiptListFull);
+            }else{
+                String filterPattern = charSequence.toString().toLowerCase().trim();
+
+                for (Receipt receipt : mReceiptListFull)
+                {
+                    if(receipt.getVendorName().toLowerCase().contains(filterPattern)){
+                        filteredList.add(receipt);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+
+            mReceiptList.clear();
+            mReceiptList.addAll((List) filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
 }
 
 
