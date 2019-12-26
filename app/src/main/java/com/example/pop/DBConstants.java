@@ -7,7 +7,7 @@ public final class DBConstants {
     public static final String DATABASE_NAME = "PoP.db";
 
     //PHP Web Server
-    public static final String BASE_URL = "http://10.108.159.16/";
+    public static final String BASE_URL = "https://mysql03.comp.dkit.ie/D00198128/";
     public static final String DATA = "data";
 
     //Tables

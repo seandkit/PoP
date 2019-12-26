@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">http://10.108.159.16</domain>
+        <domain includeSubdomains="true">https://mysql03.comp.dkit.ie/D00198128</domain>
     </domain-config>
 </network-security-config>

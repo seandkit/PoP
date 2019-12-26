@@ -122,9 +122,11 @@ public class LoginActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
             HttpJsonParser httpJsonParser = new HttpJsonParser();
             Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.EMAIL, email.getText().toString());
-            httpParams.put(DBConstants.PASSWORD, password.getText().toString());
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest("http://10.108.159.16/login2.php", "POST", httpParams);
+            //httpParams.put(DBConstants.EMAIL, email.getText().toString());
+            //httpParams.put(DBConstants.PASSWORD, password.getText().toString());
+            httpParams.put("email", "test@gmail.com");
+            httpParams.put("password", "1Password");
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest("https://mysql03.comp.dkit.ie/D00198128/login.php", "POST", httpParams);
             try {
                 success = jsonObject.getInt("success");
             } catch (JSONException e) {
