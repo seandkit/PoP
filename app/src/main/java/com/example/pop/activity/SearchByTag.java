@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -33,15 +34,9 @@ import java.util.ArrayList;
 public class SearchByTag extends Fragment{
 
 
-    private DrawerLayout drawer;
-    private TextView mDisplayDateFrom;
-    private TextView mDisplayDateTo;
-    private DatePickerDialog.OnDateSetListener mDateSetListenerFrom;
-    private DatePickerDialog.OnDateSetListener mDateSetListenerTo;
     private Button btn_export;
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     private ReceiptListAdapter adapter;
@@ -57,8 +52,8 @@ public class SearchByTag extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_search_tag, container, false);
-        Toolbar toolbar = v.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        //Toolbar toolbar = v.findViewById(R.id.toolbar);
+        //((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         setHasOptionsMenu(true);
 
@@ -77,29 +72,14 @@ public class SearchByTag extends Fragment{
         mRecyclerView = v.findViewById(R.id.receiptList);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
-        mAdapter = new ReceiptListAdapter(getContext(), receiptArrayList);
+        adapter = new ReceiptListAdapter(getContext(), receiptArrayList);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(adapter);
 
+        searchView = v.findViewById(R.id.tagInput);
 
         btn_export = (Button) v.findViewById(R.id.export_btn);
-
-
-        searchView = (SearchView) v.findViewById(R.id.tagInput);
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                adapter.getFilter().filter(s);
-                return false;
-            }
-        });
 
         btn_export.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +90,27 @@ public class SearchByTag extends Fragment{
         });
 
 
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                if (adapter != null) {
+                    adapter.getFilter().filter(s);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if (adapter != null) {
+                    adapter.getFilter().filter(s);
+                }
+                return false;
+            }
+        });
+
+
         return v;
     }
+
 
 }

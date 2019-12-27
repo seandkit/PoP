@@ -46,8 +46,9 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
 
     public ReceiptListAdapter(Context context, List<Receipt> receiptList) {
         mInflater = LayoutInflater.from(context);
-        this.mReceiptList = receiptList;
+
         mReceiptListFull = new ArrayList<>(receiptList);
+        this.mReceiptList = receiptList;
     }
 
     class ReceiptListItemHolder extends RecyclerView.ViewHolder {
@@ -103,5 +104,6 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         }
     };
 }
+
 
 
