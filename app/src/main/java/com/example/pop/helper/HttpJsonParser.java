@@ -55,7 +55,8 @@ public class HttpJsonParser {
                 urlConnection.getOutputStream().write(encodedParams.getBytes());
             }
 
-
+            int status = urlConnection.getResponseCode();
+            System.out.println("HTTP Status: " + status);
             urlConnection.connect();
             is = urlConnection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
