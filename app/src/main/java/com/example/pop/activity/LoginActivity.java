@@ -16,8 +16,10 @@ import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.model.User;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,8 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
-
-    private static String STRING_EMPTY = "";
 
     private SQLiteDatabaseAdapter db;
     private EditText email;
@@ -39,6 +39,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private ProgressDialog pDialog;
     private int success;
+    private String message;
+    private User user = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +85,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validateMatch() {
-        if(!STRING_EMPTY.equals(email.getText().toString())&&
-                !STRING_EMPTY.equals(password.getText().toString())){
+        if(!DBConstants.STRING_EMPTY.equals(email.getText().toString())&&
+                !DBConstants.STRING_EMPTY.equals(password.getText().toString())){
             new validateMatchAsyncTask().execute();
         }
         else {
@@ -130,6 +132,17 @@ public class LoginActivity extends AppCompatActivity {
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"loginsean.php", "POST", httpParams);
             try {
                 success = jsonObject.getInt("success");
+                if(success == 0){
+                    message = jsonObject.getString("message");
+                }
+                else{
+                    JSONArray userObjects = jsonObject.getJSONArray("data");
+                    JSONObject userObject = userObjects.getJSONObject(0);
+                    user.setId(userObject.getInt("user_id"));
+                    user.setFirstName(userObject.getString("first_name"));
+                    user.setLastName(userObject.getString("last_name"));
+                    user.setEmail(userObject.getString("email"));
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (NullPointerException e){
@@ -144,21 +157,25 @@ public class LoginActivity extends AppCompatActivity {
                     if (success == 1) {
                         //Display success messageSystem.out.println("SUCCESS");
 
+                        System.out.println("id:"+user.getId()+" fname:" +user.getFirstName()+" lname:"+user.getLastName() + " email:" + user.getEmail());
                         Toast.makeText(LoginActivity.this,
                                 "Login", Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-
+                        Intent i = new Intent(LoginActivity.this, RecentTransactionsActivity.class);
+                        startActivity(i);
                         //Finish ths activity and go back to listing activity
                         finish();
 
                     } else {
                         Toast.makeText(LoginActivity.this,
-                                "No Match",
+                                message,
                                 Toast.LENGTH_LONG).show();
 
                     }
                 }
             });
         }
+    }
+    public int getUserID(){
+        return user.getId();
     }
 }

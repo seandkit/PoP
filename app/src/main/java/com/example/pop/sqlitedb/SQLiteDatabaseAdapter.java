@@ -23,32 +23,32 @@ public class SQLiteDatabaseAdapter {
         dbHelper = new SQLiteDatabaseHelper(context);
     }
 
-    public void addUserHandler(User user) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DBConstants.USERNAME, user.getName());
-        values.put(DBConstants.EMAIL, user.getEmail());
-        values.put(DBConstants.PASSWORD, user.getPassword());
-        db.insert(DBConstants.USERDATA, null, values);
-    }
+//    public void addUserHandler(User user) {
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//        ContentValues values = new ContentValues();
+//        values.put(DBConstants.USERNAME, user.getName());
+//        values.put(DBConstants.EMAIL, user.getEmail());
+//        values.put(DBConstants.PASSWORD, user.getPassword());
+//        db.insert(DBConstants.USERDATA, null, values);
+//    }
 
 
-    public User findAccountHandler(String email, String password){
-        String query = SQLiteQueries.findAccountHandlerString(email, password);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        User user = new User();
-        if (cursor.moveToFirst()) {
-            cursor.moveToFirst();
-            user.setName(cursor.getString(0));
-            user.setEmail(cursor.getString(1));
-            user.setPassword(cursor.getString(2));
-
-        } else {
-            user = null;
-        }
-        return user;
-    }
+//    public User findAccountHandler(String email, String password){
+//        String query = SQLiteQueries.findAccountHandlerString(email, password);
+//        SQLiteDatabase db = dbHelper.getReadableDatabase();
+//        Cursor cursor = db.rawQuery(query, null);
+//        User user = new User();
+//        if (cursor.moveToFirst()) {
+//            cursor.moveToFirst();
+//            user.setName(cursor.getString(0));
+//            user.setEmail(cursor.getString(1));
+//            user.setPassword(cursor.getString(2));
+//
+//        } else {
+//            user = null;
+//        }
+//        return user;
+//    }
 
     public boolean checkUsernameExist(String username){
         String query = SQLiteQueries.checkUsernameExistString(username);
@@ -122,13 +122,13 @@ public class SQLiteDatabaseAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            User testUser = new User(1, "admin", "D00191063@student.dkit.ie", "Password!1");
+            //User testUser = new User(1, "admin", "D00191063@student.dkit.ie", "Password!1");
             db.execSQL(SQLiteQueries.createUserTableString());
-            ContentValues userValues = new ContentValues();
-            userValues.put(DBConstants.USERNAME, testUser.getName());
-            userValues.put(DBConstants.EMAIL, testUser.getEmail());
-            userValues.put(DBConstants.PASSWORD, testUser.getPassword());
-            db.insert(DBConstants.USERDATA, null, userValues);
+            //ContentValues userValues = new ContentValues();
+            //userValues.put(DBConstants.USERNAME, testUser.getName());
+            //userValues.put(DBConstants.EMAIL, testUser.getEmail());
+            //userValues.put(DBConstants.PASSWORD, testUser.getPassword());
+            //db.insert(DBConstants.USERDATA, null, userValues);
             db.execSQL(SQLiteQueries.createReceiptTableString());
             db.execSQL(SQLiteQueries.createItemTableString());
             db.execSQL(SQLiteQueries.createReceiptItemTableString());
