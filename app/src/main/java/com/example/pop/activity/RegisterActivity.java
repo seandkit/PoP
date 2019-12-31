@@ -186,7 +186,7 @@ public class RegisterActivity extends AppCompatActivity {
             httpParams.put(DBConstants.LAST_NAME, lastName);
             httpParams.put(DBConstants.EMAIL, email.getText().toString());
             httpParams.put(DBConstants.PASSWORD, pass.getText().toString());
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"addUser.php", "POST", httpParams);
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"register.php", "POST", httpParams);
             try {
                 success = jsonObject.getInt("success");
                 if(success == 0){
@@ -216,6 +216,9 @@ public class RegisterActivity extends AppCompatActivity {
                         System.out.println("User added");
                         System.out.println("id:"+user.getId()+" fname:" +user.getFirstName()+" lname:"+user.getLastName() + " email:" + user.getEmail());
 
+                        Intent i = new Intent(RegisterActivity.this, RecentTransactionsActivity.class);
+                        i.putExtra("user_id", user.getId());
+                        startActivity(i);
                         //Finish ths activity and go back to listing activity
                         finish();
 
@@ -234,7 +237,4 @@ public class RegisterActivity extends AppCompatActivity {
 //        User user = new User(username, email, password);
 //        db.addUserHandler(user);
 //    }
-    public int getUserID(){
-        return user.getId();
-    }
 }

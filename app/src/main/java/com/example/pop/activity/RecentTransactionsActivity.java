@@ -32,10 +32,8 @@ public class RecentTransactionsActivity extends AppCompatActivity {
     private ReceiptListAdapter mAdapter;
 
     private List<Receipt> mReceiptList = new ArrayList<>();
-
-    private RegisterActivity r;
-    private LoginActivity l;
-    private int userID;
+    //Hardcoded userid for now, should be passed via session from register/login
+    private int userID = 1;
 
     private ProgressDialog pDialog;
     private int success;

@@ -175,7 +175,4 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
     }
-    public int getUserID(){
-        return user.getId();
-    }
 }
