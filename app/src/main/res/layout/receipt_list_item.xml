@@ -13,7 +13,7 @@
                             android:id="@+id/receiptDate"
                             style="@style/receiptListItem"
                             android:layout_weight="1"
-                            anSdroid:layout_width="match_parent" />
+                            android:layout_width="match_parent" />
                         <TextView
                             android:id="@+id/receiptShop"
                             style="@style/receiptListItem"
