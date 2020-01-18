@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_searchDate"
+            android:icon="@drawable/ic_date_range_search"
+            android:title="Date" />
+        <item
+            android:id="@+id/nav_searchTag"
+            android:icon="@drawable/ic_tag_search"
+            android:title="Tag" />
+    </group>
+
+
+</menu>
