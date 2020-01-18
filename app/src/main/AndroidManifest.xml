@@ -9,11 +9,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.testTagSearching"></activity>
+        <activity android:name=".activity.testTagSearching">
+
+        </activity>
         <activity
             android:name=".activity.ExportActivity"
-            android:theme="@style/AppTheme.PopMe" />
-        <activity android:name=".activity.main2Test" />
+            android:theme="@style/AppTheme.PopMe">
+
+        </activity>
+        <activity android:name=".activity.main2Test">
+
+        </activity>
         <activity
             android:name=".activity.Receipt_main_activity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -25,7 +31,9 @@
         <activity android:name=".activity.RecentTransactionsActivity">
 
         </activity>
-        <activity android:name=".activity.receiptTransaction" />
+        <activity android:name=".activity.receiptTransaction">
+
+        </activity>
         <activity android:name=".activity.LoginActivity">
 
         </activity>
