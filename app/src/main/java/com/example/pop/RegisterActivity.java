@@ -122,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
         Pattern passwordPattern = Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
 
         if(!(passwordPattern.matcher(pass).matches())) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Password is too weak \n Requires: lowercase, uppercase, number and special char", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(getApplicationContext(), "Password is too weak! \n Requires: lowercase, uppercase, numeric and special char", Toast.LENGTH_LONG);
             toast.show();
             return false;
         }
