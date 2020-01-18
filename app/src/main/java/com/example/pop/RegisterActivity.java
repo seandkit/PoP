@@ -1,10 +1,9 @@
-package com.example.pop;
+package com.example.pop.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,11 +12,15 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.List;
+import com.example.pop.R;
+import com.example.pop.model.User;
+import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
+
 import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private SQLiteDatabaseAdapter db;
     private EditText username;
     private EditText email;
     private EditText pass;
@@ -31,12 +34,13 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        db = new SQLiteDatabaseAdapter(this);
         username = findViewById(R.id.regUsername);
         email = findViewById(R.id.regEmail);
         pass = findViewById(R.id.regPassword);
         confirmPass = findViewById(R.id.regConfirmPassword);
         loginLink = findViewById(R.id.loginLink);
-        errorMsg = findViewById(R.id.regErrorMsg);
+        //errorMsg = findViewById(R.id.regErrorMsg);
         registerBtn = findViewById(R.id.regBtn);
 
         username.addTextChangedListener(inputWatcher);
@@ -52,6 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
                 boolean validPassword = checkPassword(pass.getText().toString(), confirmPass.getText().toString());
 
                 if(validUsername && validEmail && validPassword) {
+                    addValidUser(username.getText().toString(), email.getText().toString(),confirmPass.getText().toString());
                     Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
@@ -86,12 +91,9 @@ public class RegisterActivity extends AppCompatActivity {
     };
 
     private boolean checkUsername(String username) {
-        //Search db for username
-        //Return list named users
-        List<String> users = null;
 
         //Check if username is taken
-        if(users == null){
+        if(db.checkUsernameExist(username)){
             Toast toast = Toast.makeText(getApplicationContext(), "Username already taken!", Toast.LENGTH_LONG);
             toast.show();
             return false;
@@ -102,12 +104,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean checkEmail(String email) {
-        //Search db for email
-        //Return list named users
-        List<String> users = null;
 
         //Check if email is taken
-        if(users == null) {
+        if(db.checkEmailExist(email)) {
             Toast toast = Toast.makeText(getApplicationContext(), "Email already taken!", Toast.LENGTH_LONG);
             toast.show();
             return false;
@@ -122,7 +121,7 @@ public class RegisterActivity extends AppCompatActivity {
         Pattern passwordPattern = Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
 
         if(!(passwordPattern.matcher(pass).matches())) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Password is too weak! \n Requires: lowercase, uppercase, numeric and special char", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(getApplicationContext(), "Password is too weak \n Requires: lowercase, uppercase and to be at least 8 chars long", Toast.LENGTH_LONG);
             toast.show();
             return false;
         }
@@ -137,5 +136,10 @@ public class RegisterActivity extends AppCompatActivity {
         else {
             return true;
         }
+    }
+
+    private void addValidUser(String username, String email, String password){
+        User user = new User(username, email, password);
+        db.addUserHandler(user);
     }
 }
