@@ -1,4 +1,4 @@
-package com.example.pop;
+package com.example.pop.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.pop.model.Receipt;
+import com.example.pop.R;
 
 public class ReceiptActivity extends AppCompatActivity {
 
@@ -32,17 +32,5 @@ public class ReceiptActivity extends AppCompatActivity {
         time = findViewById(R.id.receiptTime);
         barcodeNumber = findViewById(R.id.receiptBarcodeNumber);
         otherNumber = findViewById(R.id.receiptOtherNumber);
-
-        //Receipt receipt = findReceiptById(id);
-
-        //total.setText(Double.toString(receipt.getReceiptTotal()));
-        //cash.setText(Double.toString(receipt.getReceiptCash()));
-        //change.setText(Double.toString(receipt.getReceiptChange()));
-        //location.setText(receipt.getReceiptLocation());
-        //date.setText(receipt.getReceiptDate());
-        //time.setText(receipt.getReceiptTime());
-        //barcodeNumber.setText(receipt.getBarcodeNumber());
-
-
     }
 }
