@@ -9,30 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.testTagSearching"></activity>
-        <activity
-            android:name=".activity.ExportActivity"
-            android:theme="@style/AppTheme.PopMe" />
-        <activity android:name=".activity.main2Test" />
-        <activity
-            android:name=".activity.Receipt_main_activity"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
-        <activity android:name="activity.ReceiptActivity">
-
-        </activity>
-        <activity android:name=".activity.RecentTransactionsActivity">
-
-        </activity>
-        <activity android:name=".activity.receiptTransaction" />
-        <activity android:name=".activity.LoginActivity">
-
-        </activity>
-        <activity android:name=".activity.RegisterActivity">
-
-        </activity>
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,4 +17,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>
