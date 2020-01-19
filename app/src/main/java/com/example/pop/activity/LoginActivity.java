@@ -15,7 +15,7 @@ import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 public class LoginActivity extends AppCompatActivity {
 
     private SQLiteDatabaseAdapter db;
-    private EditText email;
+    private EditText username;
     private EditText password;
     private TextView registerLink;
     private TextView errorMsg;
@@ -29,23 +29,19 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         db = new SQLiteDatabaseAdapter(this);
-        email = findViewById(R.id.loginEmail);
+        username = findViewById(R.id.loginUsername);
         password = findViewById(R.id.loginPassword);
         loginBtn = findViewById(R.id.loginBtn);
         registerLink = findViewById(R.id.regLink);
-        //errorMsg = findViewById(R.id.loginErrorMsg);
-        //attempts = findViewById(R.id.attempts);
-
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean loginDetailsMatch = validateMatch(email.getText().toString(), password.getText().toString());
+                boolean loginDetailsMatch = validateMatch(username.getText().toString(), password.getText().toString());
                 if(loginDetailsMatch){
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, RecentTransactionsActivity.class);
                     startActivity(intent);
                 }
-
             }
         });
 
@@ -58,29 +54,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private boolean validateMatch(String email, String userPassword) {
-        try {
-            if (!db.findAccountHandler(email, userPassword).equals(null)) {
-                return true;
-            } else {
-                failedAttempt();
-                return false;
-            }
-        }catch(NullPointerException e){
-            failedAttempt();
+    private boolean validateMatch(String username, String userPassword) {
+        if (!db.findAccountHandler(username, userPassword).equals(null)) {
+            return true;
+        } else {
             return false;
-        }
-    }
-
-    private void failedAttempt() {
-        count--;
-
-        //errorMsg.setText("Wrong email or password!");
-        //attempts.setText("No of attempts remaining: " + count);
-
-        if(count == 0)
-        {
-            loginBtn.setEnabled(false);
         }
     }
 }

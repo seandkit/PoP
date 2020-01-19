@@ -55,10 +55,10 @@ public class SQLiteQueries {
                 + DBConstants.ITEMDATA + " WHERE "
                 + DBConstants.ITEMNAME + " = '" + itemName + "'";
     }
-    public static String findAccountHandlerString(String email, String password){
+    public static String findAccountHandlerString(String username, String password){
         return "Select "+ DBConstants.USERNAME +", "+ DBConstants.EMAIL +", " + DBConstants.PASSWORD +" FROM "
                 + DBConstants.USERDATA + " WHERE "
-                + DBConstants.EMAIL + " = " + "'" + email + "'"
+                + DBConstants.USERNAME + " = " + "'" + username + "'"
                 + " AND " + DBConstants.PASSWORD + " = '" + password + "'";
     }
 }

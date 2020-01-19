@@ -2,50 +2,44 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.pop">
 
+    <uses-permission android:name="android.permission.NFC" />
+
+    <uses-feature
+        android:name="android.hardware.nfc.hce"
+        android:required="true" />
+
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.testTagSearching">
+        <activity android:name=".activity.nfcTest">
 
         </activity>
+        <activity android:name=".activity.testTagSearching" />
         <activity
             android:name=".activity.ExportActivity"
-            android:theme="@style/AppTheme.PopMe">
-
-        </activity>
-        <activity android:name=".activity.main2Test">
-
-        </activity>
+            android:theme="@style/AppTheme.PopMe" />
+        <activity android:name=".activity.main2Test" />
         <activity
             android:name=".activity.Receipt_main_activity"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
-        <activity android:name="activity.ReceiptActivity">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name="activity.ReceiptActivity" />
         <activity android:name=".activity.RecentTransactionsActivity">
-
-        </activity>
-        <activity android:name=".activity.receiptTransaction">
-
-        </activity>
-        <activity android:name=".activity.LoginActivity">
-
-        </activity>
-        <activity android:name=".activity.RegisterActivity">
-
-        </activity>
-        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.receiptTransaction" />
+        <activity android:name=".activity.LoginActivity" />
+        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.MainActivity">
+
+        </activity>
     </application>
+
 </manifest>

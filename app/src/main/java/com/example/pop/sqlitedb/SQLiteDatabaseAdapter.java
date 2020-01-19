@@ -33,8 +33,8 @@ public class SQLiteDatabaseAdapter {
     }
 
 
-    public User findAccountHandler(String email, String password){
-        String query = SQLiteQueries.findAccountHandlerString(email, password);
+    public User findAccountHandler(String username, String password){
+        String query = SQLiteQueries.findAccountHandlerString(username, password);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         User user = new User();
