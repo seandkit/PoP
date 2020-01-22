@@ -51,13 +51,28 @@ public class RegisterActivity extends AppCompatActivity {
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean validUsername = checkUsername(username.getText().toString());
-                boolean validEmail = checkEmail(email.getText().toString());
-                boolean validPassword = checkPassword(pass.getText().toString(), confirmPass.getText().toString());
+                String usernameText = username.getText().toString();
+                String emailText = email.getText().toString();
+                String passText = pass.getText().toString();
+                String confirmPassText = confirmPass.getText().toString();
+
+                boolean validUsername = checkUsername(usernameText);
+                boolean validEmail = checkEmail(emailText);
+                boolean validPassword = checkPassword(passText, confirmPassText);
 
                 if(validUsername && validEmail && validPassword) {
-                    addValidUser(username.getText().toString(), email.getText().toString(),confirmPass.getText().toString());
-                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                    User user = new User(usernameText, emailText, passText);
+                    db.addUserHandler(user);
+
+                    //Need to pull user information to populate session
+
+                    Session session = new Session(getApplicationContext());
+                    session.setLogin("Login");
+                    //session.setUserId(userId);
+                    session.setName(usernameText);
+                    session.setEmail(emailText);
+
+                    Intent intent = new Intent(RegisterActivity.this, RecentTransactionsActivity.class);
                     startActivity(intent);
                 }
             }
@@ -136,10 +151,5 @@ public class RegisterActivity extends AppCompatActivity {
         else {
             return true;
         }
-    }
-
-    private void addValidUser(String username, String email, String password){
-        User user = new User(username, email, password);
-        db.addUserHandler(user);
     }
 }

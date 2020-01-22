@@ -28,16 +28,16 @@ public class TEST {
         itemList0.add(testItem4);
 
         //Sample Receipt Items
-        Receipt testReceipt0 = new Receipt("2019-10-01", "Tesco", 1, 1, itemList0);
-        Receipt testReceipt1 = new Receipt("2019-10-03", "Tesco", 1, 103.59, 1);
-        Receipt testReceipt2 = new Receipt("2019-10-11", "Tesco", 0, 4.08, 1);
-        Receipt testReceipt3 = new Receipt("2019-10-15", "Tesco", 1, 55.55, 1);
-        Receipt testReceipt4 = new Receipt("2019-10-20", "Tesco", 0, 23.00, 1);
-        Receipt testReceipt5 = new Receipt("2019-10-24", "Tesco", 1, 77.53, 1);
-        Receipt testReceipt6 = new Receipt("2019-10-29", "Tesco", 1, 60.31, 1);
-        Receipt testReceipt7 = new Receipt("2019-11-01", "Tesco", 0, 12.96, 1);
-        Receipt testReceipt8 = new Receipt("2019-11-03", "Tesco", 1, 33.33, 1);
-        Receipt testReceipt9 = new Receipt("2019-11-07", "Tesco", 0, 201.68, 1);
+        Receipt testReceipt0 = new Receipt("2019/10/01", "Tesco", 1, 1, itemList0);
+        Receipt testReceipt1 = new Receipt("2019/10/03", "Tesco", 1, 103.59, 1);
+        Receipt testReceipt2 = new Receipt("2019/10/11", "Tesco", 0, 4.08, 1);
+        Receipt testReceipt3 = new Receipt("2019/10/15", "Tesco", 1, 55.55, 1);
+        Receipt testReceipt4 = new Receipt("2019/10/20", "Tesco", 0, 23.00, 1);
+        Receipt testReceipt5 = new Receipt("2019/10/24", "Tesco", 1, 77.53, 1);
+        Receipt testReceipt6 = new Receipt("2019/10/29", "Tesco", 1, 60.31, 1);
+        Receipt testReceipt7 = new Receipt("2019/11/01", "Tesco", 0, 12.96, 1);
+        Receipt testReceipt8 = new Receipt("2019/11/03", "Tesco", 1, 33.33, 1);
+        Receipt testReceipt9 = new Receipt("2019/11/07", "Tesco", 0, 201.68, 1);
 
         insertReceiptToDB(db, testReceipt0);
         insertReceiptToDB(db, testReceipt1);

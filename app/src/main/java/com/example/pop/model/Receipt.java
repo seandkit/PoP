@@ -69,7 +69,7 @@ public class Receipt {
     }
 
     public double getReceiptTotal() {
-        return receiptTotal;
+        return Double.valueOf(String.format("%.2f", receiptTotal));
     }
 
     public int getUserId() {

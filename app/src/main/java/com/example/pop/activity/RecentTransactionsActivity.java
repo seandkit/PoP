@@ -27,6 +27,8 @@ public class RecentTransactionsActivity extends AppCompatActivity implements Nfc
     private RecyclerView mRecyclerView;
     private ReceiptListAdapter mAdapter;
 
+    private Session session;
+
     private List<Receipt> mReceiptList = new ArrayList<>();
 
     private NfcAdapter nfcAdapter = null;
@@ -35,12 +37,15 @@ public class RecentTransactionsActivity extends AppCompatActivity implements Nfc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.getSupportActionBar().hide();
-        setContentView(R.layout.activity_recent_transactions);
+        setContentView(R.layout.activity_receipt_transaction2);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         db = new SQLiteDatabaseAdapter(this);
-        populateReceipts();
+
+        session = new Session(getApplicationContext());
+
+        populateReceipts(session.getUserId());
 
         // Get a handle to the RecyclerView.
         mRecyclerView = findViewById(R.id.receiptList);
@@ -52,8 +57,8 @@ public class RecentTransactionsActivity extends AppCompatActivity implements Nfc
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void populateReceipts(){
-        mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(1);
+    private void populateReceipts(int id){
+        mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(id);
     }
 
     @Override
@@ -65,7 +70,6 @@ public class RecentTransactionsActivity extends AppCompatActivity implements Nfc
     @Override
     protected void onPause() {
         super.onPause();
-
         nfcAdapter.disableReaderMode(this);
     }
 
@@ -94,15 +98,29 @@ public class RecentTransactionsActivity extends AppCompatActivity implements Nfc
 
         final String finalStringResponse = stringResponse;
 
+        String[] responseArray = finalStringResponse.split(",");
+
+        String vendor = responseArray[0];
+        Double total = Double.valueOf(responseArray[1]);
+        int paymentType = Integer.valueOf(responseArray[2]);
+        String currentDate = responseArray[3];
+        String currentTime = responseArray[4];
+
+        Receipt newReceipt = new Receipt(currentDate, vendor, paymentType, total, 1);
+
+        //======================================================================================================
+        //This is the receipt (newReceipt) that will contain a uuid that needs to be searched for in the cloud
+        //======================================================================================================
+
+        mReceiptList.add(newReceipt);
+
         runOnUiThread(new Runnable()
         {
             public void run()
             {
-                TextView v = findViewById(R.id.pageTitle);
-                v.append("\nCard Response: " + finalStringResponse);
+                mAdapter.notifyItemInserted(mReceiptList.size() - 1);
             }
         });
-        System.out.println("\nCard Response: " + Utils.toHex(response));
 
         try {
             isoDep.close();
