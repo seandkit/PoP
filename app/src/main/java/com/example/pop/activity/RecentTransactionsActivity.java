@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class RecentTransactionsActivity extends AppCompatActivity implements NfcAdapter.ReaderCallback {
+public class RecentTransactionsActivity extends AppCompatActivity {
 
     private SQLiteDatabaseAdapter db;
     private RecyclerView mRecyclerView;
@@ -59,73 +59,5 @@ public class RecentTransactionsActivity extends AppCompatActivity implements Nfc
 
     private void populateReceipts(int id){
         mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(id);
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        nfcAdapter.enableReaderMode(this, this, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        nfcAdapter.disableReaderMode(this);
-    }
-
-    @Override
-    public void onTagDiscovered(Tag tag) {
-        IsoDep isoDep = IsoDep.get(tag);
-        try {
-            isoDep.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] response = new byte[0];
-        try {
-            response = isoDep.transceive(Utils.hexStringToByteArray("00A4040007A0000002471001"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String stringResponse = "";
-
-        try {
-            stringResponse = new String(response, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        final String finalStringResponse = stringResponse;
-
-        String[] responseArray = finalStringResponse.split(",");
-
-        String vendor = responseArray[0];
-        Double total = Double.valueOf(responseArray[1]);
-        int paymentType = Integer.valueOf(responseArray[2]);
-        String currentDate = responseArray[3];
-        String currentTime = responseArray[4];
-
-        Receipt newReceipt = new Receipt(currentDate, vendor, paymentType, total, 1);
-
-        //======================================================================================================
-        //This is the receipt (newReceipt) that will contain a uuid that needs to be searched for in the cloud
-        //======================================================================================================
-
-        mReceiptList.add(newReceipt);
-
-        runOnUiThread(new Runnable()
-        {
-            public void run()
-            {
-                mAdapter.notifyItemInserted(mReceiptList.size() - 1);
-            }
-        });
-
-        try {
-            isoDep.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

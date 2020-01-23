@@ -103,7 +103,6 @@ public class SQLiteDatabaseAdapter {
             for (int i = 0; i < cursor.getCount(); i++) {
                 Receipt receipt = new Receipt(cursor.getInt(0), cursor.getString(1), cursor.getString(2),
                                               cursor.getInt(3), cursor.getFloat(4), cursor.getInt(5));
-                System.out.println(receipt.getReceiptTotal());
                 receiptList.add(receipt);
                 cursor.moveToNext();
             }

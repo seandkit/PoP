@@ -1,13 +1,17 @@
 package com.example.pop.activity;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +34,7 @@ public class ReceiptFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ReceiptListAdapter mAdapter;
 
-    private List<Receipt> mReceiptList = new ArrayList<>();
+    public List<Receipt> mReceiptList = new ArrayList<>();
 
     public ReceiptFragment() {
         // Required empty public constructor
@@ -44,7 +48,8 @@ public class ReceiptFragment extends Fragment {
 
         Context context = v.getContext();
         db = new SQLiteDatabaseAdapter(context);
-        populateReceipts();
+
+        mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(1);
 
         // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.receiptList);
@@ -58,7 +63,8 @@ public class ReceiptFragment extends Fragment {
         return v;
     }
 
-    private void populateReceipts(){
-        mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(1);
+    void addItemToList(Context context, Receipt receipt){
+        mReceiptList.add(receipt);
+        mAdapter.notifyItemInserted(mReceiptList.size() - 1);
     }
 }
