@@ -20,9 +20,6 @@ public class main2Test extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-
     }
 
 
