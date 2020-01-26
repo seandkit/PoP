@@ -8,22 +8,16 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pop.R;
-import com.example.pop.activity.LoginActivity;
 import com.example.pop.activity.ReceiptActivity;
-import com.example.pop.activity.ReceiptFragment;
 import com.example.pop.activity.Receipt_main_activity;
-import com.example.pop.activity.RecentTransactionsActivity;
-import com.example.pop.activity.RegisterActivity;
 import com.example.pop.model.Receipt;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.ReceiptListItemHolder> implements Filterable {
@@ -44,7 +38,7 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
 
     @Override
     public void onBindViewHolder(ReceiptListItemHolder holder, int position) {
-        Receipt receipt = mReceiptList.get(position);
+        final Receipt receipt = mReceiptList.get(position);
         holder.receiptDateView.setText(receipt.getDate());
         holder.receiptShopView.setText(receipt.getVendorName());
         holder.receiptTotalView.setText(""+receipt.getReceiptTotal());
@@ -52,9 +46,9 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(context, ReceiptActivity.class);
-                //context.startActivity(intent);
-                System.out.println("Click");
+                Intent intent = new Intent(context, ReceiptActivity.class);
+                intent.putExtra("receiptID", receipt.getId());
+                context.startActivity(intent);
             }
         });
     }

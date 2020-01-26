@@ -31,7 +31,7 @@ import com.example.pop.model.Receipt;
 import java.util.ArrayList;
 
 
-public class SearchByTag extends Fragment{
+public class Fragment_SearchByTag extends Fragment{
 
 
     private Button btn_export;
@@ -42,7 +42,7 @@ public class SearchByTag extends Fragment{
     private ReceiptListAdapter adapter;
     private SearchView searchView;
 
-    public SearchByTag() {
+    public Fragment_SearchByTag() {
         // Required empty public constructor
     }
 

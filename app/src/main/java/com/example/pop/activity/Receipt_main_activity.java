@@ -30,9 +30,9 @@ public class Receipt_main_activity extends AppCompatActivity implements NfcAdapt
     private SQLiteDatabaseAdapter db;
 
     //fragments:
-    private ReceiptFragment receiptFragment;
-    private Search searchFragment;
-    private SearchByTag tagFragment;
+    private Fragment_Receipt receiptFragment;
+    private Fragment_SearchByDate searchFragment;
+    private Fragment_SearchByTag tagFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +47,9 @@ public class Receipt_main_activity extends AppCompatActivity implements NfcAdapt
 
 
         //Fragment initialization
-        receiptFragment = new ReceiptFragment();
-        searchFragment = new Search();
-        tagFragment = new SearchByTag();
+        receiptFragment = new Fragment_Receipt();
+        searchFragment = new Fragment_SearchByDate();
+        tagFragment = new Fragment_SearchByTag();
 
         InitializeFragment(receiptFragment);
 

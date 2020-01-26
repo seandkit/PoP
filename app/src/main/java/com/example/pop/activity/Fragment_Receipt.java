@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ReceiptFragment extends Fragment {
+public class Fragment_Receipt extends Fragment {
 
     private SQLiteDatabaseAdapter db;
     private RecyclerView mRecyclerView;
@@ -36,7 +36,7 @@ public class ReceiptFragment extends Fragment {
 
     public List<Receipt> mReceiptList = new ArrayList<>();
 
-    public ReceiptFragment() {
+    public Fragment_Receipt() {
         // Required empty public constructor
     }
 

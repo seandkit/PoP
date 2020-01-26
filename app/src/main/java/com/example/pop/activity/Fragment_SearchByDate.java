@@ -28,14 +28,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.pop.R;
 import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.model.Receipt;
 import com.google.android.material.navigation.NavigationView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -43,7 +40,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Search extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
+public class Fragment_SearchByDate extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
     private TextView mDisplayDateFrom;
@@ -56,7 +53,7 @@ public class Search extends Fragment implements NavigationView.OnNavigationItemS
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    public Search() {
+    public Fragment_SearchByDate() {
         // Required empty public constructor
     }
 
@@ -177,11 +174,11 @@ public class Search extends Fragment implements NavigationView.OnNavigationItemS
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch(menuItem.getItemId()){
             case R.id.nav_search:
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Search()).commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment_SearchByDate()).commit();
                 Log.d("This is clicked", this.toString());
                 break;
             case R.id.nav_searchTag:
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SearchByTag()).commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment_SearchByTag()).commit();
                 Log.d("This is clicked", this.toString());
                 break;
 

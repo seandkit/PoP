@@ -35,7 +35,6 @@
         <activity
             android:name=".activity.ExportActivity"
             android:theme="@style/AppTheme.PopMe" />
-        <activity android:name=".activity.main2Test" />
         <activity
             android:name=".activity.Receipt_main_activity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -45,7 +44,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="activity.ReceiptActivity" />
+        <activity android:name=".activity.ReceiptActivity">
+
+        </activity>
         <activity android:name=".activity.RecentTransactionsActivity">
 
         </activity>

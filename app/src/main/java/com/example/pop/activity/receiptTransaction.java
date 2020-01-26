@@ -18,8 +18,8 @@ public class receiptTransaction extends AppCompatActivity {
     BottomNavigationView navigation;
 
     //fragments:
-    private ReceiptFragment receiptFragment;
-    private Search searchFragment;
+    private Fragment_Receipt receiptFragment;
+    private Fragment_SearchByDate searchFragment;
     private Data dataFragment;
 
     @Override
@@ -30,8 +30,8 @@ public class receiptTransaction extends AppCompatActivity {
         frameLayout = findViewById(R.id.frameLayout);
 
         //Fragment initialization
-        receiptFragment = new ReceiptFragment();
-        searchFragment = new Search();
+        receiptFragment = new Fragment_Receipt();
+        searchFragment = new Fragment_SearchByDate();
         dataFragment = new Data();
 
 

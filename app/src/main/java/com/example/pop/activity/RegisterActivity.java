@@ -26,7 +26,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText pass;
     private EditText confirmPass;
     private TextView loginLink;
-    private TextView errorMsg;
     private Button registerBtn;
 
     @Override
