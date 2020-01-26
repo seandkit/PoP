@@ -16,6 +16,13 @@ public class Receipt {
 
     }
 
+    public Receipt(String date, String vendorName, double receiptTotal, int userId){
+        this.date = date;
+        this.vendorName = vendorName;
+        this.receiptTotal = receiptTotal;
+        this.userId = userId;
+    }
+
     public Receipt(String date, String vendorName, int cardTrans, double receiptTotal, int userId){
         this.date = date;
         this.vendorName = vendorName;

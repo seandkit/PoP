@@ -28,9 +28,6 @@
                 android:resource="@xml/apduservice" />
         </service>
 
-        <activity android:name=".activity.nfcTest">
-
-        </activity>
         <activity android:name=".activity.testTagSearching" />
         <activity
             android:name=".activity.ExportActivity"

@@ -34,7 +34,6 @@ public class receiptTransaction extends AppCompatActivity {
         searchFragment = new Fragment_SearchByDate();
         dataFragment = new Data();
 
-
         navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -55,7 +54,6 @@ public class receiptTransaction extends AppCompatActivity {
                         //Code to be executed when item 1 selected.
                         InitializeFragment(dataFragment);
                         return true;
-
                 }
                 return false;
             }
@@ -64,7 +62,6 @@ public class receiptTransaction extends AppCompatActivity {
     }
 
     private void InitializeFragment(Fragment fragment) {
-
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();

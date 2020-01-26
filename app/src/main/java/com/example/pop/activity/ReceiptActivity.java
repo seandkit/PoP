@@ -27,7 +27,6 @@ public class ReceiptActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         int receiptID = intent.getIntExtra("receiptID", 0);
-        System.out.println("ID = " + receiptID);
 
         total = findViewById(R.id.receiptTotal);
         cash = findViewById(R.id.receiptCash);

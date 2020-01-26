@@ -41,7 +41,7 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         final Receipt receipt = mReceiptList.get(position);
         holder.receiptDateView.setText(receipt.getDate());
         holder.receiptShopView.setText(receipt.getVendorName());
-        holder.receiptTotalView.setText(""+receipt.getReceiptTotal());
+        holder.receiptTotalView.setText(String.format("%.2f", receipt.getReceiptTotal()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +111,6 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-
             mReceiptList.clear();
             mReceiptList.addAll((List) filterResults.values);
             notifyDataSetChanged();

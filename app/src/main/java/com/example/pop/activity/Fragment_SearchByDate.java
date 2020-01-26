@@ -1,6 +1,5 @@
 package com.example.pop.activity;
 
-
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -8,7 +7,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -19,8 +17,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,23 +24,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
-
 import com.example.pop.R;
 import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.model.Receipt;
 import com.google.android.material.navigation.NavigationView;
-
-import org.w3c.dom.Text;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class Fragment_SearchByDate extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
 
     private String endSearchByDate = "";
@@ -65,11 +53,9 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
         // Required empty public constructor
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_search, container, false);
         Toolbar toolbar = v.findViewById(R.id.toolbar);
@@ -78,7 +64,6 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
         drawer = v.findViewById(R.id.drawer_layout);
         NavigationView navigationView = v.findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener((toggle));
@@ -95,7 +80,6 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
         receiptArrayList.add(new Receipt(8, "24/12/2019", "Tesco", 60, 2054.99, 1));
         receiptArrayList.add(new Receipt(9, "24/12/2019", "Tesco", 61, 1254.99, 1));
         receiptArrayListTemp = receiptArrayList;
-
 
         mRecyclerView = v.findViewById(R.id.receiptList);
         mRecyclerView.setHasFixedSize(true);
@@ -119,10 +103,7 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
                 int month = cal.get(Calendar.MONTH);
                 int day = cal.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog dialog = new DatePickerDialog(getActivity(),
-                                                                android.R.style.Theme_Black,
-                                                                mDateSetListenerFrom,
-                                                                year,month,day);
+                DatePickerDialog dialog = new DatePickerDialog(getActivity(), android.R.style.Theme_Black, mDateSetListenerFrom, year, month, day);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.R.color.transparent));
                 dialog.show();
                 //updateRecyclerView();
@@ -180,7 +161,6 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
             }
         };
 
-
         btn_export.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -189,13 +169,10 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
             }
         });
 
-
         return v;
     }
 
     public void updateSearchList(ArrayList<com.example.pop.model.Receipt> receiptArrayListTemp, String startSearchByDate, String endSearchByDate) throws ParseException {
-        Log.d("CurrentStart Da...", startSearchByDate);
-        Log.d("CurrentSend Da888", endSearchByDate);
         ArrayList<Receipt> updatedReceiptList = new ArrayList<>();
 
         String dtStart = startSearchByDate;
@@ -205,12 +182,7 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
         Date dateStart = format.parse(dtStart);
         Date dateEnd = format.parse(dtEnd);
 
-
-
         int lengthTemp =  endSearchByDate.length();
-        Log.d("CurrentStart Date", Integer.toString(lengthTemp));
-
-
 
         if(startSearchByDate.length() > 0 && endSearchByDate.length() > 0)
         {
@@ -224,33 +196,21 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
             }
         }
 
-        Log.d("CurrentStart Date", updatedReceiptList.toString());
-
-
-
-
         mAdapter = new ReceiptListAdapter(getContext(), updatedReceiptList);
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-
-
     }
-
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch(menuItem.getItemId()){
             case R.id.nav_search:
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment_SearchByDate()).commit();
-                Log.d("This is clicked", this.toString());
                 break;
             case R.id.nav_searchTag:
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment_SearchByTag()).commit();
-                Log.d("This is clicked", this.toString());
                 break;
-
         }
 
         drawer.closeDrawer(GravityCompat.START);

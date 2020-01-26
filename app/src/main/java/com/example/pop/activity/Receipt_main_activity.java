@@ -45,7 +45,6 @@ public class Receipt_main_activity extends AppCompatActivity implements NfcAdapt
 
         db = new SQLiteDatabaseAdapter(this);
 
-
         //Fragment initialization
         receiptFragment = new Fragment_Receipt();
         searchFragment = new Fragment_SearchByDate();
@@ -80,7 +79,6 @@ public class Receipt_main_activity extends AppCompatActivity implements NfcAdapt
     }
 
     private void InitializeFragment(Fragment fragment) {
-
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
         fragmentTransaction.commit();
@@ -130,13 +128,11 @@ public class Receipt_main_activity extends AppCompatActivity implements NfcAdapt
 
         String[] responseArray = finalStringResponse.split(",");
 
-        String vendor = responseArray[0];
-        Double total = Double.valueOf(responseArray[1]);
-        int paymentType = Integer.valueOf(responseArray[2]);
-        String currentDate = responseArray[3];
-        String currentTime = responseArray[4];
+        String currentDate = responseArray[0];
+        String vendor = responseArray[1];
+        Double  total = Double.valueOf(responseArray[2]);
 
-        final Receipt newReceipt = new Receipt(currentDate, vendor, paymentType, total, 1);
+        final Receipt newReceipt = new Receipt(currentDate, vendor, total, 1);
 
         //======================================================================================================
         //This is the receipt (newReceipt) that will contain a uuid that needs to be searched for in the cloud
