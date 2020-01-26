@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -12,16 +11,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
-
 import com.example.pop.R;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-public class Receipt_main_activity extends AppCompatActivity implements NfcAdapter.ReaderCallback {
+public class FragmentHolder extends AppCompatActivity implements NfcAdapter.ReaderCallback {
 
     FrameLayout frameLayout;
     BottomNavigationView navigation;
@@ -37,7 +34,7 @@ public class Receipt_main_activity extends AppCompatActivity implements NfcAdapt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_receipt_main_activity);
+        setContentView(R.layout.fragment_holder);
         navigation = findViewById(R.id.bottomNavigationView);
         frameLayout = findViewById(R.id.frameLayout);
 

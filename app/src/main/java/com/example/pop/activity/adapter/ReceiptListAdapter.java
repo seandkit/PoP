@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pop.R;
 import com.example.pop.activity.ReceiptActivity;
-import com.example.pop.activity.Receipt_main_activity;
 import com.example.pop.model.Receipt;
 
 import java.util.ArrayList;
@@ -117,6 +116,3 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         }
     };
 }
-
-
-

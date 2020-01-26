@@ -26,7 +26,7 @@
                 android:id="@+id/rv_sub_item"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/layout_listitem"
+                tools:listitem="@layout/layout_list_item"
                 />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

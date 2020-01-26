@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
                     session.setName(user.getName());
                     session.setEmail(user.getEmail());
 
-                    Intent intent = new Intent(LoginActivity.this, RecentTransactionsActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, FragmentHolder.class);
                     startActivity(intent);
                 }
             }
@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkLogin(String login) {
         if(login.equals("Login")) {
-            Intent i = new Intent(LoginActivity.this, RecentTransactionsActivity.class);
+            Intent i = new Intent(LoginActivity.this, FragmentHolder.class);
             startActivity(i);
         }
     }

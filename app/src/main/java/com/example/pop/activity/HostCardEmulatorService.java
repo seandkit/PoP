@@ -4,6 +4,8 @@ import android.nfc.cardemulation.HostApduService;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.pop.activity.Utils;
+
 public class HostCardEmulatorService extends HostApduService {
 
     private static String tag = "Host Card Emulator";

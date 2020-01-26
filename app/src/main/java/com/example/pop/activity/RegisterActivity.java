@@ -71,7 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
                     session.setName(usernameText);
                     session.setEmail(emailText);
 
-                    Intent intent = new Intent(RegisterActivity.this, RecentTransactionsActivity.class);
+                    Intent intent = new Intent(RegisterActivity.this, FragmentHolder.class);
                     startActivity(intent);
                 }
             }
