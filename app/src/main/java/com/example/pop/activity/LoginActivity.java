@@ -29,7 +29,7 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private SQLiteDatabaseAdapter db;
-    private EditText username;
+    private EditText email;
     private EditText password;
     private TextView registerLink;
     private Button loginBtn;
@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         checkLogin(session.getLogin());
 
         db = new SQLiteDatabaseAdapter(this);
-        username = findViewById(R.id.loginUsername);
+        email = findViewById(R.id.loginEmail);
         password = findViewById(R.id.loginPassword);
         loginBtn = findViewById(R.id.loginBtn);
         registerLink = findViewById(R.id.regLink);
@@ -57,19 +57,6 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean loginDetailsMatch = validateMatch(username.getText().toString(), password.getText().toString());
-                if(loginDetailsMatch){
-                    //Make call to the db for user details.
-                    User user = new User();
-
-                    Session session = new Session(getApplicationContext());
-                    session.setLogin("Login");
-                    session.setUserId(user.getId());
-                    session.setName(user.getName());
-                    session.setEmail(user.getEmail());
-
-                    Intent intent = new Intent(LoginActivity.this, FragmentHolder.class);
-                    startActivity(intent);
                 if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
                     validateMatch();
                 } else {
@@ -160,7 +147,13 @@ public class LoginActivity extends AppCompatActivity {
                         System.out.println("id:"+user.getId()+" fname:" +user.getFirstName()+" lname:"+user.getLastName() + " email:" + user.getEmail());
                         Toast.makeText(LoginActivity.this,
                                 "Login", Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(LoginActivity.this, RecentTransactionsActivity.class);
+
+                        Session session = new Session(getApplicationContext());
+                        session.setLogin("Login");
+                        session.setUserId(user.getId());
+                        session.setName(user.getFirstName());
+                        session.setEmail(user.getEmail());
+                        Intent i = new Intent(LoginActivity.this, FragmentHolder.class);
                         startActivity(i);
                         //Finish ths activity and go back to listing activity
                         finish();

@@ -80,28 +80,8 @@ public class RegisterActivity extends AppCompatActivity {
                             "Bad password match",
                             Toast.LENGTH_LONG).show();
                 }
-        //        boolean validEmail = checkEmail(email.getText().toString());
-        //        boolean validPassword = checkPassword(pass.getText().toString(), confirmPass.getText().toString());
 
-                boolean validUsername = checkUsername(usernameText);
-                boolean validEmail = checkEmail(emailText);
-                boolean validPassword = checkPassword(passText, confirmPassText);
 
-                if(validUsername && validEmail && validPassword) {
-                    User user = new User(usernameText, emailText, passText);
-                    db.addUserHandler(user);
-
-                    //Need to pull user information to populate session
-
-                    Session session = new Session(getApplicationContext());
-                    session.setLogin("Login");
-                    //session.setUserId(userId);
-                    session.setName(usernameText);
-                    session.setEmail(emailText);
-
-                    Intent intent = new Intent(RegisterActivity.this, FragmentHolder.class);
-                    startActivity(intent);
-                }
             }
         });
 
@@ -140,22 +120,8 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(RegisterActivity.this,
                     "One or more fields left empty!",
                     Toast.LENGTH_LONG).show();
-
         }
     }
-
-//    private boolean checkEmail(String email) {
-//
-//        //Check if email is taken
-//        if(db.checkEmailExist(email)) {
-//            Toast toast = Toast.makeText(getApplicationContext(), "Email already taken!", Toast.LENGTH_LONG);
-//            toast.show();
-//            return false;
-//        }
-//        else {
-//            return true;
-//        }
-//    }
 
     private boolean checkPassword(String pass, String confirmPass) {
 
@@ -229,8 +195,13 @@ public class RegisterActivity extends AppCompatActivity {
                         System.out.println("User added");
                         System.out.println("id:"+user.getId()+" fname:" +user.getFirstName()+" lname:"+user.getLastName() + " email:" + user.getEmail());
 
-                        Intent i = new Intent(RegisterActivity.this, RecentTransactionsActivity.class);
-                        i.putExtra("user_id", user.getId());
+                        Session session = new Session(getApplicationContext());
+                        session.setLogin("Login");
+                        session.setUserId(user.getId());
+                        session.setName(user.getFirstName());
+                        session.setEmail(user.getEmail());
+
+                        Intent i = new Intent(RegisterActivity.this, FragmentHolder.class);
                         startActivity(i);
                         //Finish ths activity and go back to listing activity
                         finish();
@@ -246,8 +217,5 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-//    private void addValidUser(String username, String email, String password){
-//        User user = new User(username, email, password);
-//        db.addUserHandler(user);
-//    }
+
 }
