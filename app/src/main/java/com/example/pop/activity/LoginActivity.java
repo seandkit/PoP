@@ -29,13 +29,10 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private SQLiteDatabaseAdapter db;
-    private EditText email;
+    private EditText username;
     private EditText password;
     private TextView registerLink;
-    private TextView errorMsg;
-    private TextView attempts;
     private Button loginBtn;
-    private int count = 4;
 
     private ProgressDialog pDialog;
     private int success;
@@ -47,18 +44,32 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        Session session = new Session(getApplicationContext());
+        System.out.println(session.getLogin());
+        checkLogin(session.getLogin());
+
         db = new SQLiteDatabaseAdapter(this);
-        email = findViewById(R.id.loginEmail);
+        username = findViewById(R.id.loginUsername);
         password = findViewById(R.id.loginPassword);
         loginBtn = findViewById(R.id.loginBtn);
         registerLink = findViewById(R.id.regLink);
-        //errorMsg = findViewById(R.id.loginErrorMsg);
-        //attempts = findViewById(R.id.attempts);
-
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean loginDetailsMatch = validateMatch(username.getText().toString(), password.getText().toString());
+                if(loginDetailsMatch){
+                    //Make call to the db for user details.
+                    User user = new User();
+
+                    Session session = new Session(getApplicationContext());
+                    session.setLogin("Login");
+                    session.setUserId(user.getId());
+                    session.setName(user.getName());
+                    session.setEmail(user.getEmail());
+
+                    Intent intent = new Intent(LoginActivity.this, FragmentHolder.class);
+                    startActivity(intent);
                 if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
                     validateMatch();
                 } else {
@@ -66,12 +77,6 @@ public class LoginActivity extends AppCompatActivity {
                             "Unable to connect to internet",
                             Toast.LENGTH_LONG).show();
                 }
-                //boolean loginDetailsMatch = validateMatch();
-                //if(loginDetailsMatch){
-                //   Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                //    startActivity(intent);
-                //}
-
             }
         });
 
@@ -97,15 +102,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void failedAttempt() {
-        count--;
-
-        //errorMsg.setText("Wrong email or password!");
-        //attempts.setText("No of attempts remaining: " + count);
-
-        if(count == 0)
-        {
-            loginBtn.setEnabled(false);
+    private void checkLogin(String login) {
+        if(login.equals("Login")) {
+            Intent i = new Intent(LoginActivity.this, FragmentHolder.class);
+            startActivity(i);
         }
     }
     private class validateMatchAsyncTask extends AsyncTask<String, String, String> {

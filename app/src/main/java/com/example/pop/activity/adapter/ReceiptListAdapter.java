@@ -1,38 +1,55 @@
 package com.example.pop.activity.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pop.R;
+import com.example.pop.activity.ReceiptActivity;
 import com.example.pop.model.Receipt;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.ReceiptListItemHolder> {
+public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.ReceiptListItemHolder> implements Filterable {
 
     private List<Receipt> mReceiptList;
+    private List<Receipt> mReceiptListFull;
     private LayoutInflater mInflater;
+
+    private Context context;
 
     @NonNull
     @Override
     public ReceiptListItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View mItemView = mInflater.inflate(R.layout.receipt_list_item, parent, false);
+        context = parent.getContext();
         return new ReceiptListItemHolder(mItemView, this);
     }
 
     @Override
     public void onBindViewHolder(ReceiptListItemHolder holder, int position) {
-        Receipt receipt = mReceiptList.get(position);
+        final Receipt receipt = mReceiptList.get(position);
         holder.receiptDateView.setText(receipt.getDate());
         holder.receiptShopView.setText(receipt.getVendorName());
-        holder.receiptTotalView.setText(""+receipt.getReceiptTotal());
+        holder.receiptTotalView.setText(String.format("%.2f", receipt.getReceiptTotal()));
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ReceiptActivity.class);
+                intent.putExtra("receiptID", receipt.getId());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -42,6 +59,8 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
 
     public ReceiptListAdapter(Context context, List<Receipt> receiptList) {
         mInflater = LayoutInflater.from(context);
+
+        mReceiptListFull = new ArrayList<>(receiptList);
         this.mReceiptList = receiptList;
     }
 
@@ -59,6 +78,41 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
             this.mAdapter = adapter;
         }
     }
+
+    @Override
+    public Filter getFilter() {
+        return receiptFilter;
+    }
+
+    private Filter receiptFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            List<Receipt> filteredList = new ArrayList<>();
+
+            if (charSequence == null || charSequence.length() == 0){
+
+                filteredList.addAll(mReceiptListFull);
+            }else{
+                String filterPattern = charSequence.toString().toLowerCase().trim();
+
+                for (Receipt receipt : mReceiptListFull)
+                {
+                    if(receipt.getVendorName().toLowerCase().contains(filterPattern)){
+                        filteredList.add(receipt);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            mReceiptList.clear();
+            mReceiptList.addAll((List) filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
 }
-
-

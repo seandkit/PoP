@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:stretchColumns="1"
-    tools:context=".MainActivity">
+    tools:context=".activity.RecentTransactionsActivity">
 
     <TableLayout
         android:layout_width="wrap_content"
@@ -28,7 +28,7 @@
                 android:layout_width="50px"
                 android:layout_height="50px"
                 android:layout_marginTop="20dp"
-                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
                 app:srcCompat="@drawable/white_burger" />
 
             <TextView
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
 
                 android:layout_marginTop="20dp"
-                android:layout_marginStart="60dp"
+                android:layout_marginLeft="60dp"
 
                 android:fontFamily="sans-serif-black"
                 android:text="Recent Transactions"

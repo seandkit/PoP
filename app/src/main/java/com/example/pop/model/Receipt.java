@@ -16,6 +16,13 @@ public class Receipt {
 
     }
 
+    public Receipt(String date, String vendorName, double receiptTotal, int userId){
+        this.date = date;
+        this.vendorName = vendorName;
+        this.receiptTotal = receiptTotal;
+        this.userId = userId;
+    }
+
     public Receipt(int id, String date, String vendorName,  double receiptTotal){
         this.id = id;
         this.date = date;
@@ -76,7 +83,7 @@ public class Receipt {
     }
 
     public double getReceiptTotal() {
-        return receiptTotal;
+        return Double.valueOf(String.format("%.2f", receiptTotal));
     }
 
     public int getUserId() {

@@ -37,7 +37,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText pass;
     private EditText confirmPass;
     private TextView loginLink;
-    private TextView errorMsg;
     private Button registerBtn;
 
     private ProgressDialog pDialog;
@@ -84,11 +83,25 @@ public class RegisterActivity extends AppCompatActivity {
         //        boolean validEmail = checkEmail(email.getText().toString());
         //        boolean validPassword = checkPassword(pass.getText().toString(), confirmPass.getText().toString());
 
-        //        if(validEmail && validPassword) {
-        //            addValidUser(username.getText().toString(), email.getText().toString(),confirmPass.getText().toString());
-        //            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-        //            startActivity(intent);
-        //        }
+                boolean validUsername = checkUsername(usernameText);
+                boolean validEmail = checkEmail(emailText);
+                boolean validPassword = checkPassword(passText, confirmPassText);
+
+                if(validUsername && validEmail && validPassword) {
+                    User user = new User(usernameText, emailText, passText);
+                    db.addUserHandler(user);
+
+                    //Need to pull user information to populate session
+
+                    Session session = new Session(getApplicationContext());
+                    session.setLogin("Login");
+                    //session.setUserId(userId);
+                    session.setName(usernameText);
+                    session.setEmail(emailText);
+
+                    Intent intent = new Intent(RegisterActivity.this, FragmentHolder.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -149,7 +162,7 @@ public class RegisterActivity extends AppCompatActivity {
         Pattern passwordPattern = Pattern.compile("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$");
 
         if(!(passwordPattern.matcher(pass).matches())) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Password is too weak \n Requires: lowercase, uppercase, number and special char", Toast.LENGTH_LONG);
+            Toast toast = Toast.makeText(getApplicationContext(), "Password is too weak \n Requires: lowercase, uppercase and to be at least 8 chars long", Toast.LENGTH_LONG);
             toast.show();
             return false;
         }

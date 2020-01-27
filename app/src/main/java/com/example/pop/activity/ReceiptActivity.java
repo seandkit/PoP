@@ -2,6 +2,7 @@ package com.example.pop.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -23,6 +24,9 @@ public class ReceiptActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt);
+
+        Intent intent = getIntent();
+        int receiptID = intent.getIntExtra("receiptID", 0);
 
         total = findViewById(R.id.receiptTotal);
         cash = findViewById(R.id.receiptCash);

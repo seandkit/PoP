@@ -25,7 +25,11 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/fragment_container"/>
+            android:id="@+id/fragment_container">
+
+
+
+        </FrameLayout>
 
     </LinearLayout>
 
@@ -38,9 +42,7 @@
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_menu"/>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -82,7 +84,7 @@
                 android:textColor="#000000"/>
 
             <TextView
-                android:id="@+id/tvDate"
+                android:id="@+id/tvDateFrom"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -92,27 +94,30 @@
 
                 android:layout_marginRight="35dp"
                 android:background="@drawable/backforbox"
-                android:text="01/01/2020"
+                android:text="Start Date"
                 android:textSize="20sp"
                 android:gravity="center"
                 android:textColor="#000000"
                 />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/tvDateTo"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tvDate"
+                android:layout_below="@+id/tvDateFrom"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="20dp"
 
                 android:layout_marginRight="35dp"
                 android:background="@drawable/backforbox"
-                android:text="31/12/2020"
+                android:text="End Date"
                 android:textSize="20sp"
                 android:gravity="center"
                 android:textColor="#000000"/>
+
+
+
 
         </RelativeLayout>
 
@@ -124,13 +129,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textboxtest"
         android:scrollbars="vertical"
-        tools:listitem="@layout/layout_listitem"
+        tools:listitem="@layout/layout_list_item"
         >
     </androidx.recyclerview.widget.RecyclerView>
 
 
     <Button
-        android:id="@+id/signup_btn"
+        android:id="@+id/export_btn"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"

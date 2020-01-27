@@ -49,6 +49,4 @@ public final class DBConstants {
     public static final String RECEIPTITEMPK = "receiptitempk";
     public static final String PRICE = "price";
     public static final String QUANTITY = "quantity";
-
-
 }
