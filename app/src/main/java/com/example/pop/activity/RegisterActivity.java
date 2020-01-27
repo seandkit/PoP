@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,7 +17,11 @@ import com.example.pop.R;
 import com.example.pop.model.User;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 
+import java.security.Key;
 import java.util.regex.Pattern;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -27,6 +32,12 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText confirmPass;
     private TextView loginLink;
     private Button registerBtn;
+
+    private String EText;
+    private String DText;
+
+    private static final String ALGORITHM = "AES";
+    private static final String KEY = "F0C101355CD00EF098BD78C3D85E141C";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +82,19 @@ public class RegisterActivity extends AppCompatActivity {
                     session.setName(usernameText);
                     session.setEmail(emailText);
 
-                    Intent intent = new Intent(RegisterActivity.this, FragmentHolder.class);
-                    startActivity(intent);
+                    //Intent intent = new Intent(RegisterActivity.this, FragmentHolder.class);
+                    //startActivity(intent);
+
+                    try {
+                        EText = encrypt(passText);
+                        DText = decrypt(EText);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    System.out.println(passText);
+                    System.out.println("Encrypt: " + EText);
+                    System.out.println("Decrypt: " + DText);
                 }
             }
         });
@@ -150,5 +172,32 @@ public class RegisterActivity extends AppCompatActivity {
         else {
             return true;
         }
+    }
+
+    public static String encrypt(String value) throws Exception
+    {
+        Key key = generateKey();
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte [] encryptedByteValue = cipher.doFinal(value.getBytes("utf-8"));
+        String encryptedValue64 = Base64.encodeToString(encryptedByteValue, Base64.DEFAULT);
+        return encryptedValue64;
+    }
+
+    public static String decrypt(String value) throws Exception
+    {
+        Key key = generateKey();
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] decryptedValue64 = Base64.decode(value, Base64.DEFAULT);
+        byte [] decryptedByteValue = cipher.doFinal(decryptedValue64);
+        String decryptedValue = new String(decryptedByteValue,"utf-8");
+        return decryptedValue;
+    }
+
+    private static Key generateKey()
+    {
+        Key key = new SecretKeySpec(KEY.getBytes(), ALGORITHM);
+        return key;
     }
 }
