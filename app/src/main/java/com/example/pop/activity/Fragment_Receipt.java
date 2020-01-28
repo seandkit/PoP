@@ -1,6 +1,5 @@
 package com.example.pop.activity;
 
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -34,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -50,22 +48,26 @@ public class Fragment_Receipt extends Fragment {
     private int success;
     private String message;
 
-    public Fragment_Receipt() {
-        // Required empty public constructor
-    }
+    private Context context;
+    private Session session;
+
+    public Fragment_Receipt() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_receipt, container, false);
 
-        Context context = v.getContext();
+        context = getActivity().getApplicationContext();
+        session = new Session(context);
+
+        mRecyclerView = v.findViewById(R.id.receiptList);
+
         db = new SQLiteDatabaseAdapter(context);
 
-        mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(1);
+        //mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(1);
 
         new FetchReceiptsAsyncTask().execute();
-
 
         //Move below code block into populateReceiptList()
         // Get a handle to the RecyclerView.
@@ -80,30 +82,25 @@ public class Fragment_Receipt extends Fragment {
         return v;
     }
 
-    void addItemToList(Context context, Receipt receipt){
+    void addItemToList(Receipt receipt){
         mReceiptList.add(receipt);
         mAdapter.notifyItemInserted(mReceiptList.size() - 1);
     }
+
     private class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            //Display progress bar
-            //Needs context
-            pDialog = new ProgressDialog(FragmentHolder.this);
-            pDialog.setMessage("Loading receipts. Please wait...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
+
         }
 
         @Override
         protected String doInBackground(String... params) {
             HttpJsonParser httpJsonParser = new HttpJsonParser();
             Map<String, String> httpParams = new HashMap<>();
-            //session user id
-            httpParams.put(DBConstants.USER_ID, String.valueOf(userID));
+            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceipts.php", "POST", null);
+
             try {
                 success = jsonObject.getInt("success");
                 JSONArray receipts;
@@ -117,7 +114,7 @@ public class Fragment_Receipt extends Fragment {
                         String receiptDate = receipt.getString(DBConstants.DATE);
                         String receiptVendor = receipt.getString(DBConstants.VENDOR);
                         double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
-                        System.out.println(receiptVendor);
+
                         mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal));
                     }
                 }
@@ -128,25 +125,11 @@ public class Fragment_Receipt extends Fragment {
         }
 
         protected void onPostExecute(String result) {
-            pDialog.dismiss();
-            //Adrian please fix
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    populateReceiptList();
-                    System.out.println("Successful receipts load");
-                }
-            });
+            mAdapter = new ReceiptListAdapter(context, mReceiptList);
+            // Connect the adapter with the RecyclerView.
+            mRecyclerView.setAdapter(mAdapter);
+            // Give the RecyclerView a default layout manager.
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         }
-
-    }
-    private void populateReceiptList(){
-        // Get a handle to the RecyclerView.
-        mRecyclerView = findViewById(R.id.receiptList);
-        // Create an adapter and supply the data to be displayed.
-        mAdapter = new ReceiptListAdapter(this, mReceiptList);
-        // Connect the adapter with the RecyclerView.
-        mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 }

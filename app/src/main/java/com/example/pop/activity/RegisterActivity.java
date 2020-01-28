@@ -80,8 +80,6 @@ public class RegisterActivity extends AppCompatActivity {
                             "Bad password match",
                             Toast.LENGTH_LONG).show();
                 }
-
-
             }
         });
 

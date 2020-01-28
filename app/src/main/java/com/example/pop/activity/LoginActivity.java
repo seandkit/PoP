@@ -3,6 +3,7 @@ package com.example.pop.activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,13 +40,15 @@ public class LoginActivity extends AppCompatActivity {
     private String message;
     private User user = new User();
 
+    private Context context;
+    private Session session;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Session session = new Session(getApplicationContext());
-        System.out.println(session.getLogin());
+        session = new Session(getApplicationContext());
         checkLogin(session.getLogin());
 
         db = new SQLiteDatabaseAdapter(this);
@@ -82,10 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             new validateMatchAsyncTask().execute();
         }
         else {
-            Toast.makeText(LoginActivity.this,
-                    "One or more fields left empty!",
-                    Toast.LENGTH_LONG).show();
-
+            Toast.makeText(LoginActivity.this,"One or more fields left empty!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -144,25 +144,20 @@ public class LoginActivity extends AppCompatActivity {
                     if (success == 1) {
                         //Display success messageSystem.out.println("SUCCESS");
 
-                        System.out.println("id:"+user.getId()+" fname:" +user.getFirstName()+" lname:"+user.getLastName() + " email:" + user.getEmail());
-                        Toast.makeText(LoginActivity.this,
-                                "Login", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this,"Login", Toast.LENGTH_LONG).show();
 
-                        Session session = new Session(getApplicationContext());
                         session.setLogin("Login");
                         session.setUserId(user.getId());
                         session.setName(user.getFirstName());
                         session.setEmail(user.getEmail());
+
                         Intent i = new Intent(LoginActivity.this, FragmentHolder.class);
                         startActivity(i);
                         //Finish ths activity and go back to listing activity
                         finish();
 
                     } else {
-                        Toast.makeText(LoginActivity.this,
-                                message,
-                                Toast.LENGTH_LONG).show();
-
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
                     }
                 }
             });

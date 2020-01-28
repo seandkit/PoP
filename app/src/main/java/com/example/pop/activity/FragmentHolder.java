@@ -4,19 +4,34 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+
+import com.example.pop.DBConstants;
 import com.example.pop.R;
+import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FragmentHolder extends AppCompatActivity implements NfcAdapter.ReaderCallback {
 
@@ -31,12 +46,18 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     private Fragment_SearchByDate searchFragment;
     private Fragment_SearchByTag tagFragment;
 
+    private Context context;
+    private Session session;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_holder);
         navigation = findViewById(R.id.bottomNavigationView);
         frameLayout = findViewById(R.id.frameLayout);
+
+        context = getApplicationContext();
+        session = new Session(context);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -53,7 +74,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 //switch to fragment
-
                 switch(menuItem.getItemId()){
                     case R.id.nav_home :
                         //Code to be executed when item 1 selected.
@@ -108,7 +128,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
         byte[] response = new byte[0];
         try {
-            response = isoDep.transceive(Utils.hexStringToByteArray("00A4040007A0000002471001"));
+            response = isoDep.transceive(Utils.hexStringToByteArray("00A4040007A0000002471002"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -150,6 +170,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     }
 
     void addItem(Receipt receipt){
-        receiptFragment.addItemToList(this, receipt);
+        receiptFragment.addItemToList(receipt);
     }
 }

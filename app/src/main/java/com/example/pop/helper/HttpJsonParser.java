@@ -69,7 +69,6 @@ public class HttpJsonParser {
             json = sb.toString();
             jObj = new JSONObject(json);
 
-
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (ProtocolException e) {
