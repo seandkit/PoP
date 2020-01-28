@@ -21,7 +21,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -90,7 +89,7 @@ public class RecentTransactionsActivity extends AppCompatActivity {
                     //Iterate through the response and populate receipt list
                     for (int i = 0; i < receipts.length(); i++) {
                         JSONObject receipt = receipts.getJSONObject(i);
-                        int receiptId = receipt.getInt(DBConstants.RECEIPTID);
+                        int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
                         String receiptDate = receipt.getString(DBConstants.DATE);
                         String receiptVendor = receipt.getString(DBConstants.VENDOR);
                         double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);

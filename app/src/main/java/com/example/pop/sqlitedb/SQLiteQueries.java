@@ -3,6 +3,18 @@ package com.example.pop.sqlitedb;
 import com.example.pop.DBConstants;
 
 public class SQLiteQueries {
+
+    //TABLE FOR NFC TRANSFER
+    public static String createNFCTapTableString(){
+        return "CREATE TABLE nfctap ( id INTEGER PRIMARY KEY, " +
+                "uuid TEXT," +
+                "vendor TEXT," +
+                "date TEXT)";
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //NO LONGER NEEDED SQLITE **TRANSFER ONGOING**
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public static String createUserTableString(){
         return "CREATE TABLE " + DBConstants.USERDATA + " ( "
                 + DBConstants.ID + " INTEGER PRIMARY KEY, "
@@ -27,8 +39,8 @@ public class SQLiteQueries {
     public static String createReceiptItemTableString(){
         return "CREATE TABLE " + DBConstants.RECEIPTITEMDATA + "( "
                 + DBConstants.RECEIPTITEMPK + " INTEGER PRIMARY KEY, "
-                + DBConstants.RECEIPTID + " INTEGER NOT NULL REFERENCES " + DBConstants.RECEIPTDATA + "('" + DBConstants.ID +"'), "
-                + DBConstants.ITEMID + " INTEGER NOT NULL REFERENCES " + DBConstants.ITEMDATA + "('" + DBConstants.ID +"'), "
+                + DBConstants.RECEIPT_ID + " INTEGER NOT NULL REFERENCES " + DBConstants.RECEIPTDATA + "('" + DBConstants.ID +"'), "
+                + DBConstants.ITEM_ID + " INTEGER NOT NULL REFERENCES " + DBConstants.ITEMDATA + "('" + DBConstants.ID +"'), "
                 + DBConstants.PRICE + " INTEGER, "
                 + DBConstants.QUANTITY+ " INTEGER)";
     }
