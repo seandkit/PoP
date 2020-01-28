@@ -1,8 +1,6 @@
 package com.example.pop.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,20 +13,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.pop.DBConstants;
 import com.example.pop.R;
-import com.example.pop.helper.CheckNetworkStatus;
-import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.User;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 
 import java.security.Key;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
@@ -72,18 +61,40 @@ public class RegisterActivity extends AppCompatActivity {
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkPassword(pass.getText().toString(), confirmPass.getText().toString())) {
-                    if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
-                        createUser();
-                    } else {
-                        Toast.makeText(RegisterActivity.this,
-                                "Unable to connect to internet",
-                                Toast.LENGTH_LONG).show();
+                String usernameText = username.getText().toString();
+                String emailText = email.getText().toString();
+                String passText = pass.getText().toString();
+                String confirmPassText = confirmPass.getText().toString();
+
+                boolean validUsername = checkUsername(usernameText);
+                boolean validEmail = checkEmail(emailText);
+                boolean validPassword = checkPassword(passText, confirmPassText);
+
+                if(validUsername && validEmail && validPassword) {
+                    User user = new User(usernameText, emailText, passText);
+                    db.addUserHandler(user);
+
+                    //Need to pull user information to populate session
+
+                    Session session = new Session(getApplicationContext());
+                    session.setLogin("Login");
+                    //session.setUserId(userId);
+                    session.setName(usernameText);
+                    session.setEmail(emailText);
+
+                    //Intent intent = new Intent(RegisterActivity.this, FragmentHolder.class);
+                    //startActivity(intent);
+
+                    try {
+                        EText = encrypt(passText);
+                        DText = decrypt(EText);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } else{
-                    Toast.makeText(RegisterActivity.this,
-                            "Bad password match",
-                            Toast.LENGTH_LONG).show();
+
+                    System.out.println(passText);
+                    System.out.println("Encrypt: " + EText);
+                    System.out.println("Decrypt: " + DText);
                 }
             }
         });
@@ -115,14 +126,29 @@ public class RegisterActivity extends AppCompatActivity {
         }
     };
 
-    private void createUser() {
-        if(!DBConstants.STRING_EMPTY.equals(email.getText().toString())){
-            new createUserAsyncTask().execute();
+    private boolean checkUsername(String username) {
+
+        //Check if username is taken
+        if(db.checkUsernameExist(username)){
+            Toast toast = Toast.makeText(getApplicationContext(), "Username already taken!", Toast.LENGTH_LONG);
+            toast.show();
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+    private boolean checkEmail(String email) {
+
+        //Check if email is taken
+        if(db.checkEmailExist(email)) {
+            Toast toast = Toast.makeText(getApplicationContext(), "Email already taken!", Toast.LENGTH_LONG);
+            toast.show();
+            return false;
         }
         else {
-            Toast.makeText(RegisterActivity.this,
-                    "One or more fields left empty!",
-                    Toast.LENGTH_LONG).show();
+            return true;
         }
     }
 
@@ -174,78 +200,4 @@ public class RegisterActivity extends AppCompatActivity {
         Key key = new SecretKeySpec(KEY.getBytes(), ALGORITHM);
         return key;
     }
-
-    private class createUserAsyncTask extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //Display proggress bar
-            pDialog = new ProgressDialog(RegisterActivity.this);
-            pDialog.setMessage("Checking Database. Please wait...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.FIRST_NAME, username.getText().toString());
-            httpParams.put(DBConstants.LAST_NAME, lastName);
-            httpParams.put(DBConstants.EMAIL, email.getText().toString());
-            httpParams.put(DBConstants.PASSWORD, pass.getText().toString());
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"register.php", "POST", httpParams);
-            try {
-                success = jsonObject.getInt("success");
-                if(success == 0){
-                    message = jsonObject.getString("message");
-                }
-                else{
-                    JSONArray userObjects = jsonObject.getJSONArray("data");
-                    JSONObject userObject = userObjects.getJSONObject(0);
-                    user.setId(userObject.getInt("user_id"));
-                    user.setFirstName(userObject.getString("first_name"));
-                    user.setLastName(userObject.getString("last_name"));
-                    user.setEmail(userObject.getString("email"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e){
-                e.printStackTrace();
-            }
-            return null;
-        }
-        protected void onPostExecute(String result) {
-            pDialog.dismiss();
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    if (success == 1) {
-                        //Display success message
-                        System.out.println("User added");
-                        System.out.println("id:"+user.getId()+" fname:" +user.getFirstName()+" lname:"+user.getLastName() + " email:" + user.getEmail());
-
-                        Session session = new Session(getApplicationContext());
-                        session.setLogin("Login");
-                        session.setUserId(user.getId());
-                        session.setName(user.getFirstName());
-                        session.setEmail(user.getEmail());
-
-                        Intent i = new Intent(RegisterActivity.this, FragmentHolder.class);
-                        startActivity(i);
-                        //Finish ths activity and go back to listing activity
-                        finish();
-
-                    } else {
-                        Toast.makeText(RegisterActivity.this,
-                                message,
-                                Toast.LENGTH_LONG).show();
-
-                    }
-                }
-            });
-        }
-    }
-
-
 }
