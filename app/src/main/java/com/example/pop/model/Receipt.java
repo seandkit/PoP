@@ -12,6 +12,7 @@ public class Receipt {
     private double receiptTotal;
     private int userId;
     private List<Item> items;
+    private String uuid;
 
     public Receipt(){
 
@@ -25,11 +26,12 @@ public class Receipt {
         this.receiptTotal = receiptTotal;
     }
 
-    public Receipt(String date, String vendorName, double receiptTotal, int userId){
+    public Receipt(String date, String vendorName, double receiptTotal, int userId, String uuid){
         this.date = date;
         this.vendorName = vendorName;
         this.receiptTotal = receiptTotal;
         this.userId = userId;
+        this.uuid = uuid;
     }
 
     public Receipt(int id, String date, String vendorName,  double receiptTotal){
@@ -105,6 +107,9 @@ public class Receipt {
     public List<Item> getItems() {
         return items;
     }
+    public String getUuid() {
+        return uuid;
+    }
 
     public void setId(int id) {
         this.id = id;
@@ -136,6 +141,10 @@ public class Receipt {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     private double calculateTotalPrice(List<Item> items){

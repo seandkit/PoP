@@ -50,12 +50,13 @@ public class SQLiteDatabaseAdapter {
 //        return user;
 //    }
 
-    public void addUserHandler(String uuid, String vendor, String date) {
+    public void addNFCTap(String uuid, String vendor, String date, String total) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("uuid", uuid);
         values.put("vendor", vendor);
         values.put("date", date);
+        values.put("total", total);
         db.insert("nfctap", null, values);
     }
 

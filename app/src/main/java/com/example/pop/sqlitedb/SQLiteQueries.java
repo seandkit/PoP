@@ -9,7 +9,8 @@ public class SQLiteQueries {
         return "CREATE TABLE nfctap ( id INTEGER PRIMARY KEY, " +
                 "uuid TEXT," +
                 "vendor TEXT," +
-                "date TEXT)";
+                "date TEXT," +
+                "total TEXT)";
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
