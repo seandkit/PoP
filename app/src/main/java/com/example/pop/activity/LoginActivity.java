@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,8 +25,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -43,13 +48,16 @@ public class LoginActivity extends AppCompatActivity {
     private Context context;
     private Session session;
 
+    private static final String ALGORITHM = "AES";
+    private static final String KEY = "F0C101355CD00EF098BD78C3D85E141C";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         session = new Session(getApplicationContext());
-        //checkLogin(session.getLogin());
+        checkLogin(session.getLogin());
 
         db = new SQLiteDatabaseAdapter(this);
         email = findViewById(R.id.loginEmail);
@@ -80,12 +88,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validateMatch() {
-        if(!DBConstants.STRING_EMPTY.equals(email.getText().toString())&&
-                !DBConstants.STRING_EMPTY.equals(password.getText().toString())){
+        if(!DBConstants.STRING_EMPTY.equals(email.getText().toString()) || !DBConstants.STRING_EMPTY.equals(password.getText().toString())){
             new validateMatchAsyncTask().execute();
         }
         else {
-            Toast.makeText(LoginActivity.this,"One or more fields left empty!", Toast.LENGTH_LONG).show();
+            Toast.makeText(LoginActivity.this,"Some fields left empty", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -95,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(i);
         }
     }
+
     private class validateMatchAsyncTask extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
@@ -109,30 +117,38 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.EMAIL, email.getText().toString());
-            httpParams.put(DBConstants.PASSWORD, password.getText().toString());
-            //WORKING TEST LOGIN
-            //httpParams.put("email", "test@gmail.com");
-            //httpParams.put("password", "1Password");
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"loginsean.php", "POST", httpParams);
             try {
-                success = jsonObject.getInt("success");
-                if(success == 0){
-                    message = jsonObject.getString("message");
+                String encryptedPassword = encrypt(password.getText().toString());
+
+                System.out.println("Encrypted pass: " + encryptedPassword);
+
+                HttpJsonParser httpJsonParser = new HttpJsonParser();
+                Map<String, String> httpParams = new HashMap<>();
+                httpParams.put(DBConstants.EMAIL, email.getText().toString());
+                httpParams.put(DBConstants.PASSWORD, encryptedPassword);
+                //WORKING TEST LOGIN
+                //httpParams.put("email", "test@gmail.com");
+                //httpParams.put("password", "1Password");
+                JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"loginsean.php", "POST", httpParams);
+                try {
+                    success = jsonObject.getInt("success");
+                    if(success == 0){
+                        message = jsonObject.getString("message");
+                    }
+                    else{
+                        JSONArray userObjects = jsonObject.getJSONArray("data");
+                        JSONObject userObject = userObjects.getJSONObject(0);
+                        user.setId(userObject.getInt("user_id"));
+                        user.setFirstName(userObject.getString("first_name"));
+                        user.setLastName(userObject.getString("last_name"));
+                        user.setEmail(userObject.getString("email"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (NullPointerException e){
+                    e.printStackTrace();
                 }
-                else{
-                    JSONArray userObjects = jsonObject.getJSONArray("data");
-                    JSONObject userObject = userObjects.getJSONObject(0);
-                    user.setId(userObject.getInt("user_id"));
-                    user.setFirstName(userObject.getString("first_name"));
-                    user.setLastName(userObject.getString("last_name"));
-                    user.setEmail(userObject.getString("email"));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return null;
@@ -162,5 +178,19 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public static String encrypt(String value) throws Exception {
+        Key key = generateKey();
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte [] encryptedByteValue = cipher.doFinal(value.getBytes("utf-8"));
+        String encryptedValue64 = Base64.encodeToString(encryptedByteValue, Base64.DEFAULT);
+        return encryptedValue64;
+    }
+
+    private static Key generateKey() {
+        Key key = new SecretKeySpec(KEY.getBytes(), ALGORITHM);
+        return key;
     }
 }
