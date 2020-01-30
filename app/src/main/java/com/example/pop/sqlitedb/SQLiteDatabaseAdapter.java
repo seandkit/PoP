@@ -50,6 +50,16 @@ public class SQLiteDatabaseAdapter {
 //        return user;
 //    }
 
+    public void addNFCTap(String uuid, String vendor, String date, String total) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("uuid", uuid);
+        values.put("vendor", vendor);
+        values.put("date", date);
+        values.put("total", total);
+        db.insert("nfctap", null, values);
+    }
+
     public boolean checkUsernameExist(String username){
         String query = SQLiteQueries.checkUsernameExistString(username);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -122,17 +132,19 @@ public class SQLiteDatabaseAdapter {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
+            db.execSQL(SQLiteQueries.createNFCTapTableString());
+
             //User testUser = new User(1, "admin", "D00191063@student.dkit.ie", "Password!1");
-            db.execSQL(SQLiteQueries.createUserTableString());
+            //db.execSQL(SQLiteQueries.createUserTableString());
             //ContentValues userValues = new ContentValues();
             //userValues.put(DBConstants.USERNAME, testUser.getName());
             //userValues.put(DBConstants.EMAIL, testUser.getEmail());
             //userValues.put(DBConstants.PASSWORD, testUser.getPassword());
             //db.insert(DBConstants.USERDATA, null, userValues);
-            db.execSQL(SQLiteQueries.createReceiptTableString());
-            db.execSQL(SQLiteQueries.createItemTableString());
-            db.execSQL(SQLiteQueries.createReceiptItemTableString());
-            TEST.sampleTestReceipts(db);
+            //db.execSQL(SQLiteQueries.createReceiptTableString());
+            //db.execSQL(SQLiteQueries.createItemTableString());
+            //db.execSQL(SQLiteQueries.createReceiptItemTableString());
+            //TEST.sampleTestReceipts(db);
         }
 
         @Override
@@ -141,6 +153,7 @@ public class SQLiteDatabaseAdapter {
             db.execSQL("DROP TABLE IF EXISTS " + DBConstants.RECEIPTDATA+ ";");
             db.execSQL("DROP TABLE IF EXISTS " + DBConstants.ITEMDATA+ ";");
             db.execSQL("DROP TABLE IF EXISTS " + DBConstants.RECEIPTITEMDATA+ ";");
+            db.execSQL("DROP TABLE IF EXISTS nfctap;");
             onCreate(db);
         }
     }

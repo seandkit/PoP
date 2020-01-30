@@ -95,6 +95,7 @@
         app:layout_constraintStart_toEndOf="@+id/receiptDate" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/itemList"
         android:layout_width="384dp"
         android:layout_height="274dp"
         app:layout_constraintBottom_toTopOf="@+id/receiptTotal"

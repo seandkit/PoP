@@ -1,18 +1,14 @@
 package com.example.pop.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,8 +59,6 @@ public class Fragment_Receipt extends Fragment {
         context = getActivity().getApplicationContext();
         session = new Session(context);
 
-        mRecyclerView = v.findViewById(R.id.receiptList);
-
         db = new SQLiteDatabaseAdapter(context);
 
         //mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(1);
@@ -111,7 +105,7 @@ public class Fragment_Receipt extends Fragment {
                     //Iterate through the response and populate receipt list
                     for (int i = 0; i < receipts.length(); i++) {
                         JSONObject receipt = receipts.getJSONObject(i);
-                        int receiptId = receipt.getInt(DBConstants.RECEIPTID);
+                        int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
                         String receiptDate = receipt.getString(DBConstants.DATE);
                         String receiptVendor = receipt.getString(DBConstants.VENDOR);
                         double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);

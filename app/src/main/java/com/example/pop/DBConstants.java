@@ -35,14 +35,14 @@ public final class DBConstants {
     public static final String USERNAME = "username";
 
     //receiptdata columns
-    public static final String RECEIPTID = "receipt_id";
+    public static final String RECEIPT_ID = "receipt_id";
     public static final String DATE = "date";
     public static final String VENDORNAME = "vendorname";
     public static final String CARDTRANS = "cardtrans";
     public static final String RECEIPTTOTAL = "receipttotal";
 
     //itemdata columns
-    public static final String ITEMID = "itemid";
+    public static final String ITEM_ID = "item_id";
     public static final String ITEMNAME = "itemname";
 
     //receiptitemdata columns
