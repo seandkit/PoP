@@ -149,7 +149,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         String vendor = responseArray[1];
         Double  total = Double.valueOf(responseArray[2]);
 
-        final Receipt newReceipt = new Receipt(currentDate, vendor, total, 1);
+        final Receipt newReceipt = new Receipt(currentDate, vendor, total, session.getUserId());
 
         //======================================================================================================
         //This is the receipt (newReceipt) that will contain a uuid that needs to be searched for in the cloud
