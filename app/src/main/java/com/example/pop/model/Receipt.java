@@ -6,21 +6,32 @@ public class Receipt {
 
     private int id;
     private String date;
+    private String time;
     private String vendorName;
     private int cardTrans;
     private double receiptTotal;
     private int userId;
     private List<Item> items;
+    private String uuid;
 
     public Receipt(){
 
     }
 
-    public Receipt(String date, String vendorName, double receiptTotal, int userId){
+    public Receipt(int id, String date, String time, String vendorName, double receiptTotal){
+        this.id = id;
+        this.date = date;
+        this.time = time;
+        this.vendorName = vendorName;
+        this.receiptTotal = receiptTotal;
+    }
+
+    public Receipt(String date, String vendorName, double receiptTotal, int userId, String uuid){
         this.date = date;
         this.vendorName = vendorName;
         this.receiptTotal = receiptTotal;
         this.userId = userId;
+        this.uuid = uuid;
     }
 
     public Receipt(int id, String date, String vendorName,  double receiptTotal){
@@ -73,6 +84,9 @@ public class Receipt {
     public String getDate() {
         return date;
     }
+    public String getTime() {
+        return time;
+    }
 
     public String getVendorName() {
         return vendorName;
@@ -93,13 +107,20 @@ public class Receipt {
     public List<Item> getItems() {
         return items;
     }
+    public String getUuid() {
+        return uuid;
+    }
 
     public void setId(int id) {
         this.id = id;
     }
 
+
     public void setDate(String date) {
         this.date = date;
+    }
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public void setVendorName(String vendorName) {
@@ -120,6 +141,10 @@ public class Receipt {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     private double calculateTotalPrice(List<Item> items){

@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
-import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 import com.example.pop.sqlitedb.SQLiteQueries;
 
 import java.util.ArrayList;
@@ -81,8 +80,8 @@ public class TEST {
     //Method to add receiptItem connection and information to localdb
     private static void insertReceiptItemToDB(SQLiteDatabase db, Receipt r, Item i){
         ContentValues receiptItemValues = new ContentValues();
-        receiptItemValues.put(DBConstants.RECEIPTID, r.getId());
-        receiptItemValues.put(DBConstants.ITEMID, i.getId());
+        receiptItemValues.put(DBConstants.RECEIPT_ID, r.getId());
+        receiptItemValues.put(DBConstants.ITEM_ID, i.getId());
         receiptItemValues.put(DBConstants.PRICE, i.getPrice());
         receiptItemValues.put(DBConstants.QUANTITY, i.getQuantity());
         db.insert(DBConstants.RECEIPTITEMDATA, null, receiptItemValues);
