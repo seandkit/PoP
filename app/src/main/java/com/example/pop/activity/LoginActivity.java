@@ -113,7 +113,6 @@ public class LoginActivity extends AppCompatActivity {
             Map<String, String> httpParams = new HashMap<>();
             httpParams.put(DBConstants.EMAIL, email.getText().toString());
             httpParams.put(DBConstants.PASSWORD, password.getText().toString());
-            //WORKING TEST LOGIN
             //httpParams.put("email", "test@gmail.com");
             //httpParams.put("password", "1Password");
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"loginsean.php", "POST", httpParams);

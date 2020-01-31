@@ -7,10 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.pop.DBConstants;
-import com.example.pop.TEST;
-import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
-import com.example.pop.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
