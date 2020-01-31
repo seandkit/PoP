@@ -15,9 +15,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
+import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FragmentHolder extends AppCompatActivity implements NfcAdapter.ReaderCallback {
@@ -48,6 +51,11 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
     private Context context;
     private Session session;
+    private String receiptUuidphp;
+
+    int success;
+
+    Receipt newReceipt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +70,16 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         db = new SQLiteDatabaseAdapter(this);
+
+        if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
+            if(db.getUnlinkedReceipts() != null) {
+                List<Receipt> receipts = db.getUnlinkedReceipts();
+                for(Receipt r: receipts){
+                    receiptUuidphp = receiptUuidphp.concat(r.getUuid()+"@");
+                }
+                new linkReceiptAsyncTask().execute();
+            }
+        }
 
         //Fragment initialization
         receiptFragment = new Fragment_Receipt();
@@ -150,9 +168,9 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         Double  total = Double.valueOf(responseArray[2]);
         String uuid = responseArray[3];
 
-        final Receipt newReceipt = new Receipt(currentDate, vendor, total, session.getUserId(), uuid);
+        newReceipt = new Receipt(currentDate, vendor, total, session.getUserId(), uuid);
 
-        db.addNFCTap(uuid, vendor,currentDate, String.valueOf(total));
+        db.addUnlinkedReceipt(uuid, vendor,currentDate, String.valueOf(total));
 
         //======================================================================================================
         //This is the receipt (newReceipt) that will contain a uuid that needs to be searched for in the cloud
@@ -174,5 +192,40 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
     void addItem(Receipt receipt){
         receiptFragment.addItemToList(receipt);
+    }
+
+    private class linkReceiptAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put("uuid", receiptUuidphp);
+            httpParams.put("user_id", String.valueOf(session.getUserId()));
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "uuidNULL.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                JSONArray data;
+                if (success == 1) {
+                    Toast.makeText(FragmentHolder.this,
+                            "User Linked",
+                            Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            //?? populate xml with receipt and itemList??
+
+
+        }
     }
 }

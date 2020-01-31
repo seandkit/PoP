@@ -17,14 +17,14 @@ public class Receipt {
     public Receipt(){
 
     }
-
-    public Receipt(int id, String date, String time, String vendorName, double receiptTotal){
+    public Receipt(int id, String uuid, String vendorName, String date, double receiptTotal){
         this.id = id;
-        this.date = date;
-        this.time = time;
+        this.uuid = uuid;
         this.vendorName = vendorName;
+        this.date = date;
         this.receiptTotal = receiptTotal;
     }
+
 
     public Receipt(String date, String vendorName, double receiptTotal, int userId, String uuid){
         this.date = date;
