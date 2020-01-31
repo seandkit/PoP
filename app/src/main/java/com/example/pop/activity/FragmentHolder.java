@@ -51,7 +51,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
     private Context context;
     private Session session;
-    private String receiptUuidphp;
+    private String receiptUuidphp = "";
 
     int success;
 
@@ -74,10 +74,12 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
             if(db.getUnlinkedReceipts() != null) {
                 List<Receipt> receipts = db.getUnlinkedReceipts();
-                for(Receipt r: receipts){
-                    receiptUuidphp = receiptUuidphp.concat(r.getUuid()+"@");
+                if (receipts != null) {
+                    for (Receipt r : receipts) {
+                        receiptUuidphp = receiptUuidphp.concat(r.getUuid() + "@");
+                    }
+                    new linkReceiptAsyncTask().execute();
                 }
-                new linkReceiptAsyncTask().execute();
             }
         }
 
@@ -170,7 +172,13 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         newReceipt = new Receipt(currentDate, vendor, total, session.getUserId(), uuid);
 
-        db.addUnlinkedReceipt(uuid, vendor,currentDate, String.valueOf(total));
+        if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
+            receiptUuidphp = receiptUuidphp.concat(newReceipt.getUuid()+"@");
+            new linkReceiptAsyncTask().execute();
+        }
+        else{
+            db.addUnlinkedReceipt(uuid, vendor,currentDate, String.valueOf(total));
+        }
 
         //======================================================================================================
         //This is the receipt (newReceipt) that will contain a uuid that needs to be searched for in the cloud
@@ -212,9 +220,8 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 success = jsonObject.getInt("success");
                 JSONArray data;
                 if (success == 1) {
-                    Toast.makeText(FragmentHolder.this,
-                            "User Linked",
-                            Toast.LENGTH_LONG).show();
+                    //Toast.makeText(FragmentHolder.this, "User Linked", Toast.LENGTH_LONG).show();
+                    receiptUuidphp = "";
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

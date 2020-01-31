@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
@@ -124,11 +125,16 @@ public class ReceiptActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
-            location.setText(receipt.getVendorName());
-            date.setText(receipt.getDate());
-            time.setText(receipt.getTime());
-            total.setText("Total: €" + String.valueOf(receipt.getReceiptTotal()));
-
+            if(success == 1)
+            {
+                location.setText(receipt.getVendorName());
+                date.setText(receipt.getDate());
+                time.setText(receipt.getTime());
+                total.setText("Total: €" + String.valueOf(receipt.getReceiptTotal()));
+            }
+            else{
+                Toast.makeText(ReceiptActivity.this,"Empty", Toast.LENGTH_LONG).show();
+            }
             mRecyclerView = findViewById(R.id.itemList);
             mAdapter = new ItemListAdapter(context, mItemList);
             mRecyclerView.setAdapter(mAdapter);

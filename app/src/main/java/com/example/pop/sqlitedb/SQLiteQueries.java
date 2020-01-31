@@ -1,7 +1,5 @@
 package com.example.pop.sqlitedb;
 
-import com.example.pop.DBConstants;
-
 public class SQLiteQueries {
 
     //TABLE FOR NFC TRANSFER
@@ -14,6 +12,6 @@ public class SQLiteQueries {
     }
 
     public static String getUnlinkedReceiptsString(){
-        return "SELECT * unlinkedReceipts";
+        return "SELECT * FROM unlinkedReceipts";
     }
 }
