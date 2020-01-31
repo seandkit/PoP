@@ -59,8 +59,6 @@ public class Fragment_Receipt extends Fragment {
         context = getActivity().getApplicationContext();
         session = new Session(context);
 
-        mRecyclerView = v.findViewById(R.id.receiptList);
-
         db = new SQLiteDatabaseAdapter(context);
 
         //mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(1);

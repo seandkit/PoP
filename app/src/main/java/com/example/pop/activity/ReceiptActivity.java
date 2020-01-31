@@ -1,6 +1,8 @@
 package com.example.pop.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +12,8 @@ import android.widget.TextView;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
+import com.example.pop.activity.adapter.ItemListAdapter;
+import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
@@ -34,6 +38,10 @@ public class ReceiptActivity extends AppCompatActivity {
     private TextView barcodeNumber;
     private TextView otherNumber;
 
+    private RecyclerView mRecyclerView;
+    private ItemListAdapter mAdapter;
+    public List<Item> mItemList = new ArrayList<>();
+
     int receiptId;
     private int success;
     private String message;
@@ -42,22 +50,16 @@ public class ReceiptActivity extends AppCompatActivity {
     private Session session;
 
     public Receipt receipt;
-    public List<Item> itemList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt);
 
-        context = getApplicationContext();
-        session = new Session(context);
+        context = this;
 
         Intent intent = getIntent();
         receiptId = intent.getIntExtra("receiptID",0);
-
-        System.out.println(receiptId);
-
-        new FetchReceiptsInfoAsyncTask().execute();
 
         total = findViewById(R.id.receiptTotal);
         cash = findViewById(R.id.receiptCash);
@@ -67,6 +69,8 @@ public class ReceiptActivity extends AppCompatActivity {
         time = findViewById(R.id.receiptTime);
         barcodeNumber = findViewById(R.id.receiptBarcodeNumber);
         otherNumber = findViewById(R.id.receiptOtherNumber);
+
+        new FetchReceiptsInfoAsyncTask().execute();
     }
 
     private class FetchReceiptsInfoAsyncTask extends AsyncTask<String, String, String> {
@@ -110,7 +114,7 @@ public class ReceiptActivity extends AppCompatActivity {
                         int itemQuantity = item.getInt(DBConstants.QUANTITY);
 
                         //Populate a list of items to be displayed on receipt
-                        itemList.add(new Item(itemId,itemName,itemPrice,itemQuantity));
+                        mItemList.add(new Item(itemId,itemName,itemPrice,itemQuantity));
                     }
                 }
             } catch (JSONException e) {
@@ -120,16 +124,15 @@ public class ReceiptActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
-            //?? populate xml with receipt and itemList??
+            location.setText(receipt.getVendorName());
+            date.setText(receipt.getDate());
+            time.setText(receipt.getTime());
+            total.setText("Total: €" + String.valueOf(receipt.getReceiptTotal()));
 
-            System.out.println("receiptild: "+receipt.getId());
-            System.out.println("receiptDate: "+receipt.getDate());
-            System.out.println("receiptTime: "+receipt.getTime());
-            System.out.println("receiptVendor: "+receipt.getVendorName());
-            System.out.println("receiptTotal: "+receipt.getReceiptTotal());
-            for(Item i: itemList){
-                System.out.println("itemID: "+i.getId() + " | itemName: "+i.getName()+" | itemPrice: "+i.getPrice()+" | itemQuantity: "+i.getQuantity());
-            }
+            mRecyclerView = findViewById(R.id.itemList);
+            mAdapter = new ItemListAdapter(context, mItemList);
+            mRecyclerView.setAdapter(mAdapter);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         }
     }
 }

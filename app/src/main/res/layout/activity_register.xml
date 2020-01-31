@@ -26,7 +26,7 @@
         android:background="@drawable/custom_button"
         android:drawableLeft="@drawable/ic_action_user"
         android:ems="10"
-        android:hint="Username"
+        android:hint="Name"
         android:inputType="textPersonName"
         android:textColorHint="#FFFFFF"
         android:textSize="16dp"
@@ -36,7 +36,7 @@
         android:id="@+id/regEmail"
         android:layout_width="250dp"
         android:layout_height="40dp"
-        android:layout_above="@+id/regConfirmPassword"
+        android:layout_above="@+id/regPassword"
         android:layout_alignStart="@+id/regName"
         android:layout_alignLeft="@+id/regName"
         android:layout_centerHorizontal="true"
@@ -53,11 +53,31 @@
 
     <EditText
         android:id="@+id/regPassword"
-        android:layout_width="250dp"
-        android:layout_height="40dp"
-        android:layout_above="@+id/loginLink"
+        android:layout_above="@+id/regConfirmPassword"
+        android:hint="Password"
         android:layout_alignStart="@+id/regName"
         android:layout_alignLeft="@+id/regName"
+        android:layout_centerHorizontal="true"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="-2dp"
+        android:layout_marginLeft="-2dp"
+        android:layout_marginBottom="35dp"
+        android:background="@drawable/custom_button"
+        android:drawableLeft="@drawable/ic_action_pass"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"/>
+
+    <EditText
+        android:id="@+id/regConfirmPassword"
+        android:layout_above="@+id/loginLink"
+        android:hint="Confirm Password"
+        android:layout_alignStart="@+id/regName"
+        android:layout_alignLeft="@+id/regName"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="-2dp"
         android:layout_marginLeft="-2dp"
@@ -65,29 +85,9 @@
         android:background="@drawable/custom_button"
         android:drawableLeft="@drawable/ic_action_pass"
         android:ems="10"
-        android:hint="Password"
         android:inputType="textPassword"
         android:textColor="#FFFFFF"
-        android:textColorHint="#FFFFFF" />
-
-    <EditText
-        android:id="@+id/regConfirmPassword"
-        android:layout_width="250dp"
-        android:layout_height="40dp"
-        android:layout_above="@+id/regPassword"
-        android:layout_alignStart="@+id/regName"
-        android:layout_alignLeft="@+id/regName"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="-2dp"
-        android:layout_marginLeft="-2dp"
-        android:layout_marginBottom="35dp"
-        android:background="@drawable/custom_button"
-        android:drawableLeft="@drawable/ic_action_pass"
-        android:ems="10"
-        android:hint="Confirm Password"
-        android:inputType="textPassword"
-        android:textColorHint="#FFFFFF"
-        android:textColor="#FFFFFF"/>
+        android:textColorHint="#FFFFFF"/>
 
     <TextView
         android:id="@+id/loginLink"
