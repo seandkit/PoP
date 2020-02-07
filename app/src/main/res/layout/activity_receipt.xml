@@ -10,7 +10,8 @@
     android:layout_width="match_parent"
     android:layout_height="650dp"
     android:id="@+id/receiptLayout"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    tools:ignore="MissingConstraints">
 
     <TextView
         android:id="@+id/receiptTotal"
