@@ -17,14 +17,6 @@ public class Receipt {
     public Receipt(){
 
     }
-    public Receipt(int id, String uuid, String vendorName, String date, double receiptTotal){
-        this.id = id;
-        this.uuid = uuid;
-        this.vendorName = vendorName;
-        this.date = date;
-        this.receiptTotal = receiptTotal;
-    }
-
 
     public Receipt(String date, String vendorName, double receiptTotal, int userId, String uuid){
         this.date = date;
@@ -34,47 +26,20 @@ public class Receipt {
         this.uuid = uuid;
     }
 
-    public Receipt(int id, String date, String vendorName,  double receiptTotal){
+    public Receipt(int id, String date, String vendorName,  double receiptTotal, int userId){
         this.id = id;
         this.date = date;
         this.vendorName = vendorName;
         this.receiptTotal = receiptTotal;
-    }
-
-    public Receipt(String date, String vendorName, int cardTrans, double receiptTotal, int userId){
-        this.date = date;
-        this.vendorName = vendorName;
-        this.cardTrans = cardTrans;
-        this.receiptTotal = receiptTotal;
         this.userId = userId;
     }
 
-    public Receipt(int id, String date, String vendorName, int cardTrans, double receiptTotal, int userId){
+    public Receipt(int id, String date, String time, String vendorName,  double receiptTotal){
         this.id = id;
         this.date = date;
+        this.time = time;
         this.vendorName = vendorName;
-        this.cardTrans = cardTrans;
         this.receiptTotal = receiptTotal;
-        this.userId = userId;
-    }
-
-    public Receipt( String date, String vendorName, int cardTrans, int userId, List<Item> items){
-        this.date = date;
-        this.vendorName = vendorName;
-        this.cardTrans = cardTrans;
-        this.receiptTotal = calculateTotalPrice(items);
-        this.userId = userId;
-        this.items = items;
-    }
-
-    public Receipt(int id, String date, String vendorName, int cardTrans,  int userId, List<Item> items){
-        this.id = id;
-        this.date = date;
-        this.vendorName = vendorName;
-        this.cardTrans = cardTrans;
-        this.receiptTotal = calculateTotalPrice(items);
-        this.userId = userId;
-        this.items = items;
     }
 
     public int getId() {

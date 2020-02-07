@@ -61,6 +61,8 @@ public class ReceiptActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         receiptId = intent.getIntExtra("receiptID",0);
+        System.out.println("======");
+        System.out.println("Receipt ID = " + receiptId);
 
         total = findViewById(R.id.receiptTotal);
         cash = findViewById(R.id.receiptCash);
@@ -86,11 +88,13 @@ public class ReceiptActivity extends AppCompatActivity {
             Map<String, String> httpParams = new HashMap<>();
             httpParams.put("receipt_id", String.valueOf(receiptId));
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "getAllReceiptInfo.php", "POST", httpParams);
+            System.out.println("Blah1");
 
             try {
                 success = jsonObject.getInt("success");
                 JSONArray receiptData;
                 JSONArray itemData;
+                System.out.println("Blah99 = " + success);
                 if (success == 1) {
                     receiptData = jsonObject.getJSONArray("receipt");
                     itemData = jsonObject.getJSONArray("items");
@@ -130,7 +134,7 @@ public class ReceiptActivity extends AppCompatActivity {
                 location.setText(receipt.getVendorName());
                 date.setText(receipt.getDate());
                 time.setText(receipt.getTime());
-                total.setText("Total: €" + String.valueOf(receipt.getReceiptTotal()));
+                total.setText("Total: €" + String.format("%.2f", receipt.getReceiptTotal()));
             }
             else{
                 Toast.makeText(ReceiptActivity.this,"Empty", Toast.LENGTH_LONG).show();

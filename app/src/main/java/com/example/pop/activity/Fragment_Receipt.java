@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.adapter.ReceiptListAdapter;
+import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
@@ -63,7 +64,9 @@ public class Fragment_Receipt extends Fragment {
 
         //mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(1);
 
-        new FetchReceiptsAsyncTask().execute();
+        if (CheckNetworkStatus.isNetworkAvailable(context)) {
+            new FetchReceiptsAsyncTask().execute();
+        }
 
         //Move below code block into populateReceiptList()
         // Get a handle to the RecyclerView.
@@ -110,7 +113,7 @@ public class Fragment_Receipt extends Fragment {
                         String receiptVendor = receipt.getString(DBConstants.VENDOR);
                         double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
 
-                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal));
+                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
                     }
                 }
             } catch (JSONException e) {

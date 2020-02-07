@@ -129,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                 //WORKING TEST LOGIN
                 //httpParams.put("email", "test@gmail.com");
                 //httpParams.put("password", "1Password");
-                JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"loginsean.php", "POST", httpParams);
+                JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"login.php", "POST", httpParams);
                 try {
                     success = jsonObject.getInt("success");
                     if(success == 0){

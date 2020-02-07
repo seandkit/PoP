@@ -20,7 +20,6 @@
                     android:id="@+id/nav_folder_warranty"
                     android:icon="@drawable/ic_folder_black_24dp"
                     android:title="Warranty"/>
-
             </menu>
 
         </item>

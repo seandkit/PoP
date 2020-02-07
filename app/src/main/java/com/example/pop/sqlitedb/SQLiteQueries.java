@@ -1,17 +1,21 @@
 package com.example.pop.sqlitedb;
 
+import com.example.pop.DBConstants;
+import com.example.pop.model.Receipt;
+
 public class SQLiteQueries {
 
     //TABLE FOR NFC TRANSFER
     public static String createUnlinkedReceiptsTableString(){
-        return "CREATE TABLE unlinkedReceipts ( id INTEGER PRIMARY KEY, " +
-                "uuid TEXT," +
-                "vendor TEXT," +
+        return "CREATE TABLE " + DBConstants.UNLINKEDRECEIPTS + " ( id INTEGER PRIMARY KEY, " +
                 "date TEXT," +
-                "total TEXT)";
+                "vendor TEXT," +
+                "total TEXT," +
+                "userID INTEGER," +
+                "uuid TEXT)";
     }
 
     public static String getUnlinkedReceiptsString(){
-        return "SELECT * FROM unlinkedReceipts";
+        return "SELECT * FROM " + DBConstants.UNLINKEDRECEIPTS;
     }
 }

@@ -8,12 +8,15 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pop.R;
+import com.example.pop.activity.FragmentHolder;
 import com.example.pop.activity.ReceiptActivity;
+import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.model.Receipt;
 
 import java.util.ArrayList;
@@ -45,9 +48,14 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, ReceiptActivity.class);
-                intent.putExtra("receiptID", receipt.getId());
-                context.startActivity(intent);
+                if (CheckNetworkStatus.isNetworkAvailable(context)) {
+                    Intent intent = new Intent(context, ReceiptActivity.class);
+                    intent.putExtra("receiptID", receipt.getId());
+                    context.startActivity(intent);
+                }
+                else {
+                    Toast.makeText(context,"No internet connection", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
