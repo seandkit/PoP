@@ -42,7 +42,6 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
     private TextView mDisplayDateTo;
     private DatePickerDialog.OnDateSetListener mDateSetListenerFrom;
     private DatePickerDialog.OnDateSetListener mDateSetListenerTo;
-    private Button btn_export;
     private ArrayList<Receipt> receiptArrayListTemp = new ArrayList<>(10);
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -91,7 +90,7 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
 
         mDisplayDateFrom = (TextView) v.findViewById(R.id.tvDateFrom);
         mDisplayDateTo = (TextView) v.findViewById(R.id.tvDateTo);
-        btn_export = (Button) v.findViewById(R.id.export_btn);
+
 
         mDisplayDateFrom.setOnClickListener(new View.OnClickListener(){
             @SuppressLint("ResourceAsColor")
@@ -161,13 +160,6 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
             }
         };
 
-        btn_export.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getContext(), ExportActivity.class);
-                startActivity(i);
-            }
-        });
 
         return v;
     }
