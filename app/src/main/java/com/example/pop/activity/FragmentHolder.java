@@ -255,8 +255,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         protected void onPostExecute(String result) {
             //?? populate xml with receipt and itemList??
-
-
         }
     }
 }
