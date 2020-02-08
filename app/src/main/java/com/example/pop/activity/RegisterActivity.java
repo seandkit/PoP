@@ -40,6 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView loginLink;
     private Button registerBtn;
 
+
     private int success;
     private User user = new User();
     private String message;
@@ -62,6 +63,8 @@ public class RegisterActivity extends AppCompatActivity {
         confirmPass = findViewById(R.id.regConfirmPassword);
         loginLink = findViewById(R.id.loginLink);
         registerBtn = findViewById(R.id.regBtn);
+
+
 
         context = this;
 

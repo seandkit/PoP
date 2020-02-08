@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class Fragment_SearchByTag extends Fragment{
 
-    private Button btn_export;
+
 
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -59,15 +59,7 @@ public class Fragment_SearchByTag extends Fragment{
 
         searchView = v.findViewById(R.id.tagInput);
 
-        btn_export = (Button) v.findViewById(R.id.export_btn);
 
-        btn_export.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getContext(), ExportActivity.class);
-                startActivity(i);
-            }
-        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

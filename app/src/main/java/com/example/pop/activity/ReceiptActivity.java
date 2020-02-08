@@ -1,13 +1,23 @@
 package com.example.pop.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.text.Layout;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +33,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,11 +64,57 @@ public class ReceiptActivity extends AppCompatActivity {
 
     public Receipt receipt;
 
+    private Bitmap bitmap;
+    private Button btn_export;
+
+    ConstraintLayout relativeLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt);
 
+        relativeLayout = findViewById(R.id.receiptLayout);
+
+
+        btn_export = (Button) findViewById(R.id.export_btn);
+        btn_export.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(),
+                        Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                relativeLayout.draw((canvas));
+
+
+                String root = Environment.getExternalStorageDirectory().toString();
+                File myDir = new File(root + "/PopReceipts");
+                myDir.mkdirs();
+
+
+                String fname = "Receipt_"+ System.currentTimeMillis() +".jpg";
+
+                File file = new File(myDir, fname);
+
+
+                if (!file.exists()) {
+                    Log.d("path", file.toString());
+
+                    try {
+                        FileOutputStream fos = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                        Toast.makeText(getApplicationContext(), "Receipt successfully exported!", Toast.LENGTH_SHORT).show();
+                        fos.flush();
+                        fos.close();
+                    } catch (java.io.IOException e) {
+                        Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+
+
+                }
+            }
+        });
         context = this;
 
         Intent intent = getIntent();
