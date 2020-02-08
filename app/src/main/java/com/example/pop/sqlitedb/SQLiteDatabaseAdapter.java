@@ -38,13 +38,6 @@ public class SQLiteDatabaseAdapter {
         Cursor cursor = db.rawQuery(query, null);
         List<Receipt> receipts = new ArrayList<>();
 
-        System.out.println("pp=========================" + cursor.getColumnName(0));
-        System.out.println("pp=========================" + cursor.getColumnName(1));
-        System.out.println("pp=========================" + cursor.getColumnName(2));
-        System.out.println("pp=========================" + cursor.getColumnName(3));
-        System.out.println("pp=========================" + cursor.getColumnName(4));
-        System.out.println("pp=========================" + cursor.getColumnName(5));
-
         if(cursor != null){
             cursor.moveToNext();
             for(int i = 0; i < cursor.getCount(); i++){

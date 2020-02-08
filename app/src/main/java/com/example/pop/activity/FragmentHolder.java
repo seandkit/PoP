@@ -82,23 +82,9 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         db = new SQLiteDatabaseAdapter(this);
 
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
-            System.out.println("====================================");
-            System.out.println("Local SIZE = " + db.getUnlinkedReceipts().size());
-            System.out.println("====================================");
             if(db.getUnlinkedReceipts().size() != 0) {
                 List<Receipt> receipts = db.getUnlinkedReceipts();
 
-                System.out.println("-----------------------");
-
-                System.out.println("VENDOR = " + receipts.get(0).getVendorName());
-                System.out.println("TOTAL = " + receipts.get(0).getReceiptTotal());
-                System.out.println("ID = " + receipts.get(0).getId());
-                System.out.println("DATE = " + receipts.get(0).getDate());
-                System.out.println("TIME = " + receipts.get(0).getTime());
-                System.out.println("UUID = " + receipts.get(0).getUuid());
-                System.out.println("USER ID = " + receipts.get(0).getUserId());
-
-                System.out.println("-----------------------");
                 Toast.makeText(FragmentHolder.this,"Found unlinked receipts", Toast.LENGTH_LONG).show();
 
                 for (Receipt r : receipts) {
@@ -194,8 +180,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         vendor = responseArray[1];
         total = Double.valueOf(responseArray[2]);
         uuid = responseArray[3];
-
-
 
         newReceipt = new Receipt(currentDate, vendor, total, session.getUserId(), uuid);
 

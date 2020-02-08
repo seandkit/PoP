@@ -76,8 +76,8 @@ public class ReceiptActivity extends AppCompatActivity {
 
         relativeLayout = findViewById(R.id.receiptLayout);
 
-
         btn_export = (Button) findViewById(R.id.export_btn);
+
         btn_export.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,16 +86,13 @@ public class ReceiptActivity extends AppCompatActivity {
                 Canvas canvas = new Canvas(bitmap);
                 relativeLayout.draw((canvas));
 
-
                 String root = Environment.getExternalStorageDirectory().toString();
                 File myDir = new File(root + "/PopReceipts");
                 myDir.mkdirs();
 
-
                 String fname = "Receipt_"+ System.currentTimeMillis() +".jpg";
 
                 File file = new File(myDir, fname);
-
 
                 if (!file.exists()) {
                     Log.d("path", file.toString());
@@ -110,8 +107,6 @@ public class ReceiptActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
-
-
                 }
             }
         });
@@ -119,8 +114,6 @@ public class ReceiptActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         receiptId = intent.getIntExtra("receiptID",0);
-        System.out.println("======");
-        System.out.println("Receipt ID = " + receiptId);
 
         total = findViewById(R.id.receiptTotal);
         cash = findViewById(R.id.receiptCash);
@@ -152,7 +145,7 @@ public class ReceiptActivity extends AppCompatActivity {
                 success = jsonObject.getInt("success");
                 JSONArray receiptData;
                 JSONArray itemData;
-                System.out.println("Blah99 = " + success);
+
                 if (success == 1) {
                     receiptData = jsonObject.getJSONArray("receipt");
                     itemData = jsonObject.getJSONArray("items");

@@ -107,7 +107,6 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            //Display proggress bar
             pDialog = new ProgressDialog(LoginActivity.this);
             pDialog.setMessage("Checking Database. Please wait...");
             pDialog.setIndeterminate(false);
@@ -120,15 +119,11 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 String encryptedPassword = encrypt(password.getText().toString());
 
-                System.out.println("Encrypted pass: " + encryptedPassword);
-
                 HttpJsonParser httpJsonParser = new HttpJsonParser();
                 Map<String, String> httpParams = new HashMap<>();
                 httpParams.put(DBConstants.EMAIL, email.getText().toString());
                 httpParams.put(DBConstants.PASSWORD, encryptedPassword);
-                //WORKING TEST LOGIN
-                //httpParams.put("email", "test@gmail.com");
-                //httpParams.put("password", "1Password");
+
                 JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"login.php", "POST", httpParams);
                 try {
                     success = jsonObject.getInt("success");
@@ -159,7 +154,6 @@ public class LoginActivity extends AppCompatActivity {
                 public void run() {
                     if (success == 1) {
                         //Display success messageSystem.out.println("SUCCESS");
-
                         Toast.makeText(LoginActivity.this,"Login", Toast.LENGTH_LONG).show();
 
                         session.setLogin("Login");
