@@ -1,6 +1,8 @@
 package com.example.pop.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,20 +12,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SearchView;
+
+import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.adapter.ReceiptListAdapter;
+import com.example.pop.helper.CheckNetworkStatus;
+import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Receipt;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Fragment_SearchByTag extends Fragment{
 
 
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
-
-    private ReceiptListAdapter adapter;
+    private ReceiptListAdapter mAdapter;
     private SearchView searchView;
+
+    private Context context;
+    private Session session;
+    private int success;
+
+    public List<Receipt> mReceiptList = new ArrayList<>();
+    public List<Receipt> mReceiptListTemp = new ArrayList<>();
+
+    private String tag;
 
     public Fragment_SearchByTag() {
         // Required empty public constructor
@@ -36,49 +57,133 @@ public class Fragment_SearchByTag extends Fragment{
         //Toolbar toolbar = v.findViewById(R.id.toolbar);
         //((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
+        context = getActivity().getApplicationContext();
+        session = new Session(context);
+
         setHasOptionsMenu(true);
 
-        ArrayList<Receipt> receiptArrayList = new ArrayList<>(10);
-        /*receiptArrayList.add(new Receipt(1, "24/12/2019", "Tesco", 1, 54.99, 1));
-        receiptArrayList.add(new Receipt(2, "24/12/2019", "Argos", 12, 24.99, 1));
-        receiptArrayList.add(new Receipt(3, "24/12/2019", "Dunnes", 17, 154.99, 1));
-        receiptArrayList.add(new Receipt(4, "24/12/2019", "Argos", 19, 20.05, 1));
-        receiptArrayList.add(new Receipt(5, "24/12/2019", "Argos", 22, 19.99, 1));
-        receiptArrayList.add(new Receipt(6, "24/12/2019", "Dunnes", 25, 4.99, 1));
-        receiptArrayList.add(new Receipt(7, "24/12/2019", "Tesco", 45, 104.99, 1));
-        receiptArrayList.add(new Receipt(8, "24/12/2019", "Tesco", 60, 2054.99, 1));
-        receiptArrayList.add(new Receipt(9, "24/12/2019", "Tesco", 61, 1254.99, 1));*/
+        if (CheckNetworkStatus.isNetworkAvailable(context)) {
+            new Fragment_SearchByTag.FetchReceiptsAsyncTask().execute();
+        }
 
+        mReceiptListTemp = mReceiptList;
+
+        // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.receiptList);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        adapter = new ReceiptListAdapter(getContext(), receiptArrayList);
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(adapter);
+        // Create an adapter and supply the data to be displayed.
+        mAdapter = new ReceiptListAdapter(context, mReceiptList);
+        // Connect the adapter with the RecyclerView.
+        mRecyclerView.setAdapter(mAdapter);
+        // Give the RecyclerView a default layout manager.
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         searchView = v.findViewById(R.id.tagInput);
-
-
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                if (adapter != null) {
-                    adapter.getFilter().filter(s);
-                }
+                //tag = s;
+                //new Fragment_SearchByTag.FetchFilteredReceiptsAsyncTask().execute();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
-                if (adapter != null) {
-                    adapter.getFilter().filter(s);
-                }
                 return false;
             }
         });
 
         return v;
+    }
+
+    private class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceipts.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                JSONArray receipts;
+                if (success == 1) {
+                    mReceiptList = new ArrayList<>();
+                    receipts = jsonObject.getJSONArray("data");
+                    //Iterate through the response and populate receipt list
+                    for (int i = 0; i < receipts.length(); i++) {
+                        JSONObject receipt = receipts.getJSONObject(i);
+                        int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
+                        String receiptDate = receipt.getString(DBConstants.DATE);
+                        String receiptVendor = receipt.getString(DBConstants.VENDOR);
+                        double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
+
+                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            mAdapter = new ReceiptListAdapter(context, mReceiptList);
+            // Connect the adapter with the RecyclerView.
+            mRecyclerView.setAdapter(mAdapter);
+            // Give the RecyclerView a default layout manager.
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        }
+    }
+
+    private class FetchFilteredReceiptsAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
+            httpParams.put("tag", tag);
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchFilteredReceipts.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                JSONArray receipts;
+                if (success == 1) {
+                    mReceiptList = new ArrayList<>();
+                    receipts = jsonObject.getJSONArray("data");
+                    //Iterate through the response and populate receipt list
+                    for (int i = 0; i < receipts.length(); i++) {
+                        JSONObject receipt = receipts.getJSONObject(i);
+                        int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
+                        String receiptDate = receipt.getString(DBConstants.DATE);
+                        String receiptVendor = receipt.getString(DBConstants.VENDOR);
+                        double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
+
+                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            mAdapter = new ReceiptListAdapter(context, mReceiptList);
+            // Connect the adapter with the RecyclerView.
+            mRecyclerView.setAdapter(mAdapter);
+            // Give the RecyclerView a default layout manager.
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        }
     }
 }

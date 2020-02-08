@@ -2,9 +2,11 @@ package com.example.pop.activity;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.icu.util.Calendar;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -24,14 +26,26 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
+
+import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.adapter.ReceiptListAdapter;
+import com.example.pop.helper.CheckNetworkStatus;
+import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Receipt;
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Fragment_SearchByDate extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -42,11 +56,16 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
     private TextView mDisplayDateTo;
     private DatePickerDialog.OnDateSetListener mDateSetListenerFrom;
     private DatePickerDialog.OnDateSetListener mDateSetListenerTo;
-    private ArrayList<Receipt> receiptArrayListTemp = new ArrayList<>(10);
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private Object Receipt;
+
+    private Session session;
+    private Context context;
+    private int success;
+    public List<Receipt> mReceiptList = new ArrayList<>();
+    public List<Receipt> mReceiptListTemp = new ArrayList<>();
 
     public Fragment_SearchByDate() {
         // Required empty public constructor
@@ -60,6 +79,9 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
         Toolbar toolbar = v.findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
 
+        context = getActivity().getApplicationContext();
+        session = new Session(context);
+
         drawer = v.findViewById(R.id.drawer_layout);
         NavigationView navigationView = v.findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -68,25 +90,20 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
         drawer.addDrawerListener((toggle));
         toggle.syncState();
 
-        ArrayList<Receipt> receiptArrayList = new ArrayList<>(10);
-        /*receiptArrayList.add(new Receipt(1, "24/12/2019", "Tesco", 1, 54.99, 1));
-        receiptArrayList.add(new Receipt(2, "24/12/2019", "Argos", 12, 24.99, 1));
-        receiptArrayList.add(new Receipt(3, "24/12/2019", "Dunnes", 17, 154.99, 1));
-        receiptArrayList.add(new Receipt(4, "24/12/2019", "Argos", 19, 20.05, 1));
-        receiptArrayList.add(new Receipt(5, "24/12/2019", "Argos", 22, 19.99, 1));
-        receiptArrayList.add(new Receipt(6, "24/12/2019", "Dunnes", 25, 4.99, 1));
-        receiptArrayList.add(new Receipt(7, "24/12/2019", "Tesco", 45, 104.99, 1));
-        receiptArrayList.add(new Receipt(8, "24/12/2019", "Tesco", 60, 2054.99, 1));
-        receiptArrayList.add(new Receipt(9, "24/12/2019", "Tesco", 61, 1254.99, 1));
-        receiptArrayListTemp = receiptArrayList;*/
+        if (CheckNetworkStatus.isNetworkAvailable(context)) {
+            new Fragment_SearchByDate.FetchReceiptsAsyncTask().execute();
+        }
 
+        mReceiptListTemp = mReceiptList;
+
+        // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.receiptList);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mAdapter = new ReceiptListAdapter(getContext(), receiptArrayList);
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        // Create an adapter and supply the data to be displayed.
+        mAdapter = new ReceiptListAdapter(context, mReceiptList);
+        // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
+        // Give the RecyclerView a default layout manager.
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         mDisplayDateFrom = (TextView) v.findViewById(R.id.tvDateFrom);
         mDisplayDateTo = (TextView) v.findViewById(R.id.tvDateTo);
@@ -113,11 +130,13 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month+1;
-                String date = day + "/" + month + "/" + year;
-                mDisplayDateFrom.setText(date);
-                startSearchByDate = date;
+                String displayDate = day + "-" + month + "-" + year;
+                String dateValue = year + "-" + month + "-" + day;
+                mDisplayDateFrom.setText(displayDate);
+                startSearchByDate = dateValue;
+
                 try {
-                    updateSearchList(receiptArrayListTemp, startSearchByDate, endSearchByDate);
+                    updateSearchList(mReceiptList, startSearchByDate, endSearchByDate);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -147,12 +166,13 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 month = month+1;
-                String date = day + "/" + month + "/" + year;
-                mDisplayDateTo.setText(date);
-                endSearchByDate = date;
+                String displayDate = day + "-" + month + "-" + year;
+                String dateValue = year + "-" + month + "-" + day;
+                mDisplayDateTo.setText(displayDate);
+                endSearchByDate = dateValue;
 
                 try {
-                    updateSearchList(receiptArrayListTemp, startSearchByDate, endSearchByDate);
+                    updateSearchList(mReceiptList, startSearchByDate, endSearchByDate);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -160,38 +180,38 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
             }
         };
 
-
         return v;
     }
 
-    public void updateSearchList(ArrayList<com.example.pop.model.Receipt> receiptArrayListTemp, String startSearchByDate, String endSearchByDate) throws ParseException {
+    public void updateSearchList(List<Receipt> receiptList, String startSearchByDate, String endSearchByDate) throws ParseException {
         ArrayList<Receipt> updatedReceiptList = new ArrayList<>();
 
         String dtStart = startSearchByDate;
         String dtEnd = endSearchByDate;
 
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
         Date dateStart = format.parse(dtStart);
         Date dateEnd = format.parse(dtEnd);
 
-        int lengthTemp =  endSearchByDate.length();
-
         if(startSearchByDate.length() > 0 && endSearchByDate.length() > 0)
         {
-            for (Receipt newList : receiptArrayListTemp) {
-                Date tempDate = format.parse(newList.getDate());
-                if(tempDate.after(dateStart) && tempDate.before(dateEnd))
+            for (Receipt receipt : receiptList) {
+                Date tempDate = format.parse(receipt.getDate());
+
+                if(!(tempDate.before(dateStart) || tempDate.after(dateEnd)))
                 {
-                    updatedReceiptList.add(newList);
+                    updatedReceiptList.add(receipt);
                 }
 
             }
         }
 
-        mAdapter = new ReceiptListAdapter(getContext(), updatedReceiptList);
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        // Create an adapter and supply the data to be displayed.
+        mAdapter = new ReceiptListAdapter(context, updatedReceiptList);
+        // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
+        // Give the RecyclerView a default layout manager.
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
 
     @Override
@@ -207,5 +227,50 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceipts.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                JSONArray receipts;
+                if (success == 1) {
+                    mReceiptList = new ArrayList<>();
+                    receipts = jsonObject.getJSONArray("data");
+                    //Iterate through the response and populate receipt list
+                    for (int i = 0; i < receipts.length(); i++) {
+                        JSONObject receipt = receipts.getJSONObject(i);
+                        int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
+                        String receiptDate = receipt.getString(DBConstants.DATE);
+                        String receiptVendor = receipt.getString(DBConstants.VENDOR);
+                        double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
+
+                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            mAdapter = new ReceiptListAdapter(context, mReceiptList);
+            // Connect the adapter with the RecyclerView.
+            mRecyclerView.setAdapter(mAdapter);
+            // Give the RecyclerView a default layout manager.
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        }
     }
 }

@@ -62,8 +62,6 @@ public class Fragment_Receipt extends Fragment {
 
         db = new SQLiteDatabaseAdapter(context);
 
-        //mReceiptList = db.findAllReceiptsForDisplayOnRecentTransaction(1);
-
         if (CheckNetworkStatus.isNetworkAvailable(context)) {
             new FetchReceiptsAsyncTask().execute();
         }
