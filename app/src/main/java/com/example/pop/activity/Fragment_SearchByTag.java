@@ -44,7 +44,7 @@ public class Fragment_SearchByTag extends Fragment{
     public List<Receipt> mReceiptList = new ArrayList<>();
     public List<Receipt> mReceiptListTemp = new ArrayList<>();
 
-    private String tag;
+    private String tag = "";
 
     public Fragment_SearchByTag() {
         // Required empty public constructor
@@ -141,6 +141,23 @@ public class Fragment_SearchByTag extends Fragment{
         }
     }
 
+    //Search Specific classes
+    private void filterReceipts(String s){
+
+        boolean vendorTag = false;
+        for(Receipt r: mReceiptList){
+            if(s.equals(r.getVendorName())){
+                //Search current existing list of receipts by vendorname
+                vendorTag = true;
+            }
+        }
+        if(!vendorTag){
+            tag.concat(s+"@");
+            new FetchFilteredReceiptsAsyncTask();
+        }
+
+    }
+
     private class FetchFilteredReceiptsAsyncTask extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
@@ -152,8 +169,8 @@ public class Fragment_SearchByTag extends Fragment{
             HttpJsonParser httpJsonParser = new HttpJsonParser();
             Map<String, String> httpParams = new HashMap<>();
             httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
-            httpParams.put("tag", tag);
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchFilteredReceipts.php", "POST", httpParams);
+            httpParams.put("tags", tag);
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "getReceiptsByItems.php", "POST", httpParams);
 
             try {
                 success = jsonObject.getInt("success");
