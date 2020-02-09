@@ -66,8 +66,6 @@ public class Fragment_SearchByTag extends Fragment{
             new Fragment_SearchByTag.FetchReceiptsAsyncTask().execute();
         }
 
-        mReceiptListTemp = mReceiptList;
-
         // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.receiptList);
         // Create an adapter and supply the data to be displayed.
@@ -82,8 +80,7 @@ public class Fragment_SearchByTag extends Fragment{
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                //tag = s;
-                //new Fragment_SearchByTag.FetchFilteredReceiptsAsyncTask().execute();
+                filterReceipts(s);
                 return false;
             }
 
@@ -115,6 +112,8 @@ public class Fragment_SearchByTag extends Fragment{
                 if (success == 1) {
                     mReceiptList = new ArrayList<>();
                     receipts = jsonObject.getJSONArray("data");
+
+                    System.out.println("Length1 = " + receipts.length());
                     //Iterate through the response and populate receipt list
                     for (int i = 0; i < receipts.length(); i++) {
                         JSONObject receipt = receipts.getJSONObject(i);
@@ -143,19 +142,20 @@ public class Fragment_SearchByTag extends Fragment{
 
     //Search Specific classes
     private void filterReceipts(String s){
-
         boolean vendorTag = false;
         for(Receipt r: mReceiptList){
-            if(s.equals(r.getVendorName())){
-                //Search current existing list of receipts by vendorname
+            if(s.equalsIgnoreCase(r.getVendorName())){
                 vendorTag = true;
+
+                //==========================
+                //Do something
+                //==========================
             }
         }
         if(!vendorTag){
-            tag.concat(s+"@");
-            new FetchFilteredReceiptsAsyncTask();
+            tag = tag.concat(s+"@");
+            new FetchFilteredReceiptsAsyncTask().execute();
         }
-
     }
 
     private class FetchFilteredReceiptsAsyncTask extends AsyncTask<String, String, String> {
@@ -172,12 +172,14 @@ public class Fragment_SearchByTag extends Fragment{
             httpParams.put("tags", tag);
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "getReceiptsByItems.php", "POST", httpParams);
 
+
             try {
                 success = jsonObject.getInt("success");
                 JSONArray receipts;
                 if (success == 1) {
-                    mReceiptList = new ArrayList<>();
+                    mReceiptListTemp = new ArrayList<>();
                     receipts = jsonObject.getJSONArray("data");
+
                     //Iterate through the response and populate receipt list
                     for (int i = 0; i < receipts.length(); i++) {
                         JSONObject receipt = receipts.getJSONObject(i);
@@ -186,7 +188,7 @@ public class Fragment_SearchByTag extends Fragment{
                         String receiptVendor = receipt.getString(DBConstants.VENDOR);
                         double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
 
-                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
+                        mReceiptListTemp.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
                     }
                 }
             } catch (JSONException e) {
@@ -196,7 +198,7 @@ public class Fragment_SearchByTag extends Fragment{
         }
 
         protected void onPostExecute(String result) {
-            mAdapter = new ReceiptListAdapter(context, mReceiptList);
+            mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
             // Connect the adapter with the RecyclerView.
             mRecyclerView.setAdapter(mAdapter);
             // Give the RecyclerView a default layout manager.
