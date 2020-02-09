@@ -112,8 +112,6 @@ public class Fragment_SearchByTag extends Fragment{
                 if (success == 1) {
                     mReceiptList = new ArrayList<>();
                     receipts = jsonObject.getJSONArray("data");
-
-                    System.out.println("Length1 = " + receipts.length());
                     //Iterate through the response and populate receipt list
                     for (int i = 0; i < receipts.length(); i++) {
                         JSONObject receipt = receipts.getJSONObject(i);
