@@ -31,8 +31,6 @@ import java.util.Map;
 
 public class Fragment_SearchByTag extends Fragment{
 
-
-
     private RecyclerView mRecyclerView;
     private ReceiptListAdapter mAdapter;
     private SearchView searchView;

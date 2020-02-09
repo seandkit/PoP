@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Fragment_SearchByDate extends Fragment implements NavigationView.OnNavigationItemSelectedListener {
+public class Fragment_SearchByDate extends Fragment {
 
     private String endSearchByDate = "";
     private String startSearchByDate = "";
@@ -81,14 +81,6 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
 
         context = getActivity().getApplicationContext();
         session = new Session(context);
-
-        drawer = v.findViewById(R.id.drawer_layout);
-        NavigationView navigationView = v.findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener((toggle));
-        toggle.syncState();
 
         if (CheckNetworkStatus.isNetworkAvailable(context)) {
             new Fragment_SearchByDate.FetchReceiptsAsyncTask().execute();
@@ -212,21 +204,6 @@ public class Fragment_SearchByDate extends Fragment implements NavigationView.On
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch(menuItem.getItemId()){
-            case R.id.nav_search:
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment_SearchByDate()).commit();
-                break;
-            case R.id.nav_searchTag:
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment_SearchByTag()).commit();
-                break;
-        }
-
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     private class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {

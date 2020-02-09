@@ -1,13 +1,19 @@
 package com.example.pop.activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
@@ -28,6 +34,7 @@ import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,10 +48,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class FragmentHolder extends AppCompatActivity implements NfcAdapter.ReaderCallback {
+public class FragmentHolder extends AppCompatActivity implements NfcAdapter.ReaderCallback, NavigationView.OnNavigationItemSelectedListener {
 
     FrameLayout frameLayout;
-    BottomNavigationView navigation;
+    BottomNavigationView bottomNavigationView;
+
+    private DrawerLayout drawer;
 
     private NfcAdapter nfcAdapter = null;
     private SQLiteDatabaseAdapter db;
@@ -72,8 +81,19 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_holder);
-        navigation = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
         frameLayout = findViewById(R.id.frameLayout);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
         context = getApplicationContext();
         session = new Session(context);
@@ -102,7 +122,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         InitializeFragment(receiptFragment);
 
-        navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 //switch to fragment
@@ -125,6 +145,32 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 return false;
             }
         });
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch(menuItem.getItemId()) {
+            case R.id.nav_logOut:
+                session.setLogin("");
+                session.setUserId(0);
+                session.setName("");
+                session.setEmail("");
+
+                Intent i = new Intent(this, LoginActivity.class);
+                startActivity(i);
+                break;
+        }
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void InitializeFragment(Fragment fragment) {

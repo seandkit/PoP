@@ -6,17 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout"
-    android:fitsSystemWindows="true"
-    >
+    android:fitsSystemWindows="true">
 
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:id="@+id/navigation_view"
-        tools:ignore="MissingConstraints"
-        app:headerLayout="@layout/nav_header"
-        app:menu="@menu/home_menu"/>
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -26,7 +18,15 @@
             android:layout_height="match_parent"
             tools:context="com.example.pop.activity.FragmentHolder">
 
-            <include layout="@layout/header"></include>
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                tools:ignore="MissingConstraints"
+                android:id="@+id/toolbar"
+                android:background="@color/colorAccent"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                android:elevation="4dp"/>
 
             <FrameLayout
                 android:id="@+id/frameLayout"
@@ -41,8 +41,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/header">
-            </FrameLayout>
+                app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottomNavigationView"
@@ -58,9 +57,17 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/frameLayout"
-                app:menu="@menu/menu_bottom_navigation_bar"
-                />
+                app:menu="@menu/menu_bottom_navigation_bar"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:id="@+id/navigation_view"
+        tools:ignore="MissingConstraints"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/home_menu"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>
