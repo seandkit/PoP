@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
@@ -26,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +83,7 @@ public class Fragment_Receipt extends Fragment {
 
     void addItemToList(Receipt receipt){
         mReceiptList.add(receipt);
+        //mReceiptList.add(0, receipt);
         mAdapter.notifyItemInserted(mReceiptList.size() - 1);
     }
 
@@ -113,6 +116,7 @@ public class Fragment_Receipt extends Fragment {
 
                         mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
                     }
+                    //Collections.sort(mReceiptList);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

@@ -1,8 +1,11 @@
 package com.example.pop.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.List;
 
-public class Receipt {
+public class Receipt implements Comparable<Receipt> {
 
     private int id;
     private String date;
@@ -118,5 +121,16 @@ public class Receipt {
             totalPrice += i.getPrice();
         }
         return totalPrice;
+    }
+
+    @Override
+    public int compareTo(Receipt receipt) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return dateFormat.parse(receipt.getDate()).compareTo(dateFormat.parse(this.getDate()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
