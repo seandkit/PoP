@@ -150,27 +150,23 @@ public class LoginActivity extends AppCompatActivity {
         }
         protected void onPostExecute(String result) {
             pDialog.dismiss();
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    if (success == 1) {
-                        //Display success messageSystem.out.println("SUCCESS");
-                        Toast.makeText(LoginActivity.this,"Login", Toast.LENGTH_LONG).show();
+            if (success == 1) {
+                //Display success messageSystem.out.println("SUCCESS");
+                Toast.makeText(LoginActivity.this,"Login", Toast.LENGTH_LONG).show();
 
-                        session.setLogin("Login");
-                        session.setUserId(user.getId());
-                        session.setName(user.getFirstName());
-                        session.setEmail(user.getEmail());
+                session.setLogin("Login");
+                session.setUserId(user.getId());
+                session.setName(user.getFirstName());
+                session.setEmail(user.getEmail());
 
-                        Intent i = new Intent(LoginActivity.this, FragmentHolder.class);
-                        startActivity(i);
-                        //Finish ths activity and go back to listing activity
-                        finish();
+                Intent i = new Intent(LoginActivity.this, FragmentHolder.class);
+                startActivity(i);
+                //Finish ths activity and go back to listing activity
+                finish();
 
-                    } else {
-                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
+            } else {
+                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
