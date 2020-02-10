@@ -1,13 +1,20 @@
 package com.example.pop.activity;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
@@ -69,6 +76,8 @@ public class ReceiptActivity extends AppCompatActivity {
 
     ConstraintLayout relativeLayout;
 
+    private int STORAGE_PERMISSION_CODE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,17 +90,24 @@ public class ReceiptActivity extends AppCompatActivity {
         btn_export.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                requestStoragePermission();
+
                 bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(),
                         Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(bitmap);
                 relativeLayout.draw((canvas));
 
                 String root = Environment.getExternalStorageDirectory().toString();
+                //String root2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+
+                System.out.println("root = " + root);
                 File myDir = new File(root + "/PopReceipts");
                 myDir.mkdirs();
 
                 String fname = "Receipt_"+ System.currentTimeMillis() +".jpg";
 
+                System.out.println(myDir.getAbsolutePath());
                 File file = new File(myDir, fname);
 
                 if (!file.exists()) {
@@ -127,6 +143,39 @@ public class ReceiptActivity extends AppCompatActivity {
         new FetchReceiptsInfoAsyncTask().execute();
     }
 
+    private void requestStoragePermission() {
+        if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            new AlertDialog.Builder(context)
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed to export your receipts.")
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            ActivityCompat.requestPermissions(ReceiptActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                        }
+                    })
+                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .create().show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == STORAGE_PERMISSION_CODE) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            } else {
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     private class FetchReceiptsInfoAsyncTask extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
@@ -139,7 +188,6 @@ public class ReceiptActivity extends AppCompatActivity {
             Map<String, String> httpParams = new HashMap<>();
             httpParams.put("receipt_id", String.valueOf(receiptId));
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "getAllReceiptInfo.php", "POST", httpParams);
-            System.out.println("Blah1");
 
             try {
                 success = jsonObject.getInt("success");

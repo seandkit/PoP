@@ -175,24 +175,20 @@ public class RegisterActivity extends AppCompatActivity {
             return null;
         }
         protected void onPostExecute(String result) {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    if (success == 1) {
-                        Session session = new Session(getApplicationContext());
-                        session.setLogin("Login");
-                        session.setUserId(user.getId());
-                        session.setName(user.getFirstName());
-                        session.setEmail(user.getEmail());
+            if (success == 1) {
+                Session session = new Session(getApplicationContext());
+                session.setLogin("Login");
+                session.setUserId(user.getId());
+                session.setName(user.getFirstName());
+                session.setEmail(user.getEmail());
 
-                        Intent i = new Intent(RegisterActivity.this, FragmentHolder.class);
-                        startActivity(i);
+                Intent i = new Intent(RegisterActivity.this, FragmentHolder.class);
+                startActivity(i);
 
-                        finish();
-                    } else {
-                        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
+                finish();
+            } else {
+                Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_LONG).show();
+            }
         }
     }
 

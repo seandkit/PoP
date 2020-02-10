@@ -168,7 +168,6 @@ public class Fragment_SearchByTag extends Fragment{
             httpParams.put("tags", tag);
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "getReceiptsByItems.php", "POST", httpParams);
 
-
             try {
                 success = jsonObject.getInt("success");
                 JSONArray receipts;
