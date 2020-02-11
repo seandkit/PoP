@@ -99,15 +99,9 @@ public class ReceiptActivity extends AppCompatActivity {
                 relativeLayout.draw((canvas));
 
                 String root = Environment.getExternalStorageDirectory().toString();
-                //String root2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
-
-                System.out.println("root = " + root);
                 File myDir = new File(root + "/PopReceipts");
                 myDir.mkdirs();
-
                 String fname = "Receipt_"+ System.currentTimeMillis() +".jpg";
-
-                System.out.println(myDir.getAbsolutePath());
                 File file = new File(myDir, fname);
 
                 if (!file.exists()) {

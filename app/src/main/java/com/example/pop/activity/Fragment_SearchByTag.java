@@ -142,18 +142,20 @@ public class Fragment_SearchByTag extends Fragment{
     //Search Specific classes
     private void filterReceipts(String s){
         boolean vendorTag = false;
+        mReceiptListTemp = new ArrayList<>();
         for(Receipt r: mReceiptList){
             if(s.equalsIgnoreCase(r.getVendorName())){
                 vendorTag = true;
-
-                //==========================
-                //Do something
-                //==========================
+                mReceiptListTemp.add(r);
             }
         }
+
         if(!vendorTag){
             tag = tag.concat(s+"@");
             new FetchFilteredReceiptsAsyncTask().execute();
+        }
+        else {
+            updateListWithVendors();
         }
     }
 
@@ -176,6 +178,7 @@ public class Fragment_SearchByTag extends Fragment{
             try {
                 success = jsonObject.getInt("success");
                 JSONArray receipts;
+                tag = "";
                 if (success == 1) {
                     mReceiptListTemp = new ArrayList<>();
                     receipts = jsonObject.getJSONArray("data");
@@ -214,5 +217,13 @@ public class Fragment_SearchByTag extends Fragment{
 
             success = 0;
         }
+    }
+
+    public void updateListWithVendors(){
+        mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
+        // Connect the adapter with the RecyclerView.
+        mRecyclerView.setAdapter(mAdapter);
+        // Give the RecyclerView a default layout manager.
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
 }
