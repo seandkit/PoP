@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
@@ -38,6 +39,7 @@ public class Fragment_SearchByTag extends Fragment{
     private Context context;
     private Session session;
     private int success;
+    private String message;
 
     public List<Receipt> mReceiptList = new ArrayList<>();
     public List<Receipt> mReceiptListTemp = new ArrayList<>();
@@ -128,6 +130,7 @@ public class Fragment_SearchByTag extends Fragment{
         }
 
         protected void onPostExecute(String result) {
+            success = 0;
             mAdapter = new ReceiptListAdapter(context, mReceiptList);
             // Connect the adapter with the RecyclerView.
             mRecyclerView.setAdapter(mAdapter);
@@ -164,9 +167,11 @@ public class Fragment_SearchByTag extends Fragment{
         protected String doInBackground(String... params) {
             HttpJsonParser httpJsonParser = new HttpJsonParser();
             Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
+            httpParams.put("user_id", String.valueOf(session.getUserId()));
             httpParams.put("tags", tag);
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "getReceiptsByItems.php", "POST", httpParams);
+            System.out.println(session.getUserId());
+            System.out.println(tag);
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "receiptFilterByTag.php", "POST", httpParams);
 
             try {
                 success = jsonObject.getInt("success");
@@ -186,6 +191,9 @@ public class Fragment_SearchByTag extends Fragment{
                         mReceiptListTemp.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
                     }
                 }
+                else{
+                    message = jsonObject.getString("message");
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -193,12 +201,18 @@ public class Fragment_SearchByTag extends Fragment{
         }
 
         protected void onPostExecute(String result) {
-            tag = "";
-            mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
-            // Connect the adapter with the RecyclerView.
-            mRecyclerView.setAdapter(mAdapter);
-            // Give the RecyclerView a default layout manager.
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            if (success == 1) {
+                mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
+                // Connect the adapter with the RecyclerView.
+                mRecyclerView.setAdapter(mAdapter);
+                // Give the RecyclerView a default layout manager.
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            }
+            else{
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            }
+
+            success = 0;
         }
     }
 }
