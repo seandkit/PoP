@@ -193,6 +193,7 @@ public class Fragment_SearchByTag extends Fragment{
         }
 
         protected void onPostExecute(String result) {
+            tag = "";
             mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
             // Connect the adapter with the RecyclerView.
             mRecyclerView.setAdapter(mAdapter);
