@@ -13,58 +13,108 @@
     android:background="#FFFFFF"
     tools:ignore="MissingConstraints">
 
+
     <TextView
         android:id="@+id/receiptTotal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="16dp"
         android:text="Total"
+        android:textColor="#000000"
+        android:textSize="18dp"
         app:layout_constraintBottom_toTopOf="@+id/receiptCash"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.833"
+        app:layout_constraintHorizontal_bias="0.17"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/receiptTotalText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="€54.79"
+        android:textColor="#000000"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/receiptCash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.799"
+        app:layout_constraintStart_toStartOf="@id/receiptTotal" />
 
     <TextView
         android:id="@+id/receiptCash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:text="Cash"
+        android:text="€55.00"
+        android:textSize="18dp"
+        android:textColor="#000000"
         app:layout_constraintBottom_toTopOf="@+id/receiptChangeDue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.831"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/receiptCashText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="Cash"
+        android:textColor="#000000"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/receiptChangeDue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.169"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/receiptChangeDue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="264dp"
-        android:text="ChangeDue"
+        android:layout_marginBottom="244dp"
+        android:text="€0.21"
+        android:textColor="#000000"
+        android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.869"
+        app:layout_constraintHorizontal_bias="0.839"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <TextView
+        android:id="@+id/receiptChangeDueText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="244dp"
+        android:text="Change"
+        android:textColor="#000000"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.171"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/receiptLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="54dp"
-        android:text="Location"
+        android:layout_marginTop="40dp"
+
+        android:text="Tesco"
+        android:textSize="30dp"
+        android:textColor="#000000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <ImageView
         android:id="@+id/receiptBarcodeNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="144dp"
-        android:layout_marginLeft="144dp"
-        android:layout_marginTop="42dp"
-        android:text="BarcodeNumber"
+        android:layout_width="243dp"
+        android:layout_height="81dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/Barcode"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receiptChangeDue" />
 
@@ -73,20 +123,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="56dp"
-        android:text="ReceiptNumber"
+        android:text="5797  071  9071  2355"
+        android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.82"
+        app:layout_constraintHorizontal_bias="0.862"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/receiptDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginLeft="52dp"
+        android:layout_marginStart="40dp"
         android:layout_marginBottom="56dp"
-        android:text="Date"
+        android:text="18/02/2020"
+        android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -94,16 +145,18 @@
         android:id="@+id/receiptTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:layout_marginBottom="56dp"
-        android:text="Time"
+        android:text="3:29 PM"
+        android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/receiptOtherNumber"
         app:layout_constraintStart_toEndOf="@+id/receiptDate" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/itemList"
         android:layout_width="388dp"
         android:layout_height="205dp"
+        android:background="##E2E2E2"
         app:layout_constraintBottom_toTopOf="@+id/receiptTotal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
