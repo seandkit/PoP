@@ -19,6 +19,7 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
@@ -77,6 +78,8 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
     Receipt newReceipt;
 
+    private int unlinkedReceiptID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,11 +109,18 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             if(db.getUnlinkedReceipts().size() != 0) {
                 List<Receipt> receipts = db.getUnlinkedReceipts();
 
+                System.out.println("SIZE = " + receipts.size());
+                System.out.println("BLAH = " + receipts.get(0).getId());
+                System.out.println("BLAH = " + receipts.get(0).getVendorName());
+                System.out.println("BLAH = " + receipts.get(0).getReceiptTotal());
+
                 Toast.makeText(FragmentHolder.this,"Found unlinked receipts", Toast.LENGTH_LONG).show();
 
                 for (Receipt r : receipts) {
+                    unlinkedReceiptID = r.getId();
                     receiptUuidphp = receiptUuidphp.concat(r.getUuid() + "@");
                 }
+
                 new linkReceiptAsyncTask().execute();
             }
         }
@@ -153,7 +163,8 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             case R.id.nav_logOut:
                 session.setLogin("");
                 session.setUserId(0);
-                session.setName("");
+                session.setFirstName("");
+                session.setLastName("");
                 session.setEmail("");
 
                 Intent i = new Intent(this, LoginActivity.class);
@@ -292,6 +303,8 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         protected void onPostExecute(String result) {
             //?? populate xml with receipt and itemList??
+            boolean done = db.dropUnlinkedReceipt(unlinkedReceiptID);
+            System.out.println("Answer = " + done);
         }
     }
 }

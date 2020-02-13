@@ -33,7 +33,7 @@ public class SQLiteDatabaseAdapter {
     }
 
     public List<Receipt> getUnlinkedReceipts() {
-        String query = SQLiteQueries.getUnlinkedReceiptsString();
+        String query = SQLiteQueries.getUnlinkedReceiptString();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         List<Receipt> receipts = new ArrayList<>();
@@ -53,6 +53,12 @@ public class SQLiteDatabaseAdapter {
         }
     }
 
+    public boolean dropUnlinkedReceipt(int id){
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        return db.delete(DBConstants.UNLINKEDRECEIPTS, "id=?", new String[] { String.valueOf(id) }) > 0;
+    }
+
     static class SQLiteDatabaseHelper  extends SQLiteOpenHelper{
 
         private Context context;
@@ -61,6 +67,8 @@ public class SQLiteDatabaseAdapter {
             super(context, DBConstants.DATABASE_NAME, null, DBConstants.DATABASE_VERSION);
             this.context = context;
         }
+
+
 
         @Override
         public void onCreate(SQLiteDatabase db) {

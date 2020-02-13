@@ -33,7 +33,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class RegisterActivity extends AppCompatActivity {
 
     private SQLiteDatabaseAdapter db;
-    private EditText name;
+    private EditText fName;
+    private EditText lName;
     private EditText email;
     private EditText pass;
     private EditText confirmPass;
@@ -44,7 +45,6 @@ public class RegisterActivity extends AppCompatActivity {
     private int success;
     private User user = new User();
     private String message;
-    private String lastName = "lastname";
 
     private static final String ALGORITHM = "AES";
     private static final String KEY = "F0C101355CD00EF098BD78C3D85E141C";
@@ -57,7 +57,8 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         db = new SQLiteDatabaseAdapter(this);
-        name = findViewById(R.id.regName);
+        fName = findViewById(R.id.regFirstName);
+        lName = findViewById(R.id.regLastName);
         email = findViewById(R.id.regEmail);
         pass = findViewById(R.id.regPassword);
         confirmPass = findViewById(R.id.regConfirmPassword);
@@ -71,7 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (name.getText().toString().length() == 0 || email.getText().toString().length() == 0 ||
+                if (fName.getText().toString().length() == 0 || lName.getText().toString().length() == 0 || email.getText().toString().length() == 0 ||
                         pass.getText().toString().length() == 0 || confirmPass.getText().toString().length() == 0) {
                     Toast.makeText(RegisterActivity.this,"Some fields left empty", Toast.LENGTH_LONG).show();
                 }
@@ -145,8 +146,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                 HttpJsonParser httpJsonParser = new HttpJsonParser();
                 Map<String, String> httpParams = new HashMap<>();
-                httpParams.put(DBConstants.FIRST_NAME, name.getText().toString());
-                httpParams.put(DBConstants.LAST_NAME, lastName);
+                httpParams.put(DBConstants.FIRST_NAME, fName.getText().toString());
+                httpParams.put(DBConstants.LAST_NAME, lName.getText().toString());
                 httpParams.put(DBConstants.EMAIL, email.getText().toString());
                 httpParams.put(DBConstants.PASSWORD, encryptedPassword);
                 JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL+"register.php", "POST", httpParams);
@@ -179,7 +180,8 @@ public class RegisterActivity extends AppCompatActivity {
                 Session session = new Session(getApplicationContext());
                 session.setLogin("Login");
                 session.setUserId(user.getId());
-                session.setName(user.getFirstName());
+                session.setFirstName(user.getFirstName());
+                session.setLastName(user.getLastName());
                 session.setEmail(user.getEmail());
 
                 Intent i = new Intent(RegisterActivity.this, FragmentHolder.class);

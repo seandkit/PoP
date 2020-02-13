@@ -1,7 +1,7 @@
 package com.example.pop;
 
 public final class DBConstants {
-    public static final int DATABASE_VERSION = 25;
+    public static final int DATABASE_VERSION = 26;
 
     //SQLITE
     public static final String DATABASE_NAME = "PoP.db";
