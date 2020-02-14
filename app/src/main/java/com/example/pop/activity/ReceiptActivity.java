@@ -110,7 +110,7 @@ public class ReceiptActivity extends AppCompatActivity {
                     try {
                         FileOutputStream fos = new FileOutputStream(file);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                        Toast.makeText(getApplicationContext(), "Receipt successfully exported!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Receipt successfully exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                         fos.flush();
                         fos.close();
                     } catch (java.io.IOException e) {
@@ -125,14 +125,14 @@ public class ReceiptActivity extends AppCompatActivity {
         Intent intent = getIntent();
         receiptId = intent.getIntExtra("receiptID",0);
 
-        total = findViewById(R.id.receiptTotal);
+        total = findViewById(R.id.receiptTotalText);
         cash = findViewById(R.id.receiptCash);
         change = findViewById(R.id.receiptChangeDue);
         location = findViewById(R.id.receiptLocation);
         date = findViewById(R.id.receiptDate);
         time = findViewById(R.id.receiptTime);
-        barcodeNumber = findViewById(R.id.receiptBarcodeNumber);
         otherNumber = findViewById(R.id.receiptOtherNumber);
+
 
         new FetchReceiptsInfoAsyncTask().execute();
     }
@@ -225,9 +225,12 @@ public class ReceiptActivity extends AppCompatActivity {
             if(success == 1)
             {
                 location.setText(receipt.getVendorName());
-                date.setText(receipt.getDate());
+                String[] separated = receipt.getDate().split("-");
+                String dateOrdered = separated[2] + "-" + separated[1] + "-" + separated[0];
+                date.setText(dateOrdered);
                 time.setText(receipt.getTime());
-                total.setText("Total: €" + String.format("%.2f", receipt.getReceiptTotal()));
+                total.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
+                cash.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
             }
             else{
                 Toast.makeText(ReceiptActivity.this,"Empty", Toast.LENGTH_LONG).show();

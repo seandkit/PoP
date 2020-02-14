@@ -8,10 +8,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.app.ActionBar;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -19,31 +15,22 @@ import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.pop.DBConstants;
 import com.example.pop.R;
-import com.example.pop.activity.adapter.ItemListAdapter;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
-import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +65,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
     Receipt newReceipt;
 
-    private int unlinkedReceiptID;
+    private String unlinkedReceiptUuid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,14 +97,14 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 List<Receipt> receipts = db.getUnlinkedReceipts();
 
                 System.out.println("SIZE = " + receipts.size());
-                System.out.println("BLAH = " + receipts.get(0).getId());
-                System.out.println("BLAH = " + receipts.get(0).getVendorName());
-                System.out.println("BLAH = " + receipts.get(0).getReceiptTotal());
+                System.out.println("FIRST UUID = " + receipts.get(0).getUuid());
+                System.out.println("FIRST NAME = " + receipts.get(0).getVendorName());
+                System.out.println("FIRST TOTAL = " + receipts.get(0).getReceiptTotal());
 
                 Toast.makeText(FragmentHolder.this,"Found unlinked receipts", Toast.LENGTH_LONG).show();
 
                 for (Receipt r : receipts) {
-                    unlinkedReceiptID = r.getId();
+                    unlinkedReceiptUuid = r.getUuid();
                     receiptUuidphp = receiptUuidphp.concat(r.getUuid() + "@");
                 }
 
@@ -290,6 +277,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
             try {
                 success = jsonObject.getInt("success");
+
                 if (success == 1) {
                     receiptID = jsonObject.getInt("receipt_id");
                     receiptUuidphp = "";
@@ -302,9 +290,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
 
         protected void onPostExecute(String result) {
-            //?? populate xml with receipt and itemList??
-            boolean done = db.dropUnlinkedReceipt(unlinkedReceiptID);
-            System.out.println("Answer = " + done);
+            boolean answer = db.dropUnlinkedReceipt(unlinkedReceiptUuid);
         }
     }
 }
