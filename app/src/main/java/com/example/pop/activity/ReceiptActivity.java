@@ -3,6 +3,7 @@ package com.example.pop.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -64,7 +65,6 @@ public class ReceiptActivity extends AppCompatActivity {
 
     int receiptId;
     private int success;
-    private String message;
 
     private Context context;
     private Session session;
@@ -78,10 +78,26 @@ public class ReceiptActivity extends AppCompatActivity {
 
     private int STORAGE_PERMISSION_CODE = 1;
 
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt);
+
+        toolbar = findViewById(R.id.receiptToolbar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.back_arrow));
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         relativeLayout = findViewById(R.id.receiptLayout);
 
@@ -235,6 +251,7 @@ public class ReceiptActivity extends AppCompatActivity {
             else{
                 Toast.makeText(ReceiptActivity.this,"Empty", Toast.LENGTH_LONG).show();
             }
+
             mRecyclerView = findViewById(R.id.itemList);
             mAdapter = new ItemListAdapter(context, mItemList);
             mRecyclerView.setAdapter(mAdapter);
