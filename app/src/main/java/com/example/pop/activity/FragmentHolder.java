@@ -27,10 +27,13 @@ import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -413,6 +416,51 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             }
             else{
                 //If successfully deleted update existing list of folders
+            }
+        }
+    }
+
+    private class fetchFoldersAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllFolders.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                JSONArray folders;
+                if (success == 1) {
+                    folders = jsonObject.getJSONArray("data");
+                    //Iterate through the response and populate receipt list
+                    for (int i = 0; i < folders.length(); i++) {
+                        JSONObject folder = folders.getJSONObject(i);
+                        int folder_id = folder.getInt("folder_id");
+                        String folder_name = folder.getString("folder_name");
+                    }
+
+                }
+                else{
+                    message = jsonObject.getString("message");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            if (success == 0) {
+                Toast.makeText(FragmentHolder.this, message, Toast.LENGTH_LONG).show();
+            }
+            else{
+                //If success update xml
             }
         }
     }
