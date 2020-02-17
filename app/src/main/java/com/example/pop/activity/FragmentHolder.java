@@ -375,4 +375,45 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             }
         }
     }
+
+    //This delete method calls a php function which deletes all ReceiptFolder and Folder objects with the same given folder id chosen by the user
+    private class deleteFolderAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put("folder_id", "1");//'1' needs to be changed to some user chosen folder id
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "deleteFolder.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                //Can choose to set values in success '1'- means added successfully, '0'- is otherwise
+                //success 1 means deleted in this case
+                if (success == 1) {
+
+                }
+                else{
+                    message = jsonObject.getString("message");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            //Can choose execute something in success '1'- means added successfully, '0'- is otherwise
+            if (success == 0) {
+                Toast.makeText(FragmentHolder.this, message, Toast.LENGTH_LONG).show();
+            }
+            else{
+                //If successfully deleted update existing list of folders
+            }
+        }
+    }
 }
