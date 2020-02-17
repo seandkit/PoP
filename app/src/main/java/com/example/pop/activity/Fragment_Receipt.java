@@ -132,4 +132,41 @@ public class Fragment_Receipt extends Fragment {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         }
     }
+
+    private class deleteReceiptAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put("receipt_id", "1");//'1' has to be changed to a user chosen receipt id
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "deleteReceipt.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                if (success == 1) {
+
+                }
+                else{
+                    message = jsonObject.getString("message");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            if(success == 0){
+
+            }
+            else{
+                //if successfully deleted remove from receipt list
+            }
+        }
+    }
 }
