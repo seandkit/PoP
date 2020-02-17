@@ -333,4 +333,46 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             }
         }
     }
+
+    private class addReceiptToFolderAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put("receipt_id", "1");//'1' needs to be changed to some user chosen receipt id
+            httpParams.put("folder_id", "1");//'1' needs to be changed to some user chosen folder id
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "addReceiptToFolder.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                message = jsonObject.getString("message");
+                //Can choose to set values in success '1'- means added successfully, '0'- is otherwise
+                if (success == 1) {
+
+                }
+                else{
+
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            Toast.makeText(FragmentHolder.this, message, Toast.LENGTH_LONG).show();
+            //Can choose execute something in success '1'- means added successfully, '0'- is otherwise
+            if (success == 0) {
+
+            }
+            else{
+
+            }
+        }
+    }
 }
