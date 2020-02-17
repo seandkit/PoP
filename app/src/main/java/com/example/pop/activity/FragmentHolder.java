@@ -55,7 +55,8 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     private Session session;
     private String receiptUuidphp = "";
 
-    int success;
+    private int success;
+    private String message;
     private int receiptID;
 
     private String currentDate;
@@ -291,6 +292,45 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         protected void onPostExecute(String result) {
             boolean answer = db.dropUnlinkedReceipt(unlinkedReceiptUuid);
+        }
+    }
+
+    private class addFolderAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put("folder_name", "PoP-Placeholder");//'PoP-Placeholder' needs to be changed to some user inputted variable
+            httpParams.put("user_id", String.valueOf(session.getUserId()));
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "addFolder.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+
+                if (success == 1) {
+                    int folderid = jsonObject.getInt("data");//returned folder id to attach to some folder object
+                }
+                else{
+                    message = jsonObject.getString("message");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            if (success == 0) {
+                Toast.makeText(FragmentHolder.this, message, Toast.LENGTH_LONG).show();
+            }
+            else{
+                //update folder display list with new folder object
+            }
         }
     }
 }
