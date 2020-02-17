@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <group android:checkableBehavior="single">
-        <item android:title="Folders">
-            <menu>
-                <item
-                    android:id="@+id/nav_folder_none"
-                    android:icon="@drawable/ic_folder_black_24dp"
-                    android:title="None" />
-                <item
-                    android:id="@+id/nav_folder_glutenfree"
-                    android:icon="@drawable/ic_folder_black_24dp"
-                    android:title="Gluten Free" />
-                <item
-                    android:id="@+id/nav_folder_warranty"
-                    android:icon="@drawable/ic_folder_black_24dp"
-                    android:title="Warranty" />
-            </menu>
-        </item>
-    </group>
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Folders"
+        android:id="@+id/submenu_1">
+        <menu
+            android:id="@+id/testing2">
+            <item
+                android:id="@+id/nav_folder_add_new"
+                android:icon="@drawable/add_icon"
+                android:title="Add New" />
+        </menu>
+    </item>
     <item
         android:id="@+id/nav_logOut"
         android:icon="@drawable/ic_exit_to_app_black_24dp"
