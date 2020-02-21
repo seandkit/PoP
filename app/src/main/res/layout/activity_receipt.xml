@@ -114,7 +114,7 @@
         android:layout_height="81dp"
         android:layout_marginStart="84dp"
         android:layout_marginTop="60dp"
-        android:background="@drawable/Barcode"
+        android:background="@drawable/barcode"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/receiptChangeDue" />
 
