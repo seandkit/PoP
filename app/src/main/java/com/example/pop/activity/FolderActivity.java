@@ -38,6 +38,7 @@ public class FolderActivity extends AppCompatActivity {
     private ReceiptListAdapter mAdapter;
     public List<Receipt> mReceiptList = new ArrayList<>();
 
+    private int folderId;
     private String folderName;
 
     int success;
@@ -48,8 +49,8 @@ public class FolderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_folder);
 
         Intent intent = getIntent();
+        folderId = intent.getIntExtra("folderId", 0);
         folderName = intent.getStringExtra("folderName");
-
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(folderName);
@@ -70,7 +71,7 @@ public class FolderActivity extends AppCompatActivity {
         session = new Session(context);
 
         if (CheckNetworkStatus.isNetworkAvailable(context)) {
-            new FetchReceiptsAsyncTask().execute();
+            new FetchFolderReceiptsAsyncTask().execute();
         }
 
         //Move below code block into populateReceiptList()
@@ -85,7 +86,7 @@ public class FolderActivity extends AppCompatActivity {
 
     }
 
-    private class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
+    private class FetchFolderReceiptsAsyncTask extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -95,8 +96,8 @@ public class FolderActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
             HttpJsonParser httpJsonParser = new HttpJsonParser();
             Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceipts.php", "POST", httpParams);
+            httpParams.put("folder_id", String.valueOf(folderId));
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceiptsFromFolder.php", "POST", httpParams);
 
             try {
                 success = jsonObject.getInt("success");

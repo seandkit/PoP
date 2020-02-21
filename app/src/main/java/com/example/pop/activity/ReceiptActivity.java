@@ -23,6 +23,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.Layout;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -151,6 +153,13 @@ public class ReceiptActivity extends AppCompatActivity {
 
 
         new FetchReceiptsInfoAsyncTask().execute();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.game_menu, menu);
+        return true;
     }
 
     private void requestStoragePermission() {
