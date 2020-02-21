@@ -14,7 +14,8 @@ public class Session {
     //Getters
     public String getLogin(){ return preferences.getString("loginKey", ""); }
     public int getUserId(){ return preferences.getInt("userIdKey", 0); }
-    public String getName(){ return preferences.getString("nameKey", ""); }
+    public String getFirstName(){ return preferences.getString("firstNameKey", ""); }
+    public String getLastName(){ return preferences.getString("lastNameKey", ""); }
     public String getEmail(){ return preferences.getString("emailKey", ""); }
 
     //Setters
@@ -22,6 +23,7 @@ public class Session {
         preferences.edit().putString("loginKey", login).apply();
     }
     public void setUserId(int userId){ preferences.edit().putInt("userIdKey", userId).apply(); }
-    public void setName(String name){ preferences.edit().putString("nameKey", name).apply(); }
+    public void setFirstName(String fName){ preferences.edit().putString("nameKey", fName).apply(); }
+    public void setLastName(String lName){ preferences.edit().putString("nameKey", lName).apply(); }
     public void setEmail(String email){ preferences.edit().putString("emailKey", email).apply(); }
 }

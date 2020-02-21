@@ -15,7 +15,11 @@ public class SQLiteQueries {
                 "uuid TEXT)";
     }
 
-    public static String getUnlinkedReceiptsString(){
+    public static String getUnlinkedReceiptString(){
         return "SELECT * FROM " + DBConstants.UNLINKEDRECEIPTS;
+    }
+
+    public static String dropUnlinkedReceiptString(int id){
+        return "DELETE FROM " + DBConstants.UNLINKEDRECEIPTS + " WHERE id = " + id;
     }
 }

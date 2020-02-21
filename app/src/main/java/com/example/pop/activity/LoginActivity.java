@@ -156,7 +156,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 session.setLogin("Login");
                 session.setUserId(user.getId());
-                session.setName(user.getFirstName());
+                session.setFirstName(user.getFirstName());
+                session.setLastName(user.getLastName());
                 session.setEmail(user.getEmail());
 
                 Intent i = new Intent(LoginActivity.this, FragmentHolder.class);

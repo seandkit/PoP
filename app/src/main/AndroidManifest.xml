@@ -62,7 +62,8 @@
             android:name=".activity.FragmentHolder"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".activity.ReceiptActivity"
+        <activity
+            android:name=".activity.ReceiptActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.pop.DBConstants;
 import com.example.pop.model.Receipt;
@@ -20,7 +21,6 @@ public class SQLiteDatabaseAdapter {
         dbHelper = new SQLiteDatabaseHelper(context);
     }
 
-
     public void addUnlinkedReceipt(Receipt receipt) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -33,7 +33,7 @@ public class SQLiteDatabaseAdapter {
     }
 
     public List<Receipt> getUnlinkedReceipts() {
-        String query = SQLiteQueries.getUnlinkedReceiptsString();
+        String query = SQLiteQueries.getUnlinkedReceiptString();
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         List<Receipt> receipts = new ArrayList<>();
@@ -51,6 +51,15 @@ public class SQLiteDatabaseAdapter {
         else{
             return null;
         }
+    }
+
+    public boolean dropUnlinkedReceipt(String uuid){
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        System.out.println("ID = " + uuid);
+        int delCount = db.delete(DBConstants.UNLINKEDRECEIPTS, "uuid = ?", new String[] {uuid});
+        System.out.println("deleted rows count = " + delCount);
+
+        return false;
     }
 
     static class SQLiteDatabaseHelper  extends SQLiteOpenHelper{

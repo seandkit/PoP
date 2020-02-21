@@ -14,9 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/layout_listener_home_page">
-
-    </androidx.recyclerview.widget.RecyclerView>
+        tools:listitem="@layout/layout_listener_home_page"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
