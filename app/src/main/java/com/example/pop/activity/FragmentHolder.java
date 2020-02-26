@@ -195,10 +195,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             case R.id.nav_folder_add_new:
                 newFolderPopUp();
                 break;
-
-            default:
-                deleteFolderPopUp();
-                break;
         }
 
         return true;
@@ -214,6 +210,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         builder.setView(dialoglayout);
 
         final EditText userInput = (EditText) dialoglayout.findViewById(R.id.newFolderInput);
+
 
         builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             @Override

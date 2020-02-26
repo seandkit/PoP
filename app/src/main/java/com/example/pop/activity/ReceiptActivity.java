@@ -140,6 +140,8 @@ public class ReceiptActivity extends AppCompatActivity {
         });
         context = this;
 
+        session = new Session(context);
+
         Intent intent = getIntent();
         receiptId = intent.getIntExtra("receiptID",0);
 
@@ -226,7 +228,13 @@ public class ReceiptActivity extends AppCompatActivity {
                         String receiptVendor = receiptInfo.getString(DBConstants.VENDOR);
                         double receiptTotal = receiptInfo.getDouble(DBConstants.RECEIPT_TOTAL);
 
-                        receipt = new Receipt(receiptId, receiptDate, receiptTime, receiptVendor, receiptTotal);
+                        String location = receiptInfo.getString("location");
+                        String barcode = receiptInfo.getString("barcode");
+                        String cashier = receiptInfo.getString("cashier");
+                        double cash = receiptInfo.getDouble("cash_given");
+                        int transactionType = receiptInfo.getInt("transaction_type");
+
+                        receipt = new Receipt(receiptId, receiptDate, receiptTime, receiptVendor, receiptTotal, barcode, transactionType, cashier, cash, location, session.getUserId());
                     }
 
                     for (int i = 0; i < itemData.length(); i++) {
@@ -256,6 +264,12 @@ public class ReceiptActivity extends AppCompatActivity {
                 time.setText(receipt.getTime());
                 total.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
                 cash.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
+
+                System.out.println(receipt.getBarcode());
+                System.out.println(receipt.getCash());
+                System.out.println(receipt.getCashier());
+                System.out.println(receipt.getLocation());
+                System.out.println(receipt.getTransactionType());
             }
             else{
                 Toast.makeText(ReceiptActivity.this,"Empty", Toast.LENGTH_LONG).show();

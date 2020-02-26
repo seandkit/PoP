@@ -125,14 +125,8 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
             try {
                 success = jsonObject.getInt("success");
                 message = jsonObject.getString("message");
-                //Can choose to set values in success '1'- means added successfully, '0'- is otherwise
-                if (success == 1) {
-
-                }
-                else{
-
-                }
             } catch (JSONException e) {
+                Toast.makeText(context,"FolderListAdapter: " + message, Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
             return null;
@@ -140,7 +134,10 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
 
         protected void onPostExecute(String result) {
             if(success == 1){
-                Toast.makeText(context,"Receipt added to folder", Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Added to folder", Toast.LENGTH_LONG).show();
+            }
+            else{
+                Toast.makeText(context,"Already in folder", Toast.LENGTH_LONG).show();
             }
         }
     }
