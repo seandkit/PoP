@@ -125,7 +125,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="56dp"
-        android:text="5797  071  9071  2355"
+        android:text="  5797  071  907123"
         android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -30,6 +30,7 @@
         android:layout_above="@+id/loginPassword"
         android:layout_centerHorizontal="true"
         android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
         />
 
 
@@ -46,6 +47,7 @@
         android:layout_marginBottom="236dp"
         android:background="@drawable/custom_button"
         android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
         android:drawableLeft="@drawable/ic_action_pass"
         android:ems="10"
         android:hint="Password"
