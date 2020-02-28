@@ -2,27 +2,41 @@ package com.example.pop.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.model.Folder;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,17 +45,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 public class FragmentHolder extends AppCompatActivity implements NfcAdapter.ReaderCallback, NavigationView.OnNavigationItemSelectedListener {
 
     FrameLayout frameLayout;
     BottomNavigationView bottomNavigationView;
+    NavigationView navigationView;
 
     private DrawerLayout drawer;
+
+    private List<Folder> foldersList = new ArrayList<>();
+    private String newFolderName;
 
     private NfcAdapter nfcAdapter = null;
     private SQLiteDatabaseAdapter db;
@@ -78,8 +98,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         setSupportActionBar(toolbar);
 
         drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -92,14 +110,25 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         db = new SQLiteDatabaseAdapter(this);
 
+        navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+
+
+        //==============================
+        //Call function for folder names
+        //==============================
+
+
+        for(Folder folder: foldersList){
+            addNewItem(folder.getName());
+        }
+
+
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
             if(db.getUnlinkedReceipts().size() != 0) {
                 List<Receipt> receipts = db.getUnlinkedReceipts();
-
-                System.out.println("SIZE = " + receipts.size());
-                System.out.println("FIRST UUID = " + receipts.get(0).getUuid());
-                System.out.println("FIRST NAME = " + receipts.get(0).getVendorName());
-                System.out.println("FIRST TOTAL = " + receipts.get(0).getReceiptTotal());
 
                 Toast.makeText(FragmentHolder.this,"Found unlinked receipts", Toast.LENGTH_LONG).show();
 
@@ -154,12 +183,50 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 session.setLastName("");
                 session.setEmail("");
 
+                drawer.closeDrawer(GravityCompat.START);
+
                 Intent i = new Intent(this, LoginActivity.class);
                 startActivity(i);
                 break;
+
+            case R.id.nav_folder_add_new:
+                newFolderPopUp();
+                break;
         }
-        drawer.closeDrawer(GravityCompat.START);
+
         return true;
+    }
+
+    public void newFolderPopUp() {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.new_folder_pop_up, null);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Create New Folder");
+        builder.setView(dialoglayout);
+
+        final EditText userInput = (EditText) dialoglayout.findViewById(R.id.newFolderInput);
+
+
+        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                addNewItem(userInput.getText().toString());
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(context,"Get Started!",Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     @Override
@@ -170,6 +237,26 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             super.onBackPressed();
         }
     }
+
+    public boolean addNewItem(String itemName){
+        newFolderName = itemName;
+        new addFolderAsyncTask().execute();
+
+        MenuItem myMoveGroupItem = navigationView.getMenu().getItem(0);
+        SubMenu subMenu = myMoveGroupItem.getSubMenu();
+        subMenu.add(itemName).setIcon(R.drawable.ic_folder_black_24dp).setOnMenuItemClickListener(folderOnClickListener);
+        return true;
+    }
+
+    private MenuItem.OnMenuItemClickListener folderOnClickListener = new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            Intent intent = new Intent(context, FolderActivity.class);
+            intent.putExtra("folderName", menuItem.getTitle());
+            startActivity(intent);
+            return false;
+        }
+    };
 
     private void InitializeFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -274,6 +361,39 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             httpParams.put("uuid", receiptUuidphp);
             httpParams.put("user_id", String.valueOf(session.getUserId()));
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "uuidNULL.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+
+                if (success == 1) {
+                    receiptID = jsonObject.getInt("receipt_id");
+                    receiptUuidphp = "";
+                    newReceipt = new Receipt(receiptID, currentDate, vendor, total, session.getUserId());
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            boolean answer = db.dropUnlinkedReceipt(unlinkedReceiptUuid);
+        }
+    }
+
+    private class addFolderAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put("folder_name", newFolderName);
+            httpParams.put("user_id", String.valueOf(session.getUserId()));
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "addFolder.php", "POST", httpParams);
 
             try {
                 success = jsonObject.getInt("success");

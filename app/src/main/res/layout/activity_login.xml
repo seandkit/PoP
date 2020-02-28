@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient"
+    android:background="@drawable/background_for_pop"
     tools:context=".activity.LoginActivity">
     <ImageView
     android:id="@+id/logoPop"
@@ -14,14 +14,33 @@
     android:layout_centerHorizontal="true"
     android:layout_marginTop="40dp"
     android:contentDescription="TODO"
-    app:srcCompat="@drawable/poplogo" />
+    app:srcCompat="@drawable/popLogoNew" />
+
+
+    <LinearLayout
+        android:layout_width="344dp"
+        android:layout_height="420dp"
+        android:layout_alignStart="@+id/imageView"
+        android:layout_alignLeft="@+id/imageView"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="-120dp"
+
+        android:layout_marginLeft="-120dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="95dp"
+        android:background="@drawable/login_background_yellow"
+        android:orientation="horizontal">
+
+
+    </LinearLayout>
 
     <EditText
         android:id="@+id/loginEmail"
         android:layout_width="250dp"
         android:layout_height="40dp"
-        android:background="@drawable/custom_button"
-        android:drawableLeft="@drawable/ic_action_user"
+        android:background="@drawable/underline_login"
         android:ems="10"
         android:hint="Email"
         android:inputType="textEmailAddress"
@@ -29,8 +48,9 @@
         android:layout_marginBottom="35dp"
         android:layout_above="@+id/loginPassword"
         android:layout_centerHorizontal="true"
-        android:textColorHint="#FFFFFF"
-        android:textColor="#FFFFFF"
+        android:textColorHint="#474545"
+        android:textColor="#474545"
+        android:textAlignment="center"
         />
 
 
@@ -38,59 +58,35 @@
         android:id="@+id/loginPassword"
         android:layout_width="250dp"
         android:layout_height="40dp"
-        android:layout_above="@+id/regLink"
+        android:layout_above="@+id/loginBtn"
         android:layout_alignStart="@+id/loginEmail"
         android:layout_alignLeft="@+id/loginEmail"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="-2dp"
         android:layout_marginLeft="-2dp"
-        android:layout_marginBottom="236dp"
-        android:background="@drawable/custom_button"
-        android:textColorHint="#FFFFFF"
-        android:textColor="#FFFFFF"
-        android:drawableLeft="@drawable/ic_action_pass"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/underline_login"
+        android:textColorHint="#474545"
+        android:textColor="#474545"
         android:ems="10"
         android:hint="Password"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:textAlignment="center"/>
 
     <TextView
         android:id="@+id/regLink"
-        android:layout_width="wrap_content"
+        android:layout_width="146dp"
         android:layout_height="wrap_content"
-        android:text="Register Here."
-        android:layout_above="@+id/linearLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="6dp" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/logoPop"
-        android:layout_alignStart="@+id/logoPop"
-        android:id="@+id/linearLayout">
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="30dp"
+        android:text="Back to Login."
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp"  />
 
-        <ImageView
-            android:id="@+id/twitterLink"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/twitter" />
 
-        <ImageView
-            android:id="@+id/instagramLink"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            app:srcCompat="@drawable/instagram" />
-
-        <ImageView
-            android:id="@+id/facebookLink"
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            app:srcCompat="@drawable/facebook" />
-    </LinearLayout>
 
     <Button
         android:id="@+id/loginBtn"
