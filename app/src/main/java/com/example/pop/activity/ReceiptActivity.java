@@ -85,7 +85,7 @@ public class ReceiptActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt);
 
-        toolbar = findViewById(R.id.receiptToolbar);
+        //toolbar = findViewById(R.id.receiptToolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

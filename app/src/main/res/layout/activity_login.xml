@@ -14,7 +14,7 @@
     android:layout_centerHorizontal="true"
     android:layout_marginTop="30dp"
     android:contentDescription="TODO"
-    app:srcCompat="@drawable/popLogoNew" />
+    app:srcCompat="@drawable/poplogonew" />
 
 
     <LinearLayout

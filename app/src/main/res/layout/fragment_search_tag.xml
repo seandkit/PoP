@@ -48,38 +48,32 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         tools:ignore="MissingConstraints"
-        android:background="@drawable/back"
+        android:background="@color/main_background_colour"
         >
 
-        <TextView
-            android:id="@+id/tagText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="35dp"
-            android:layout_marginLeft="35dp"
-            android:layout_marginTop="15dp"
-            android:text="Tag:"
-            android:textSize="20sp"
-            android:textColor="#000000"/>
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="380dp"
+            android:layout_height="80dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/background_for_search_background"
+            android:orientation="horizontal">
+
+
+        </LinearLayout>
 
         <SearchView
             android:id="@+id/tagInput"
             android:layout_width="250dp"
             android:layout_height="30dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="15dp"
-
-            android:layout_marginEnd="35dp"
-            android:layout_marginRight="35dp"
-            android:background="@drawable/backforbox"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/background_for_searchbox"
             android:gravity="center"
-            android:hint="Tag"
-            android:textColor="#000000"
+            android:hint="Search"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#000000"
             android:textSize="20sp" />
 
     </RelativeLayout>
