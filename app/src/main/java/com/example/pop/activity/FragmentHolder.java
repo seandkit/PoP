@@ -277,12 +277,15 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         if(drawer.isDrawerOpen(GravityCompat.START)){
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 
     public boolean addNewItem(int itemId, String itemName){
-        MenuItem myMoveGroupItem = navigationView.getMenu().getItem(0);
+        MenuItem myMoveGroupItem = navigationView.getMenu().getItem(1);
         SubMenu subMenu = myMoveGroupItem.getSubMenu();
 
         if(session.getCurrentFolder().equalsIgnoreCase(String.valueOf(itemId))){
@@ -298,6 +301,9 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     private MenuItem.OnMenuItemClickListener folderOnClickListener = new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
+
+            drawer.closeDrawer(GravityCompat.START);
+
             Intent intent = new Intent(context, FolderActivity.class);
 
             for(Folder f : folderList){
@@ -590,10 +596,27 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             }
             else{
                 //If success update xml
+                MenuItem myMoveGroupItem = navigationView.getMenu().getItem(1);
+                SubMenu subMenu = myMoveGroupItem.getSubMenu();
+                subMenu.clear();
                 for(Folder folder: folderList){
                     addNewItem(folder.getId(), folder.getName());
                 }
             }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        try {
+            String str_result = new fetchFoldersAsyncTask().execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 }

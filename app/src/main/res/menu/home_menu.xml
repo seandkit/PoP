@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Folders"
+    <item
+        android:id="@+id/nav_folder_add_new"
+        android:icon="@drawable/add_icon"
+        android:title="New Folder" />
+
+    <item android:title="My Folders"
         android:id="@+id/submenu_1">
         <menu
             android:id="@+id/testing2">
-            <item
-                android:id="@+id/nav_folder_add_new"
-                android:icon="@drawable/add_icon"
-                android:title="Add New" />
+
         </menu>
     </item>
-    <item
-        android:id="@+id/nav_logOut"
-        android:icon="@drawable/ic_exit_to_app_black_24dp"
-        android:title="Log Out" />
+
+    <group
+        android:id="@+id/submenu_2">
+            <item
+                android:id="@+id/nav_logOut"
+                android:icon="@drawable/ic_exit_to_app_black_24dp"
+                android:title="Log Out" />
+    </group>
 </menu>

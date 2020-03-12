@@ -23,6 +23,7 @@
             android:layout_height="?attr/actionBarSize"
             tools:ignore="MissingConstraints"
             android:id="@+id/receiptToolbar"
+            app:title="My Receipt"
             android:background="@color/colorAccent"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"

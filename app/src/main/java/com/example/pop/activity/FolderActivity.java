@@ -338,7 +338,7 @@ public class FolderActivity extends AppCompatActivity {
             else{
                 Toast.makeText(FolderActivity.this, "Set To Current", Toast.LENGTH_LONG).show();
 
-                MenuItem myMoveGroupItem = navigationView.getMenu().getItem(0);
+                MenuItem myMoveGroupItem = navigationView.getMenu().getItem(1);
                 SubMenu subMenu = myMoveGroupItem.getSubMenu();
                 subMenu.clear();
                 for(Folder folder: folderList){
@@ -349,7 +349,7 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     public boolean addNewItem(int itemId, String itemName){
-        MenuItem myMoveGroupItem = navigationView.getMenu().getItem(0);
+        MenuItem myMoveGroupItem = navigationView.getMenu().getItem(1);
         SubMenu subMenu = myMoveGroupItem.getSubMenu();
 
         if(session.getCurrentFolder().equalsIgnoreCase(String.valueOf(itemId))){
