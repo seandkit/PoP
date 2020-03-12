@@ -128,6 +128,10 @@ public class FolderActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
+            case R.id.setCurrent:
+                new setCurrentFolderAsyncTask().execute();
+                return true;
+
             case R.id.deleteFolder:
                 deleteFolderPopUp();
                 return true;
@@ -136,7 +140,7 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     public void deleteFolderPopUp() {
-        LayoutInflater inflater = getLayoutInflater();
+        final LayoutInflater inflater = getLayoutInflater();
         View dialoglayout = inflater.inflate(R.layout.delete_folder_pop_up, null);
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -151,6 +155,7 @@ public class FolderActivity extends AppCompatActivity {
                 new deleteFolderAsyncTask().execute();
 
                 Intent intent = new Intent(context, FragmentHolder.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
 
                 dialog.dismiss();
@@ -298,10 +303,61 @@ public class FolderActivity extends AppCompatActivity {
         }
     }
 
+    private class setCurrentFolderAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
+            httpParams.put("folder_id", String.valueOf(folderId));
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "assignCurrentFolder.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                if (success == 1) {
+                    session.setCurrentFolder(String.valueOf(folderId));
+                }
+                else{
+                    message = jsonObject.getString("message");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
+            if (success == 0) {
+                Toast.makeText(FolderActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+            else{
+                Toast.makeText(FolderActivity.this, "Set To Current", Toast.LENGTH_LONG).show();
+
+                MenuItem myMoveGroupItem = navigationView.getMenu().getItem(0);
+                SubMenu subMenu = myMoveGroupItem.getSubMenu();
+                subMenu.clear();
+                for(Folder folder: folderList){
+                    addNewItem(folder.getId(), folder.getName());
+                }
+            }
+        }
+    }
+
     public boolean addNewItem(int itemId, String itemName){
         MenuItem myMoveGroupItem = navigationView.getMenu().getItem(0);
         SubMenu subMenu = myMoveGroupItem.getSubMenu();
-        subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.ic_folder_black_24dp).setOnMenuItemClickListener(folderOnClickListener);
+
+        if(session.getCurrentFolder().equalsIgnoreCase(String.valueOf(itemId))){
+            subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.baseline_folder_open_24).setOnMenuItemClickListener(folderOnClickListener);
+        }
+        else{
+            subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.ic_folder_black_24dp).setOnMenuItemClickListener(folderOnClickListener);
+        }
         return true;
     }
 

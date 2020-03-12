@@ -284,7 +284,14 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     public boolean addNewItem(int itemId, String itemName){
         MenuItem myMoveGroupItem = navigationView.getMenu().getItem(0);
         SubMenu subMenu = myMoveGroupItem.getSubMenu();
-        subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.ic_folder_black_24dp).setOnMenuItemClickListener(folderOnClickListener);
+
+        if(session.getCurrentFolder().equalsIgnoreCase(String.valueOf(itemId))){
+            subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.baseline_folder_open_24).setOnMenuItemClickListener(folderOnClickListener);
+        }
+        else{
+            subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.ic_folder_black_24dp).setOnMenuItemClickListener(folderOnClickListener);
+        }
+
         return true;
     }
 
@@ -302,24 +309,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
             startActivity(intent);
 
-            /*
-            //Remove
-            //==========================================
-            MenuItem myMoveGroupItem = navigationView.getMenu().getItem(0);
-            SubMenu subMenu = myMoveGroupItem.getSubMenu();
-
-            for(Folder f : folderList){
-                if(f.getName().equalsIgnoreCase(menuItem.getTitle().toString())){
-                    subMenu.removeItem(f.getId());
-                    newFolderId = f.getId();
-                }
-            }
-            new deleteFolderAsyncTask().execute();
-            //==========================================
-
-             */
-
-
             return false;
         }
     };
@@ -332,27 +321,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /*new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                final View view = findViewById(R.id);
-
-                if (view != null) {
-                    view.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-
-                            // Do something...
-
-                            Toast.makeText(getApplicationContext(), "Long pressed", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-                    });
-                }
-            }
-        });
-
-         */
 
         return true;
     }
@@ -448,6 +416,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             Map<String, String> httpParams = new HashMap<>();
             httpParams.put("uuid", receiptUuidphp);
             httpParams.put("user_id", String.valueOf(session.getUserId()));
+            httpParams.put("folder_id", String.valueOf(session.getCurrentFolder()));
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "uuidNULL.php", "POST", httpParams);
 
             try {
@@ -600,6 +569,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 if (success == 1) {
                     folders = jsonObject.getJSONArray("data");
                     //Iterate through the response and populate receipt list
+                    folderList = new ArrayList<>();
                     for (int i = 0; i < folders.length(); i++) {
                         JSONObject folder = folders.getJSONObject(i);
                         folderList.add(new Folder(folder.getInt("folder_id"), folder.getString("folder_name")));

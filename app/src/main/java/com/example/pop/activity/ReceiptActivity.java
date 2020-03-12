@@ -6,13 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,21 +19,21 @@ import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.adapter.ItemListAdapter;
-import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.model.Folder;
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
 
@@ -49,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class ReceiptActivity extends AppCompatActivity {
 
@@ -67,6 +66,7 @@ public class ReceiptActivity extends AppCompatActivity {
 
     int receiptId;
     private int success;
+    private String message;
 
     private Context context;
     private Session session;
@@ -75,6 +75,8 @@ public class ReceiptActivity extends AppCompatActivity {
 
     private Bitmap bitmap;
     private Button btn_export;
+
+    public static List<Folder> folderList = new ArrayList<>();
 
     ConstraintLayout relativeLayout;
 
@@ -160,9 +162,48 @@ public class ReceiptActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.game_menu, menu);
+        inflater.inflate(R.menu.receipt_menu, menu);
+
+        SubMenu subMenu = menu.getItem(0).getSubMenu();
+
+        folderList = new ArrayList<>();
+        try {
+            String result = new FetchAllFoldersWithReceiptAsyncTask().execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if(folderList.isEmpty()){
+            subMenu.add(Menu.NONE, 1, Menu.NONE, "Empty");
+        }
+        else {
+            for(Folder f : folderList){
+                subMenu.add(Menu.NONE, f.getId(), Menu.NONE, f.getName()).setOnMenuItemClickListener(folderOnClickListener);
+            }
+        }
+
+
         return true;
     }
+
+    private MenuItem.OnMenuItemClickListener folderOnClickListener = new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            Intent intent = new Intent(context, FolderActivity.class);
+
+            for(Folder f : folderList){
+                if(f.getName().equalsIgnoreCase(String.valueOf(menuItem.getTitle()))){
+                    intent.putExtra("folderId", f.getId());
+                    intent.putExtra("folderName", f.getName());
+                }
+            }
+
+            startActivity(intent);
+            return false;
+        }
+    };
 
     private void requestStoragePermission() {
         if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -279,6 +320,45 @@ public class ReceiptActivity extends AppCompatActivity {
             mAdapter = new ItemListAdapter(context, mItemList);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        }
+    }
+
+    private class FetchAllFoldersWithReceiptAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            HttpJsonParser httpJsonParser = new HttpJsonParser();
+            Map<String, String> httpParams = new HashMap<>();
+            httpParams.put("receipt_id", String.valueOf(receiptId));
+            httpParams.put("user_id", String.valueOf(session.getUserId()));
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllFoldersWithReceipt.php", "POST", httpParams);
+
+            try {
+                success = jsonObject.getInt("success");
+                JSONArray folders;
+                if (success == 1) {
+                    folders = jsonObject.getJSONArray("data");
+                    //Iterate through the response and populate receipt list
+                    folderList = new ArrayList<>();
+                    for (int i = 0; i < folders.length(); i++) {
+                        JSONObject folder = folders.getJSONObject(i);
+                        folderList.add(new Folder(folder.getInt("folder_id"), folder.getString("folder_name")));
+                    }
+                }
+                else{
+                    message = jsonObject.getString("message");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(String result) {
         }
     }
 }
