@@ -66,6 +66,8 @@
         android:id="@+id/navigation_view"
         tools:ignore="MissingConstraints"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/home_menu"/>
+        app:menu="@menu/home_menu">
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

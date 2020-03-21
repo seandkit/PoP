@@ -2,9 +2,11 @@ package com.example.pop.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,12 +15,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
+import com.example.pop.activity.adapter.FolderListAdapter;
 import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.model.Folder;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 
@@ -50,6 +55,9 @@ public class Fragment_Receipt extends Fragment {
     private Context context;
     private Session session;
 
+    private int receiptId;
+    private int recyclerListId;
+
     public Fragment_Receipt() {
         // Required empty public constructor
     }
@@ -59,7 +67,7 @@ public class Fragment_Receipt extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_receipt, container, false);
 
-        context = getActivity().getApplicationContext();
+        context = getActivity();
         session = new Session(context);
 
         db = new SQLiteDatabaseAdapter(context);
@@ -85,6 +93,15 @@ public class Fragment_Receipt extends Fragment {
         mReceiptList.add(receipt);
         //mReceiptList.add(0, receipt);
         mAdapter.notifyItemInserted(mReceiptList.size() - 1);
+    }
+
+    void deleteItemFromList(Receipt receipt){
+        for(int i = 0; i < mReceiptList.size(); i++){
+            if(mReceiptList.get(i).getId() == receipt.getId()){
+                mReceiptList.remove(mReceiptList.get(i).getId());
+                mAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
@@ -132,4 +149,6 @@ public class Fragment_Receipt extends Fragment {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         }
     }
+
+
 }

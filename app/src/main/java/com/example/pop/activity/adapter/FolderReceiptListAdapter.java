@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
+import com.example.pop.activity.FolderActivity;
 import com.example.pop.activity.FragmentHolder;
 import com.example.pop.activity.Fragment_Popup_Folders;
 import com.example.pop.activity.ReceiptActivity;
@@ -42,9 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.content.Context.WINDOW_SERVICE;
-
-public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.ReceiptListItemHolder> implements Filterable {
+public class FolderReceiptListAdapter extends RecyclerView.Adapter<FolderReceiptListAdapter.ReceiptListItemHolder> implements Filterable {
 
     private List<Receipt> mReceiptList;
     private List<Receipt> mReceiptListFull;
@@ -94,7 +91,7 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
                 //creating a popup menu
                 PopupMenu popup = new PopupMenu(context, cardView);
                 //inflating menu from xml resource
-                popup.inflate(R.menu.receipt_list_menu);
+                popup.inflate(R.menu.folder_receipt_list_menu);
                 //adding click listener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -112,18 +109,9 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
                                 }
                                 return true;
 
-                            case R.id.addToFolder:
-                                FragmentHolder.addToFolder_ReceiptId = receipt.getId();
-                                Fragment_Popup_Folders fragment_popup_folders = new Fragment_Popup_Folders();
-                                FragmentActivity activity = (FragmentActivity)(context);
-                                FragmentManager fm = activity.getSupportFragmentManager();
-                                fragment_popup_folders.show(fm,"Add To Folder Popup");
-
-                                return true;
-
-                            case R.id.deleteReceipt:
-
-                                deleteReceiptPopUp(receipt.getId());
+                            case R.id.removeReceipt:
+                                receiptId = receipt.getId();
+                                new unlinkReceiptAsyncTask().execute();
 
                                 return true;
 
@@ -139,53 +127,12 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         });
     }
 
-    public void deleteReceiptPopUp(final int deleteReceiptId) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialoglayout = inflater.inflate(R.layout.delete_receipt_pop_up, null);
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(dialoglayout.getRootView().getContext());
-
-        builder.setTitle("Delete Receipt");
-        builder.setView(dialoglayout);
-
-        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(context,"Deleted",Toast.LENGTH_LONG).show();
-
-                //Delete Single receipt
-                for(int i = 0; i < mReceiptList.size(); i++){
-                    if(mReceiptList.get(i).getId() == deleteReceiptId){
-                        recyclerListId = i;
-                        receiptId = deleteReceiptId;
-                        new deleteReceiptAsyncTask().execute();
-                    }
-                }
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(context,"Cancel",Toast.LENGTH_LONG).show();
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog alertDialog = builder.create();
-        System.out.println("122");
-        alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        alertDialog.show();
-        System.out.println("12");
-    }
-
     @Override
     public int getItemCount() {
         return mReceiptList.size();
     }
 
-    public ReceiptListAdapter(Context context, List<Receipt> receiptList) {
+    public FolderReceiptListAdapter(Context context, List<Receipt> receiptList) {
         this.context = context;
         mInflater = LayoutInflater.from(context);
         mReceiptListFull = new ArrayList<>(receiptList);
@@ -197,9 +144,9 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         public final TextView receiptShopView;
         public final TextView receiptTotalView;
         public final CardView cardView;
-        final ReceiptListAdapter mAdapter;
+        final FolderReceiptListAdapter mAdapter;
 
-        public ReceiptListItemHolder(View itemView, ReceiptListAdapter adapter) {
+        public ReceiptListItemHolder(View itemView, FolderReceiptListAdapter adapter) {
             super(itemView);
 
             receiptDateView = itemView.findViewById(R.id.receiptDate);
@@ -257,7 +204,7 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         }
     };
 
-    private class deleteReceiptAsyncTask extends AsyncTask<String, String, String> {
+    private class unlinkReceiptAsyncTask extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -268,7 +215,8 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
             HttpJsonParser httpJsonParser = new HttpJsonParser();
             Map<String, String> httpParams = new HashMap<>();
             httpParams.put("receipt_id", String.valueOf(receiptId));//'1' has to be changed to a user chosen receipt id
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "deleteReceipt.php", "POST", httpParams);
+            httpParams.put("folder_id", String.valueOf(FolderActivity.folderId));//'1' has to be changed to a user chosen receipt id
+            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "deleteReceiptFolderRelation.php", "POST", httpParams);
             try {
                 success = jsonObject.getInt("success");
                 if (success == 0) {
