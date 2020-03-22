@@ -71,6 +71,9 @@
         <activity
             android:name=".activity.ExportActivity"
             android:theme="@style/AppTheme.PopMe" />
+        <activity
+            android:name=".activity.BlurActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

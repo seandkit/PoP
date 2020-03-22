@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -101,21 +102,23 @@ public class FolderActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
         if (CheckNetworkStatus.isNetworkAvailable(context)) {
             new FetchFolderReceiptsAsyncTask().execute();
         }
 
-        //Move below code block into populateReceiptList()
-        // Get a handle to the RecyclerView.
         mRecyclerView = findViewById(R.id.receiptList);
-        // Create an adapter and supply the data to be displayed.
         mAdapter = new FolderReceiptListAdapter(context, mReceiptList);
-        // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        }
     }
 
     @Override
@@ -140,10 +143,10 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     public void deleteFolderPopUp() {
-        final LayoutInflater inflater = getLayoutInflater();
+        LayoutInflater inflater = (LayoutInflater) FolderActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialoglayout = inflater.inflate(R.layout.delete_folder_pop_up, null);
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(dialoglayout.getRootView().getContext());
 
         builder.setTitle("Delete Folder");
         builder.setView(dialoglayout);
@@ -151,10 +154,10 @@ public class FolderActivity extends AppCompatActivity {
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(FolderActivity.this,"Accept",Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Deleted",Toast.LENGTH_LONG).show();
                 new deleteFolderAsyncTask().execute();
 
-                Intent intent = new Intent(context, FragmentHolder.class);
+                Intent intent = new Intent(FolderActivity.this, FragmentHolder.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
 
@@ -165,12 +168,13 @@ public class FolderActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(FolderActivity.this,"Cancel",Toast.LENGTH_LONG).show();
+                Toast.makeText(context,"Cancel",Toast.LENGTH_LONG).show();
                 dialog.dismiss();
             }
         });
 
-        AlertDialog alertDialog = builder.create();
+        android.app.AlertDialog alertDialog = builder.create();
+        //alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alertDialog.show();
     }
 
