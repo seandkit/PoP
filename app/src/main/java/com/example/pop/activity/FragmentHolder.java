@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -158,9 +159,12 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     @Override
     protected void onStart() {
         super.onStart();
-        final Intent intent = new Intent(this, BlurActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
+
+        if(BiometricManager.from(context).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
+            final Intent intent = new Intent(this, BlurActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(intent);
+        }
 
         Fragment_Receipt.mAdapter = new ReceiptListAdapter(this, FragmentHolder.mReceiptList);
         Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
@@ -395,6 +399,15 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Fragment_Receipt.mAdapter = new ReceiptListAdapter(FragmentHolder.this, FragmentHolder.mReceiptList);
+                Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
+                Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            }
+        });
     }
 
     private class linkReceiptAsyncTask extends AsyncTask<String, String, String> {
