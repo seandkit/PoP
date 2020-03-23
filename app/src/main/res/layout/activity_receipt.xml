@@ -180,7 +180,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
 
-            android:text="Tesco"
+            android:text="NULL"
             android:textColor="#000000"
             android:textSize="30dp"
             app:layout_constraintEnd_toEndOf="parent"
