@@ -172,15 +172,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     protected void onStart() {
         super.onStart();
 
-        //Toast.makeText(this,BiometricManager.from(this).canAuthenticate(), Toast.LENGTH_LONG).show();
-
-        if(BiometricManager.from(this).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
+        if(BiometricManager.from(context).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
             final Intent intent = new Intent(this, BlurActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
-        }
-        else{
-            Toast.makeText(this,"NO BIO", Toast.LENGTH_LONG).show();
         }
 
         Fragment_Receipt.mAdapter = new ReceiptListAdapter(this, FragmentHolder.mReceiptList);
@@ -453,6 +448,15 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Fragment_Receipt.mAdapter = new ReceiptListAdapter(FragmentHolder.this, FragmentHolder.mReceiptList);
+                Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
+                Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            }
+        });
     }
 
     private class linkReceiptAsyncTask extends AsyncTask<String, String, String> {
