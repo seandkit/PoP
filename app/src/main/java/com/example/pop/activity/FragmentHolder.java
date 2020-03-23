@@ -24,6 +24,7 @@ import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.media.MediaBrowserCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -151,7 +152,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 return false;
             }
         });
-
         setUp();
     }
 
@@ -159,6 +159,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     protected void onStart() {
         super.onStart();
         final Intent intent = new Intent(this, BlurActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
 
         Fragment_Receipt.mAdapter = new ReceiptListAdapter(this, FragmentHolder.mReceiptList);
