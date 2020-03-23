@@ -5,7 +5,10 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -15,13 +18,23 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.MediaBrowserCompat;
@@ -158,9 +171,17 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     @Override
     protected void onStart() {
         super.onStart();
-        final Intent intent = new Intent(this, BlurActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
+
+        //Toast.makeText(this,BiometricManager.from(this).canAuthenticate(), Toast.LENGTH_LONG).show();
+
+        if(BiometricManager.from(this).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
+            final Intent intent = new Intent(this, BlurActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(intent);
+        }
+        else{
+            Toast.makeText(this,"NO BIO", Toast.LENGTH_LONG).show();
+        }
 
         Fragment_Receipt.mAdapter = new ReceiptListAdapter(this, FragmentHolder.mReceiptList);
         Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
@@ -316,6 +337,42 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
     };
 
+    private void showNotification(String chanelId, String title, String text){
+        String CHANNEL_ID = chanelId;
+        String CHANNEL_NAME = "Notification";
+
+        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            channel.enableVibration(true);
+            channel.setLightColor(Color.BLUE);
+            channel.enableLights(true);
+            /*channel.setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.notification),
+                    new AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                            .build());*/
+            channel.canShowBadge();
+
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                .setVibrate(new long[]{0, 100})
+                .setPriority(Notification.PRIORITY_MAX)
+                .setLights(Color.BLUE, 3000, 3000)
+                .setAutoCancel(true)
+                .setSmallIcon(R.drawable.logo_dark)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                        R.drawable.logo_dark))
+                .setContentTitle(title)
+                .setContentText(text);
+
+
+        notificationManager.notify(CHANNEL_ID, 1, notificationBuilder.build());
+    }
+
     private void InitializeFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, fragment);
@@ -373,6 +430,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         uuid = responseArray[3];
 
         newReceipt = new Receipt(currentDate, vendor, total, session.getUserId(), uuid);
+        showNotification("NFC_Channel", "Receipt Received", "Tap to view");
 
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
             receiptUuidphp = receiptUuidphp.concat(newReceipt.getUuid()+"@");
