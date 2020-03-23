@@ -174,10 +174,8 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         });
 
         AlertDialog alertDialog = builder.create();
-        System.out.println("122");
-        alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        //alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alertDialog.show();
-        System.out.println("12");
     }
 
     @Override
