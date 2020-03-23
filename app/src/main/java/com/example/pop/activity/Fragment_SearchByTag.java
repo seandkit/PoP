@@ -32,8 +32,9 @@ import java.util.Map;
 
 public class Fragment_SearchByTag extends Fragment{
 
-    private RecyclerView mRecyclerView;
-    private ReceiptListAdapter mAdapter;
+    public static RecyclerView mRecyclerView;
+    public static ReceiptListAdapter mAdapter;
+
     private SearchView searchView;
 
     private Context context;
@@ -43,6 +44,9 @@ public class Fragment_SearchByTag extends Fragment{
 
     public List<Receipt> mReceiptList = new ArrayList<>();
     public List<Receipt> mReceiptListTemp = new ArrayList<>();
+
+    public static List<Receipt> mEmptyList = new ArrayList<>();
+    private ReceiptListAdapter mEmptyAdapter;
 
     private String tag = "";
 
@@ -54,29 +58,18 @@ public class Fragment_SearchByTag extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_search_tag, container, false);
-        //Toolbar toolbar = v.findViewById(R.id.toolbar);
-        //((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         context = getActivity().getApplicationContext();
         session = new Session(context);
 
         setHasOptionsMenu(true);
 
-        if (CheckNetworkStatus.isNetworkAvailable(context)) {
-            new Fragment_SearchByTag.FetchReceiptsAsyncTask().execute();
-        }
-
-        // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.receiptList);
-        // Create an adapter and supply the data to be displayed.
-        mAdapter = new ReceiptListAdapter(context, mReceiptList);
-        // Connect the adapter with the RecyclerView.
+        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         searchView = v.findViewById(R.id.tagInput);
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -93,50 +86,13 @@ public class Fragment_SearchByTag extends Fragment{
         return v;
     }
 
-    private class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+    @Override
+    public void onStart() {
+        super.onStart();
 
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceipts.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                JSONArray receipts;
-                if (success == 1) {
-                    mReceiptList = new ArrayList<>();
-                    receipts = jsonObject.getJSONArray("data");
-                    //Iterate through the response and populate receipt list
-                    for (int i = 0; i < receipts.length(); i++) {
-                        JSONObject receipt = receipts.getJSONObject(i);
-                        int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
-                        String receiptDate = receipt.getString(DBConstants.DATE);
-                        String receiptVendor = receipt.getString(DBConstants.VENDOR);
-                        double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
-
-                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            success = 0;
-            mAdapter = new ReceiptListAdapter(context, mReceiptList);
-            // Connect the adapter with the RecyclerView.
-            mRecyclerView.setAdapter(mAdapter);
-            // Give the RecyclerView a default layout manager.
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        }
+        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
 
     //Search Specific classes
