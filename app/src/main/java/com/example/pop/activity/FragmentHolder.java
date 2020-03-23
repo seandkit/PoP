@@ -178,9 +178,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             startActivity(intent);
         }
 
-        Fragment_Receipt.mAdapter = new ReceiptListAdapter(this, FragmentHolder.mReceiptList);
-        Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
-        Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        updateReceiptList();
     }
 
     @Override
@@ -375,12 +373,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        return true;
-    }
-
-    @Override
     protected void onPostResume() {
         super.onPostResume();
         nfcAdapter.enableReaderMode(this, this, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
@@ -425,12 +417,12 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         uuid = responseArray[3];
 
         newReceipt = new Receipt(currentDate, vendor, total, session.getUserId(), uuid);
-        showNotification("NFC_Channel", "Receipt Received", "Tap to view");
 
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
             receiptUuidphp = receiptUuidphp.concat(newReceipt.getUuid()+"@");
             try {
                 String result = new linkReceiptAsyncTask().execute().get();
+                showNotification("NFC_Channel", "Receipt Received", "Tap to view");
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -439,6 +431,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
         else{
             db.addUnlinkedReceipt(newReceipt);
+            showNotification("NFC_Channel", "Receipt Received", "Connect to the internet to view");
         }
 
         mReceiptList.add(newReceipt);
@@ -449,14 +442,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             e.printStackTrace();
         }
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Fragment_Receipt.mAdapter = new ReceiptListAdapter(FragmentHolder.this, FragmentHolder.mReceiptList);
-                Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
-                Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-            }
-        });
+        updateReceiptList();
     }
 
     private class linkReceiptAsyncTask extends AsyncTask<String, String, String> {
@@ -491,6 +477,17 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         protected void onPostExecute(String result) {
             boolean answer = db.dropUnlinkedReceipt(unlinkedReceiptUuid);
         }
+    }
+
+    private void updateReceiptList(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Fragment_Receipt.mAdapter = new ReceiptListAdapter(FragmentHolder.this, FragmentHolder.mReceiptList);
+                Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
+                Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+            }
+        });
     }
 
     private class addFolderAsyncTask extends AsyncTask<String, String, String> {
@@ -699,13 +696,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     protected void onResume() {
         super.onResume();
 
-        try {
-            String str_result = new fetchFoldersAsyncTask().execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        setUp();
     }
 }

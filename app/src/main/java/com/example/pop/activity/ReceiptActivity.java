@@ -82,7 +82,7 @@ public class ReceiptActivity extends AppCompatActivity {
 
     private int STORAGE_PERMISSION_CODE = 1;
 
-    private Toolbar toolbar;
+    //private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,17 +90,17 @@ public class ReceiptActivity extends AppCompatActivity {
         setContentView(R.layout.activity_receipt);
 
         //toolbar = findViewById(R.id.receiptToolbar);
-        setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        /*toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
-        });
+        });*/
 
         relativeLayout = findViewById(R.id.receiptLayout);
 
