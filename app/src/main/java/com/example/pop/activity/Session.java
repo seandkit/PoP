@@ -24,8 +24,8 @@ public class Session {
         preferences.edit().putString("loginKey", login).apply();
     }
     public void setUserId(int userId){ preferences.edit().putInt("userIdKey", userId).apply(); }
-    public void setFirstName(String fName){ preferences.edit().putString("nameKey", fName).apply(); }
-    public void setLastName(String lName){ preferences.edit().putString("nameKey", lName).apply(); }
+    public void setFirstName(String fName){ preferences.edit().putString("firstNameKey", fName).apply(); }
+    public void setLastName(String lName){ preferences.edit().putString("lastNameKey", lName).apply(); }
     public void setEmail(String email){ preferences.edit().putString("emailKey", email).apply(); }
     public void setCurrentFolder(String currentFolder){ preferences.edit().putString("currentFolderKey", currentFolder).apply(); }
 }

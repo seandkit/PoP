@@ -38,6 +38,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.media.MediaBrowserCompat;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +46,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.pop.DBConstants;
@@ -136,6 +138,8 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        populateDrawerInfo();
+
         //Fragment initialization
         receiptFragment = new Fragment_Receipt();
         searchFragment = new Fragment_SearchByDate();
@@ -215,6 +219,15 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 new linkReceiptAsyncTask().execute();
             }
         }
+    }
+
+    public void populateDrawerInfo(){
+        View headerView = navigationView.getHeaderView(0);
+        TextView drawerUsername = headerView.findViewById(R.id.drawer_username);
+        String drawerUsernameValue = session.getFirstName() + " " + session.getLastName();
+        drawerUsername.setText(drawerUsernameValue.toUpperCase());
+        TextView drawerEmail = headerView.findViewById(R.id.drawer_email);
+        drawerEmail.setText(session.getEmail());
     }
 
     @Override
