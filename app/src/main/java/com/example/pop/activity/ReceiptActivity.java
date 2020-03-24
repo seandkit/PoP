@@ -168,7 +168,7 @@ public class ReceiptActivity extends AppCompatActivity {
         Toast.makeText(ReceiptActivity.this, "You are doing this in the right order!", Toast.LENGTH_LONG).show();
         Double markerLat = 53.9979;
         Double markerLong = -6.406;
-        String markerTitle = "Tesco Extra";
+        String markerTitle = "Tesco";
         String markerSnippet = "Dublin Rd, Townparks, Dundalk, Co. Louth";
         Intent intent = new Intent(ReceiptActivity.this, Map_Location.class);
         intent.putExtra("title", markerTitle);
@@ -176,7 +176,6 @@ public class ReceiptActivity extends AppCompatActivity {
         intent.putExtra("lat", markerLat);
         intent.putExtra("long", markerLong);
         startActivity(intent);
-
     }
 
     @Override
