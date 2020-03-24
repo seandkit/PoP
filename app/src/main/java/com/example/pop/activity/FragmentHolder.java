@@ -330,7 +330,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
     };
 
-    private void showNotification(String chanelId, String title, String text){
+    private void showNotification(String chanelId, String title, String text, int receiptId){
         String CHANNEL_ID = chanelId;
         String CHANNEL_NAME = "Notification";
 
@@ -351,17 +351,38 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             notificationManager.createNotificationChannel(channel);
         }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                .setVibrate(new long[]{0, 100})
-                .setPriority(Notification.PRIORITY_MAX)
-                .setLights(Color.BLUE, 3000, 3000)
-                .setAutoCancel(true)
-                .setSmallIcon(R.drawable.logo_dark)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
-                        R.drawable.logo_dark))
-                .setContentTitle(title)
-                .setContentText(text);
+        Intent notificationIntent = new Intent(context, ReceiptActivity.class);
+        NotificationCompat.Builder notificationBuilder;
 
+        if(receiptId != -1) {
+            notificationIntent.putExtra("receiptID", receiptId);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                    .setVibrate(new long[]{0, 100})
+                    .setPriority(Notification.PRIORITY_MAX)
+                    .setLights(Color.BLUE, 3000, 3000)
+                    .setAutoCancel(true)
+                    .setContentIntent(intent)
+                    .setSmallIcon(R.drawable.logo_dark)
+                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                            R.drawable.logo_dark))
+                    .setContentTitle(title)
+                    .setContentText(text);
+        }
+        else{
+            notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                    .setVibrate(new long[]{0, 100})
+                    .setPriority(Notification.PRIORITY_MAX)
+                    .setLights(Color.BLUE, 3000, 3000)
+                    .setAutoCancel(true)
+                    .setSmallIcon(R.drawable.logo_dark)
+                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                            R.drawable.logo_dark))
+                    .setContentTitle(title)
+                    .setContentText(text);
+        }
 
         notificationManager.notify(CHANNEL_ID, 1, notificationBuilder.build());
     }
@@ -422,7 +443,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             receiptUuidphp = receiptUuidphp.concat(newReceipt.getUuid()+"@");
             try {
                 String result = new linkReceiptAsyncTask().execute().get();
-                showNotification("NFC_Channel", "Receipt Received", "Tap to view");
+                showNotification("NFC_Channel", "Receipt Received", "Tap to view", newReceipt.getId());
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -431,7 +452,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
         else{
             db.addUnlinkedReceipt(newReceipt);
-            showNotification("NFC_Channel", "Receipt Received", "Connect to the internet to view");
+            showNotification("NFC_Channel", "Receipt Received", "Connect to the internet to view", -1);
         }
 
         mReceiptList.add(newReceipt);

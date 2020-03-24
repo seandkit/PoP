@@ -70,6 +70,18 @@ public class Fragment_SearchByTag extends Fragment{
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         searchView = v.findViewById(R.id.tagInput);
+
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.tagInput:
+                        searchView.onActionViewExpanded();
+                        break;
+                }
+            }
+        });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {

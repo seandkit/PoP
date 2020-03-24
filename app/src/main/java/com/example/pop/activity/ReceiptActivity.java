@@ -146,6 +146,8 @@ public class ReceiptActivity extends AppCompatActivity {
         Intent intent = getIntent();
         receiptId = intent.getIntExtra("receiptID",0);
 
+        System.out.println("RECEIPT ID: " + receiptId);
+
         total = findViewById(R.id.receiptTotalText);
         cash = findViewById(R.id.receiptCash);
         change = findViewById(R.id.receiptChangeDue);
