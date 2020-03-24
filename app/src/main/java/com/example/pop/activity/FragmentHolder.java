@@ -333,6 +333,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     private void showNotification(String chanelId, String title, String text, int receiptId){
         String CHANNEL_ID = chanelId;
         String CHANNEL_NAME = "Notification";
+        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"+ getApplicationContext().getPackageName() + "/" + R.raw.success);
 
         NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -341,12 +342,11 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             channel.enableVibration(true);
             channel.setLightColor(Color.BLUE);
             channel.enableLights(true);
-            /*channel.setSound(Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getApplicationContext().getPackageName() + "/" + R.raw.notification),
-                    new AudioAttributes.Builder()
-                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                            .build());*/
-            channel.canShowBadge();
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            channel.setSound(soundUri, audioAttributes);
 
             notificationManager.createNotificationChannel(channel);
         }
