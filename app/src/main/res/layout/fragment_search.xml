@@ -43,14 +43,14 @@
         <RelativeLayout
             android:id="@+id/textboxtest"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="100dp"
             tools:ignore="MissingConstraints"
             android:background="@color/main_background_colour"
             >
 
             <RelativeLayout
                 android:id="@+id/linearLayout"
-                android:layout_width="380dp"
+                android:layout_width="360dp"
                 android:layout_height="80dp"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"

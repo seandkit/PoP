@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="false"
@@ -22,6 +24,10 @@
         android:roundIcon="@drawable/logo_dark"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activity.Map_Location"></activity>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyALRfXYO9M3CWVGxhpzdVKppFxprPBifBY" />
 
         <service
             android:name=".activity.HostCardEmulatorService"
@@ -30,6 +36,8 @@
             <intent-filter>
                 <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
             </intent-filter>
+
+
 
             <meta-data
                 android:name="android.nfc.cardemulation.host_apdu_service"
@@ -67,7 +75,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.FolderActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.ExportActivity"
             android:theme="@style/AppTheme.PopMe" />

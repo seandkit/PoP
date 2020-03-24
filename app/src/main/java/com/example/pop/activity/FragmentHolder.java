@@ -172,11 +172,11 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     protected void onStart() {
         super.onStart();
 
-        if(BiometricManager.from(context).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
-            final Intent intent = new Intent(this, BlurActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-        }
+        //if(BiometricManager.from(context).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
+        //    final Intent intent = new Intent(this, BlurActivity.class);
+         //   intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+         //   startActivity(intent);
+        //}
 
         updateReceiptList();
     }
