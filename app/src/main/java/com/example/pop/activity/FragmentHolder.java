@@ -45,6 +45,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.example.pop.DBConstants;
 import com.example.pop.R;
@@ -120,6 +121,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         setSupportActionBar(toolbar);
 
         drawer = findViewById(R.id.drawer_layout);
+
+        TextView help = (TextView) drawer.getChildAt(0);
+        System.out.println("==================");
+        System.out.println(help.getText().toString());
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
