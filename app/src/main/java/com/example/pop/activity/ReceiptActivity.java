@@ -296,8 +296,10 @@ public class ReceiptActivity extends AppCompatActivity {
                         String cashier = receiptInfo.getString("cashier");
                         double cash = receiptInfo.getDouble("cash_given");
                         int transactionType = receiptInfo.getInt("transaction_type");
+                        double longitude = receiptInfo.getDouble("lng");
+                        double latitude = receiptInfo.getDouble("lat");
 
-                        receipt = new Receipt(receiptId, receiptDate, receiptTime, receiptVendor, receiptTotal, barcode, transactionType, cashier, cash, location, session.getUserId());
+                        receipt = new Receipt(receiptId, receiptDate, receiptTime, receiptVendor, receiptTotal, barcode, transactionType, cashier, cash, location, session.getUserId(), longitude, latitude);
                     }
 
                     for (int i = 0; i < itemData.length(); i++) {

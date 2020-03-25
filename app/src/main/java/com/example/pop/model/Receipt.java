@@ -20,6 +20,8 @@ public class Receipt implements Comparable<Receipt> {
     private int userId;
     private List<Item> items;
     private String uuid;
+    private double lng;
+    private double lat;
 
     public Receipt(){
 
@@ -41,7 +43,7 @@ public class Receipt implements Comparable<Receipt> {
         this.userId = userId;
     }
 
-    public Receipt(int id, String date, String time, String vendorName,  double receiptTotal, String barcode, int transactionType, String cashier, Double cash, String location, int userId){
+    public Receipt(int id, String date, String time, String vendorName,  double receiptTotal, String barcode, int transactionType, String cashier, Double cash, String location, int userId, double lng, double lat){
         this.id = id;
         this.date = date;
         this.time = time;
@@ -53,6 +55,8 @@ public class Receipt implements Comparable<Receipt> {
         this.cash = cash;
         this.location = location;
         this.userId = userId;
+        this.lng = lng;
+        this.lat = lat;
     }
 
     public Receipt(int id, String date, String time, String vendorName,  double receiptTotal){
@@ -114,6 +118,13 @@ public class Receipt implements Comparable<Receipt> {
         return cashier;
     }
 
+    public double getLng() {
+        return lng;
+    }
+
+    public double getLat() {
+        return lat;
+    }
 
     public void setId(int id) {
         this.id = id;
@@ -165,6 +176,14 @@ public class Receipt implements Comparable<Receipt> {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
     }
 
     private double calculateTotalPrice(List<Item> items){
