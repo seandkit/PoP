@@ -10,15 +10,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,10 +45,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -123,9 +132,11 @@ public class ReceiptActivity extends AppCompatActivity {
                 String fname = "Receipt_"+ System.currentTimeMillis() +".jpg";
                 File file = new File(myDir, fname);
 
-                if (!file.exists()) {
-                    Log.d("path", file.toString());
+                saveImage(bitmap, "PHOTO");
 
+                MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "yourTitle" , "yourDescription");
+
+                /*if (!file.exists()) {
                     try {
                         FileOutputStream fos = new FileOutputStream(file);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
@@ -136,7 +147,7 @@ public class ReceiptActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
-                }
+                }*/
             }
         });
         context = this;
@@ -146,8 +157,6 @@ public class ReceiptActivity extends AppCompatActivity {
         Intent intent = getIntent();
         receiptId = intent.getIntExtra("receiptID",0);
 
-        System.out.println("RECEIPT ID: " + receiptId);
-
         total = findViewById(R.id.receiptTotalText);
         cash = findViewById(R.id.receiptCash);
         change = findViewById(R.id.receiptChangeDue);
@@ -156,15 +165,28 @@ public class ReceiptActivity extends AppCompatActivity {
         time = findViewById(R.id.receiptTime);
         otherNumber = findViewById(R.id.receiptOtherNumber);
 
-
-
-
         new FetchReceiptsInfoAsyncTask().execute();
-
-
-
     }
 
+    private void saveImage(Bitmap finalBitmap, String image_name) {
+
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root);
+        myDir.mkdirs();
+        String fname = "Image-" + image_name+ ".jpg";
+        File file = new File(myDir, fname);
+        if (file.exists()) file.delete();
+        Log.i("LOAD", root + fname);
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+            System.out.println("DONE JOB");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public void onClick(View v) {
         Toast.makeText(ReceiptActivity.this, "You are doing this in the right order!", Toast.LENGTH_LONG).show();
