@@ -97,8 +97,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     private Session session;
     private String receiptUuidphp = "";
 
-    private int success;
-    private String message;
     private int receiptID;
 
     public static int addToFolder_ReceiptId;
@@ -481,6 +479,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     }
 
     private class linkReceiptAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -526,6 +528,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     }
 
     private class addFolderAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -559,6 +565,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     }
 
     private class addReceiptToFolderAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -602,6 +612,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
     //This delete method calls a php function which deletes all ReceiptFolder and Folder objects with the same given folder id chosen by the user
     private class deleteFolderAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -638,6 +652,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     }
 
     private class fetchFoldersAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -688,6 +706,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     }
 
     private class fetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

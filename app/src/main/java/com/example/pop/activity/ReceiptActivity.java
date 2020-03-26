@@ -68,8 +68,6 @@ public class ReceiptActivity extends AppCompatActivity {
     public List<Item> mItemList = new ArrayList<>();
 
     int receiptId;
-    private int success;
-    private String message;
 
     private Context context;
     private Session session;
@@ -277,6 +275,10 @@ public class ReceiptActivity extends AppCompatActivity {
     }
 
     private class FetchReceiptsInfoAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -359,6 +361,10 @@ public class ReceiptActivity extends AppCompatActivity {
     }
 
     private class FetchAllFoldersWithReceiptAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

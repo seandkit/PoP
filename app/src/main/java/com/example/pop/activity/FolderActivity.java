@@ -70,9 +70,6 @@ public class FolderActivity extends AppCompatActivity {
     public static int folderId;
     public static String folderName;
 
-    private int success;
-    private String message;
-
     private int receiptId;
     private Receipt receipt;
 
@@ -181,6 +178,10 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     private class ExportAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -331,12 +332,10 @@ public class FolderActivity extends AppCompatActivity {
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(context,"Deleted",Toast.LENGTH_LONG).show();
                 new deleteFolderAsyncTask().execute();
+                Toast.makeText(context,"Folder Deleted",Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent(FolderActivity.this, FragmentHolder.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                finish();
 
                 dialog.dismiss();
             }
@@ -356,6 +355,10 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     private class deleteFolderAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -392,6 +395,10 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     private class FetchFolderReceiptsAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -439,6 +446,10 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     private class fetchFoldersAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -453,6 +464,7 @@ public class FolderActivity extends AppCompatActivity {
 
             try {
                 success = jsonObject.getInt("success");
+                System.out.println("Success: " + success);
                 JSONArray folders;
                 if (success == 1) {
                     folders = jsonObject.getJSONArray("data");
@@ -473,7 +485,10 @@ public class FolderActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
+
+            System.out.println("Success: " + success);
             if (success == 0) {
+                System.out.println("BROKE");
                 Toast.makeText(FolderActivity.this, message, Toast.LENGTH_LONG).show();
             }
             else{
@@ -486,6 +501,10 @@ public class FolderActivity extends AppCompatActivity {
     }
 
     private class setCurrentFolderAsyncTask extends AsyncTask<String, String, String> {
+
+        int success;
+        String message;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
