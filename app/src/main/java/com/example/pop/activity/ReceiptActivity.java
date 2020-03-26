@@ -119,35 +119,32 @@ public class ReceiptActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                requestStoragePermission();
+                boolean ask = requestStoragePermission();
 
-                bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(),
-                        Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                relativeLayout.draw((canvas));
+                if(!ask) {
+                    bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    relativeLayout.draw((canvas));
+                    Toast.makeText(ReceiptActivity.this, "Exporting to gallery", Toast.LENGTH_LONG).show();
 
-                String root = Environment.getExternalStorageDirectory().toString();
-                File myDir = new File(root + "/PopReceipts");
-                myDir.mkdirs();
-                String fname = "Receipt_"+ System.currentTimeMillis() +".jpg";
-                File file = new File(myDir, fname);
+                    //saveImage(bitmap, "PHOTO");
 
-                saveImage(bitmap, "PHOTO");
+                    //MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "yourTitle" , "yourDescription");
+                    ScreenCapture.insertImage(getContentResolver(), bitmap, System.currentTimeMillis() + ".jpg", "All Receipts", "All Receipts");
 
-                MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "yourTitle" , "yourDescription");
-
-                /*if (!file.exists()) {
-                    try {
-                        FileOutputStream fos = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                        Toast.makeText(getApplicationContext(), "Receipt successfully exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                        fos.flush();
-                        fos.close();
-                    } catch (java.io.IOException e) {
-                        Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                    }
-                }*/
+                    /*if (!file.exists()) {
+                        try {
+                            FileOutputStream fos = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                            Toast.makeText(getApplicationContext(), "Receipt successfully exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                            fos.flush();
+                            fos.close();
+                        } catch (java.io.IOException e) {
+                            Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+                    }*/
+                }
             }
         });
         context = this;
@@ -182,7 +179,6 @@ public class ReceiptActivity extends AppCompatActivity {
             finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.flush();
             out.close();
-            System.out.println("DONE JOB");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -249,8 +245,11 @@ public class ReceiptActivity extends AppCompatActivity {
         }
     };
 
-    private void requestStoragePermission() {
+    private boolean requestStoragePermission() {
+        boolean answer = false;
+
         if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            answer = true;
             new AlertDialog.Builder(context)
                     .setTitle("Permission needed")
                     .setMessage("This permission is needed to export your receipts.")
@@ -270,6 +269,8 @@ public class ReceiptActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
         }
+
+        return answer;
     }
 
     @Override
@@ -349,12 +350,6 @@ public class ReceiptActivity extends AppCompatActivity {
                 time.setText(receipt.getTime());
                 total.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
                 cash.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
-
-                System.out.println(receipt.getBarcode());
-                System.out.println(receipt.getCash());
-                System.out.println(receipt.getCashier());
-                System.out.println(receipt.getLocation());
-                System.out.println(receipt.getTransactionType());
             }
             else{
                 Toast.makeText(ReceiptActivity.this,"Empty", Toast.LENGTH_LONG).show();
