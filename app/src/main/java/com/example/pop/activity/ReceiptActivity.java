@@ -3,25 +3,21 @@ package com.example.pop.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,16 +42,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -64,7 +54,8 @@ public class ReceiptActivity extends AppCompatActivity {
     private TextView total; //Can currently be got from db
     private TextView cash;
     private TextView change;
-    private TextView location; //Temporarily Vendor
+    private TextView vendor;
+    private TextView location;
     private TextView date; //Can currently be got from db
     private TextView time; //Can currently be got from db
     private TextView barcodeNumber;
@@ -122,35 +113,32 @@ public class ReceiptActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                requestStoragePermission();
+                boolean ask = requestStoragePermission();
 
-                bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(),
-                        Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                relativeLayout.draw((canvas));
+                if(!ask) {
+                    bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(), Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    relativeLayout.draw((canvas));
+                    Toast.makeText(ReceiptActivity.this, "Exporting to gallery", Toast.LENGTH_LONG).show();
 
-                String root = Environment.getExternalStorageDirectory().toString();
-                File myDir = new File(root + "/PopReceipts");
-                myDir.mkdirs();
-                String fname = "Receipt_"+ System.currentTimeMillis() +".jpg";
-                File file = new File(myDir, fname);
+                    //saveImage(bitmap, "PHOTO");
 
-                saveImage(bitmap, "PHOTO");
+                    //MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "yourTitle" , "yourDescription");
+                    ScreenCapture.insertImage(getContentResolver(), bitmap, System.currentTimeMillis() + ".jpg", "All Receipts", "All Receipts");
 
-                MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "yourTitle" , "yourDescription");
-
-                /*if (!file.exists()) {
-                    try {
-                        FileOutputStream fos = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                        Toast.makeText(getApplicationContext(), "Receipt successfully exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                        fos.flush();
-                        fos.close();
-                    } catch (java.io.IOException e) {
-                        Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                    }
-                }*/
+                    /*if (!file.exists()) {
+                        try {
+                            FileOutputStream fos = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                            Toast.makeText(getApplicationContext(), "Receipt successfully exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                            fos.flush();
+                            fos.close();
+                        } catch (java.io.IOException e) {
+                            Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+                    }*/
+                }
             }
         });
         context = this;
@@ -163,7 +151,8 @@ public class ReceiptActivity extends AppCompatActivity {
         total = findViewById(R.id.receiptTotalText);
         cash = findViewById(R.id.receiptCash);
         change = findViewById(R.id.receiptChangeDue);
-        location = findViewById(R.id.receiptLocation);
+        vendor = findViewById(R.id.receiptLocation);
+        location = findViewById(R.id.storeAddress);
         date = findViewById(R.id.receiptDate);
         time = findViewById(R.id.receiptTime);
         otherNumber = findViewById(R.id.receiptOtherNumber);
@@ -185,7 +174,6 @@ public class ReceiptActivity extends AppCompatActivity {
             finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.flush();
             out.close();
-            System.out.println("DONE JOB");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -250,8 +238,11 @@ public class ReceiptActivity extends AppCompatActivity {
         }
     };
 
-    private void requestStoragePermission() {
+    private boolean requestStoragePermission() {
+        boolean answer = false;
+
         if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            answer = true;
             new AlertDialog.Builder(context)
                     .setTitle("Permission needed")
                     .setMessage("This permission is needed to export your receipts.")
@@ -271,6 +262,8 @@ public class ReceiptActivity extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
         }
+
+        return answer;
     }
 
     @Override
@@ -345,11 +338,12 @@ public class ReceiptActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             if(success == 1)
             {
-                location.setText(receipt.getVendorName());
+                vendor.setText(receipt.getVendorName());
                 String[] separated = receipt.getDate().split("-");
                 String dateOrdered = separated[2] + "-" + separated[1] + "-" + separated[0];
                 date.setText(dateOrdered);
                 time.setText(receipt.getTime());
+                location.setText(receipt.getLocation());
                 total.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
                 cash.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
             }

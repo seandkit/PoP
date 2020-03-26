@@ -1,19 +1,22 @@
 package com.example.pop.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.accounts.Account;
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,20 +25,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.adapter.FolderReceiptListAdapter;
-import com.example.pop.activity.adapter.ReceiptListAdapter;
+import com.example.pop.activity.adapter.ItemListAdapter;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Folder;
+import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
@@ -70,6 +73,30 @@ public class FolderActivity extends AppCompatActivity {
     private int success;
     private String message;
 
+    private int receiptId;
+    private Receipt receipt;
+
+    private Button btn_export;
+    private int STORAGE_PERMISSION_CODE = 1;
+
+
+    //Export Variable
+    private View v;
+    private ConstraintLayout relativeLayout;
+    private Button exportBtn;
+    private RecyclerView mItemRecyclerView;
+    private ItemListAdapter mItemAdapter;
+    public List<Item> mItemList = new ArrayList<>();
+    private TextView total; //Can currently be got from db
+    private TextView cash;
+    private TextView change;
+    private TextView vendor;
+    private TextView location;
+    private TextView date; //Can currently be got from db
+    private TextView time; //Can currently be got from db
+    private TextView barcodeNumber;
+    private TextView otherNumber;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,22 +121,170 @@ public class FolderActivity extends AppCompatActivity {
 
         navigationView = findViewById(R.id.navigation_view);
 
-        try {
-            String str_result = new FolderActivity.fetchFoldersAsyncTask().execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         if (CheckNetworkStatus.isNetworkAvailable(context)) {
-            new FetchFolderReceiptsAsyncTask().execute();
+            try {
+                String str_result = new FolderActivity.fetchFoldersAsyncTask().execute().get();
+                String str_result2 = new FetchFolderReceiptsAsyncTask().execute().get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         mRecyclerView = findViewById(R.id.receiptList);
         mAdapter = new FolderReceiptListAdapter(context, mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        btn_export = findViewById(R.id.export_btn);
+        btn_export.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean ask = requestStoragePermission();
+
+                if(!ask) {
+                    new ExportAsyncTask().execute();
+                    Toast.makeText(FolderActivity.this, "Exporting to gallery", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private boolean requestStoragePermission() {
+        boolean answer = false;
+
+        if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            answer = true;
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed to export your receipts.")
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            ActivityCompat.requestPermissions(FolderActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                        }
+                    })
+                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .create().show();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+        }
+
+        return answer;
+    }
+
+    private class ExportAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            for(Receipt r : mReceiptList) {
+                LayoutInflater inflater = LayoutInflater.from(context);
+                v = inflater.inflate(R.layout.activity_receipt, null);
+
+                relativeLayout = v.findViewById(R.id.receiptLayout);
+                ConstraintLayout pageLayout = v.findViewById(R.id.receiptPageContainer);
+                pageLayout.removeView(v.findViewById(R.id.export_btn));
+
+                v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
+                vendor = v.findViewById(R.id.receiptLocation);
+                location = v.findViewById(R.id.storeAddress);
+                total = v.findViewById(R.id.receiptTotalText);
+                cash = v.findViewById(R.id.receiptCash);
+                date = v.findViewById(R.id.receiptDate);
+                time = v.findViewById(R.id.receiptTime);
+
+                mItemRecyclerView = v.findViewById(R.id.itemList);
+
+                receiptId = r.getId();
+
+                HttpJsonParser httpJsonParser = new HttpJsonParser();
+                Map<String, String> httpParams = new HashMap<>();
+                httpParams.put("receipt_id", String.valueOf(receiptId));
+                JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "getAllReceiptInfo.php", "POST", httpParams);
+
+                try {
+                    success = jsonObject.getInt("success");
+                    JSONArray receiptData;
+                    JSONArray itemData;
+
+                    if (success == 1) {
+                        receiptData = jsonObject.getJSONArray("receipt");
+                        itemData = jsonObject.getJSONArray("items");
+                        for (int i = 0; i < receiptData.length(); i++) {
+                            JSONObject receiptInfo = receiptData.getJSONObject(i);
+
+                            //Values that can currently be gotten from database and assigned to receipt
+                            int receiptId = receiptInfo.getInt(DBConstants.RECEIPT_ID);
+                            String receiptDate = receiptInfo.getString(DBConstants.DATE);
+                            String receiptTime = receiptInfo.getString("time");
+                            String receiptVendor = receiptInfo.getString(DBConstants.VENDOR);
+                            double receiptTotal = receiptInfo.getDouble(DBConstants.RECEIPT_TOTAL);
+
+                            String location = receiptInfo.getString("location");
+                            String barcode = receiptInfo.getString("barcode");
+                            String cashier = receiptInfo.getString("cashier");
+                            double cash = receiptInfo.getDouble("cash_given");
+                            int transactionType = receiptInfo.getInt("transaction_type");
+
+                            receipt = new Receipt(receiptId, receiptDate, receiptTime, receiptVendor, receiptTotal, barcode, transactionType, cashier, cash, location, session.getUserId());
+                        }
+
+                        mItemList = new ArrayList<>();
+                        for (int i = 0; i < itemData.length(); i++) {
+                            JSONObject item = itemData.getJSONObject(i);
+                            int itemId = item.getInt(DBConstants.ITEM_ID);
+                            String itemName = item.getString("name");
+                            double itemPrice = item.getDouble(DBConstants.PRICE);
+                            int itemQuantity = item.getInt(DBConstants.QUANTITY);
+
+                            //Populate a list of items to be displayed on receipt
+                            mItemList.add(new Item(itemId, itemName, itemPrice, itemQuantity));
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if(success == 1)
+                {
+                    vendor.setText(receipt.getVendorName());
+                    location.setText(receipt.getLocation());
+                    String[] separated = receipt.getDate().split("-");
+                    String dateOrdered = separated[2] + "-" + separated[1] + "-" + separated[0];
+                    date.setText(dateOrdered);
+                    time.setText(receipt.getTime());
+                    total.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
+                    cash.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
+                }
+
+                mItemAdapter = new ItemListAdapter(context, mItemList);
+                mItemRecyclerView.setAdapter(mItemAdapter);
+                mItemRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+                Bitmap bitmap = Bitmap.createBitmap(v.getMeasuredWidth(), v.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+                Canvas c = new Canvas(bitmap);
+                v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
+                v.draw(c);
+
+                ScreenCapture.insertImage(getContentResolver(), bitmap,System.currentTimeMillis() +".jpg", folderName, folderName + " Receipts");
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String result) { }
     }
 
     @Override
@@ -233,6 +408,7 @@ public class FolderActivity extends AppCompatActivity {
                 if (success == 1) {
                     mReceiptList = new ArrayList<>();
                     receipts = jsonObject.getJSONArray("data");
+
                     //Iterate through the response and populate receipt list
                     for (int i = 0; i < receipts.length(); i++) {
                         JSONObject receipt = receipts.getJSONObject(i);

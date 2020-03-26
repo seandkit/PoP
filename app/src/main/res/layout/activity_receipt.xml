@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/receiptPageContainer"
     android:background="#E8E8E8"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -99,7 +100,7 @@
             android:id="@+id/receiptTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="3:29 PM"
+            android:text="13:29:48"
             android:textColor="#000000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -130,8 +131,9 @@
             android:id="@+id/storeAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Kings Court, Dundalk, Ireland"
+            android:text="0000000000000000000000000000000000000000000"
             android:textColor="#000000"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/receiptLocation" />
@@ -179,12 +181,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-
-            android:text="NULL"
+            android:text="00000000000000000000"
+            android:gravity="center"
             android:textColor="#000000"
             android:textSize="30dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:onClick="onClick"
@@ -228,7 +229,6 @@
             tools:listitem="@layout/item_list_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <Button
         android:id="@+id/export_btn"
