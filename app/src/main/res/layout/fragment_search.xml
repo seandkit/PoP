@@ -43,76 +43,80 @@
         <RelativeLayout
             android:id="@+id/textboxtest"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="100dp"
             tools:ignore="MissingConstraints"
-            android:background="@drawable/back"
+            android:background="@color/main_background_colour"
             >
 
-            <TextView
-                android:id="@+id/fromDateText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="35dp"
-                android:layout_marginLeft="35dp"
-                android:layout_marginTop="15dp"
-                android:text="From:"
-                android:textSize="20sp"
-                android:textColor="#000000"/>
+            <RelativeLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="360dp"
+                android:layout_height="80dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/background_for_search_background"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/toDateText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/fromDateText"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_marginStart="35dp"
-                android:layout_marginLeft="35dp"
-                android:layout_marginTop="20dp"
-                android:text="To:"
-                android:textSize="20sp"
-                android:textColor="#000000"/>
+                <TextView
+                    android:id="@+id/fromDateText"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Start Date"
+                    android:textSize="15dp"
+                    android:textColor="#474545"/>
 
-            <TextView
-                android:id="@+id/tvDateFrom"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="15dp"
-
-                android:layout_marginRight="35dp"
-                android:background="@drawable/backforbox"
-                android:text="Start Date"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:textColor="#000000"
-                />
-
-            <TextView
-                android:id="@+id/tvDateTo"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tvDateFrom"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="20dp"
-
-                android:layout_marginRight="35dp"
-                android:background="@drawable/backforbox"
-                android:text="End Date"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:textColor="#000000"/>
+                <TextView
+                    android:id="@+id/toDateText"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="90dp"
+                    android:text="End Date  "
+                    android:textColor="#474545"
+                    android:textSize="15dp" />
 
 
 
+
+                <TextView
+                    android:id="@+id/tvDateFrom"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/toDateText"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="30dp"
+                    android:background="@drawable/background_for_searchbox"
+                    android:text="24 Jan 2018"
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    android:textColor="#000000"
+                    />
+
+                <TextView
+                    android:id="@+id/tvDateTo"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/toDateText"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/background_for_searchbox"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="20dp"
+                    android:text="11 Feb 2020"
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    android:textColor="#000000"/>
+
+
+            </RelativeLayout>
 
         </RelativeLayout>
+
+
+
+
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -126,6 +130,15 @@
         tools:listitem="@layout/layout_list_item"
         >
     </androidx.recyclerview.widget.RecyclerView>
+
+    <ImageView
+        android:id="@+id/emptyListImg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/list_empty"
+        tools:layout_editor_absoluteX="157dp" />
 
 
 

@@ -137,6 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                         user.setFirstName(userObject.getString("first_name"));
                         user.setLastName(userObject.getString("last_name"));
                         user.setEmail(userObject.getString("email"));
+                        user.setCurrentFolder(userObject.getString("current_folder"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -159,6 +160,7 @@ public class LoginActivity extends AppCompatActivity {
                 session.setFirstName(user.getFirstName());
                 session.setLastName(user.getLastName());
                 session.setEmail(user.getEmail());
+                session.setCurrentFolder(user.getCurrentFolder());
 
                 Intent i = new Intent(LoginActivity.this, FragmentHolder.class);
                 startActivity(i);

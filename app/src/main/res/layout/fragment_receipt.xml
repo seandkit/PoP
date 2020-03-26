@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     >
 
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -15,6 +17,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/layout_listener_home_page"/>
+
+    <ImageView
+        android:id="@+id/emptyListImg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/list_empty"
+        tools:layout_editor_absoluteX="157dp" />
+
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

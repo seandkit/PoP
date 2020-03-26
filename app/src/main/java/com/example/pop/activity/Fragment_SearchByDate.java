@@ -25,7 +25,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
@@ -56,8 +58,11 @@ public class Fragment_SearchByDate extends Fragment {
     private TextView mDisplayDateTo;
     private DatePickerDialog.OnDateSetListener mDateSetListenerFrom;
     private DatePickerDialog.OnDateSetListener mDateSetListenerTo;
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+
+    public static RecyclerView mRecyclerView;
+    public static RecyclerView.Adapter mAdapter;
+    public static ImageView mImageView;
+
     private RecyclerView.LayoutManager mLayoutManager;
     private Object Receipt;
 
@@ -66,6 +71,9 @@ public class Fragment_SearchByDate extends Fragment {
     private int success;
     public List<Receipt> mReceiptList = new ArrayList<>();
     public List<Receipt> mReceiptListTemp = new ArrayList<>();
+
+    public static List<Receipt> mEmptyList = new ArrayList<>();
+    private ReceiptListAdapter mEmptyAdapter;
 
     public Fragment_SearchByDate() {
         // Required empty public constructor
@@ -82,23 +90,16 @@ public class Fragment_SearchByDate extends Fragment {
         context = getActivity().getApplicationContext();
         session = new Session(context);
 
-        if (CheckNetworkStatus.isNetworkAvailable(context)) {
-            new Fragment_SearchByDate.FetchReceiptsAsyncTask().execute();
-        }
-
-        mReceiptListTemp = mReceiptList;
-
-        // Get a handle to the RecyclerView.
         mRecyclerView = v.findViewById(R.id.receiptList);
-        // Create an adapter and supply the data to be displayed.
-        mAdapter = new ReceiptListAdapter(context, mReceiptList);
-        // Connect the adapter with the RecyclerView.
+        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mImageView = v.findViewById(R.id.emptyListImg);
 
         mDisplayDateFrom = (TextView) v.findViewById(R.id.tvDateFrom);
         mDisplayDateTo = (TextView) v.findViewById(R.id.tvDateTo);
+
+
 
 
         mDisplayDateFrom.setOnClickListener(new View.OnClickListener(){
@@ -175,6 +176,19 @@ public class Fragment_SearchByDate extends Fragment {
         return v;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        if( mAdapter.getItemCount() != 0 ){
+            mImageView.setVisibility(View.GONE);
+        }
+    }
+
     public void updateSearchList(List<Receipt> receiptList, String startSearchByDate, String endSearchByDate) throws ParseException {
         ArrayList<Receipt> updatedReceiptList = new ArrayList<>();
 
@@ -204,50 +218,5 @@ public class Fragment_SearchByDate extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-    }
-
-    private class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceipts.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                JSONArray receipts;
-                if (success == 1) {
-                    mReceiptList = new ArrayList<>();
-                    receipts = jsonObject.getJSONArray("data");
-                    //Iterate through the response and populate receipt list
-                    for (int i = 0; i < receipts.length(); i++) {
-                        JSONObject receipt = receipts.getJSONObject(i);
-                        int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
-                        String receiptDate = receipt.getString(DBConstants.DATE);
-                        String receiptVendor = receipt.getString(DBConstants.VENDOR);
-                        double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
-
-                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            mAdapter = new ReceiptListAdapter(context, mReceiptList);
-            // Connect the adapter with the RecyclerView.
-            mRecyclerView.setAdapter(mAdapter);
-            // Give the RecyclerView a default layout manager.
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        }
     }
 }
