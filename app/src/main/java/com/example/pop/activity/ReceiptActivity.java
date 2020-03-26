@@ -171,32 +171,16 @@ public class ReceiptActivity extends AppCompatActivity {
                 relativeLayout.draw((canvas));
 
                 String root = Environment.getExternalStorageDirectory().toString();
-                File myDir = new File(root + "/Pop Receipts");
+                File myDir = new File(root + "/Pop Receipts/PDF Receipts");
                 myDir.mkdirs();
                 String fname = "Receipt_"+ System.currentTimeMillis() +".pdf";
                 File file = new File(myDir, fname);
 
 
                 createPdf(bitmap, myDir, fname);
-
-                /*if (!file.exists()) {
-                    Log.d("path", file.toString());
-
-                    try {
-                        FileOutputStream fos = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                        Toast.makeText(getApplicationContext(), "Receipt successfully exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                        fos.flush();
-                        fos.close();
-                    } catch (java.io.IOException e) {
-                        Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                    }
-                }*/
+                Toast.makeText(getApplicationContext(), "PDF file Created in: /Pop Receipts/PDF Receipts", Toast.LENGTH_SHORT).show();
             }
         });
-
-
 
         btn_export_csv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -230,9 +214,7 @@ public class ReceiptActivity extends AppCompatActivity {
                 }
                 catch (Exception e){
                     e.printStackTrace();
-
                 }
-
             }
         });
 
@@ -269,7 +251,6 @@ public class ReceiptActivity extends AppCompatActivity {
         paint.setColor(Color.BLUE);
         canvas.drawBitmap(bitmap, 0, 0 , null);
         document.finishPage(page);
-
 
         // write the document content
         File filePath = new File(myDir, fileName);
@@ -340,7 +321,6 @@ public class ReceiptActivity extends AppCompatActivity {
                 subMenu.add(Menu.NONE, f.getId(), Menu.NONE, f.getName()).setOnMenuItemClickListener(folderOnClickListener);
             }
         }
-
 
         return true;
     }
