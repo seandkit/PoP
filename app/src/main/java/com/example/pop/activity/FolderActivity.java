@@ -1,6 +1,5 @@
 package com.example.pop.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,33 +12,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.accounts.Account;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapRegionDecoder;
 import android.graphics.Canvas;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,23 +34,17 @@ import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.adapter.FolderReceiptListAdapter;
 import com.example.pop.activity.adapter.ItemListAdapter;
-import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Folder;
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -102,13 +83,15 @@ public class FolderActivity extends AppCompatActivity {
     //Export Variable
     private View v;
     private ConstraintLayout relativeLayout;
+    private Button exportBtn;
     private RecyclerView mItemRecyclerView;
     private ItemListAdapter mItemAdapter;
     public List<Item> mItemList = new ArrayList<>();
     private TextView total; //Can currently be got from db
     private TextView cash;
     private TextView change;
-    private TextView location; //Temporarily Vendor
+    private TextView vendor;
+    private TextView location;
     private TextView date; //Can currently be got from db
     private TextView time; //Can currently be got from db
     private TextView barcodeNumber;
@@ -209,11 +192,14 @@ public class FolderActivity extends AppCompatActivity {
                 LayoutInflater inflater = LayoutInflater.from(context);
                 v = inflater.inflate(R.layout.activity_receipt, null);
 
-                relativeLayout = findViewById(R.id.receiptLayout);
+                relativeLayout = v.findViewById(R.id.receiptLayout);
+                ConstraintLayout pageLayout = v.findViewById(R.id.receiptPageContainer);
+                pageLayout.removeView(v.findViewById(R.id.export_btn));
 
                 v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
-                location = v.findViewById(R.id.receiptLocation);
+                vendor = v.findViewById(R.id.receiptLocation);
+                location = v.findViewById(R.id.storeAddress);
                 total = v.findViewById(R.id.receiptTotalText);
                 cash = v.findViewById(R.id.receiptCash);
                 date = v.findViewById(R.id.receiptDate);
@@ -273,8 +259,8 @@ public class FolderActivity extends AppCompatActivity {
 
                 if(success == 1)
                 {
-                    location.clearComposingText();
-                    location.setText(receipt.getVendorName());
+                    vendor.setText(receipt.getVendorName());
+                    location.setText(receipt.getLocation());
                     String[] separated = receipt.getDate().split("-");
                     String dateOrdered = separated[2] + "-" + separated[1] + "-" + separated[0];
                     date.setText(dateOrdered);
