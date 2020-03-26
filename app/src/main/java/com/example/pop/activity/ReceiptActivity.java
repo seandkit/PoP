@@ -192,13 +192,19 @@ public class ReceiptActivity extends AppCompatActivity {
 
 
 
-                StringBuilder data = new StringBuilder();
-                data.append("Item,Quantity,Total");
 
-                for(int i = 0; i<mAdapter.getItemCount(); i++){
-                    data.append("\n"+String.valueOf(i)+","+String.valueOf(i*i));
+                StringBuilder data = new StringBuilder();
+                data.append("Location,Date,Time,Store,Cashier,Item,Quantity,Price,Total");
+                data.append("\n"+receipt.getVendorName()  + "," +receipt.getDate() + "," + receipt.getTime() + "," +receipt.getId() + "," +receipt.getCashier()+ ","
+                        + mItemList.get(0).getName() + "," + mItemList.get(0).getQuantity() + "," + mItemList.get(0).getPrice() + "," +
+                        receipt.getReceiptTotal());
+
+                for(int i = 1; i<mItemList.size(); i++){
+                    data.append("\n"+ ", , , , ," + mItemList.get(i).getName() + "," + mItemList.get(i).getQuantity() + "," + mItemList.get(i).getPrice() + ",");
 
                 }
+
+
                 try {
                     FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
                     out.write((data.toString()).getBytes());
@@ -206,6 +212,7 @@ public class ReceiptActivity extends AppCompatActivity {
 
                     Context context = getApplicationContext();
                     File filelocation = new File(getFilesDir(), "data.csv");
+
                     Uri path = FileProvider.getUriForFile(context, "com.example.pop.fileprovider", filelocation);
                     Intent fileIntent = new Intent(Intent.ACTION_SEND);
                     fileIntent.setType("text/csv");
