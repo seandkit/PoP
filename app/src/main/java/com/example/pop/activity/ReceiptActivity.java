@@ -1,6 +1,7 @@
 package com.example.pop.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -19,16 +20,21 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
+import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +54,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -151,6 +158,7 @@ public class ReceiptActivity extends AppCompatActivity {
 
 
         btn_export_pdf.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View view) {
 
@@ -158,16 +166,20 @@ public class ReceiptActivity extends AppCompatActivity {
 
                 bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(),
                         Bitmap.Config.ARGB_8888);
+
                 Canvas canvas = new Canvas(bitmap);
                 relativeLayout.draw((canvas));
 
                 String root = Environment.getExternalStorageDirectory().toString();
-                File myDir = new File(root + "/PopReceipts");
+                File myDir = new File(root + "/Pop Receipts");
                 myDir.mkdirs();
-                String fname = "Receipt_"+ System.currentTimeMillis() +".png";
+                String fname = "Receipt_"+ System.currentTimeMillis() +".pdf";
                 File file = new File(myDir, fname);
 
-                if (!file.exists()) {
+
+                createPdf(bitmap, myDir, fname);
+
+                /*if (!file.exists()) {
                     Log.d("path", file.toString());
 
                     try {
@@ -180,7 +192,7 @@ public class ReceiptActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
-                }
+                }*/
             }
         });
 
@@ -190,15 +202,13 @@ public class ReceiptActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-
-
                 StringBuilder data = new StringBuilder();
                 data.append("Item,Quantity,Total");
 
-                for(int i = 0; i<mAdapter.getItemCount(); i++){
+                for(int i = 0; i < mItemList.size(); i++){
                     data.append("\n"+String.valueOf(i)+","+String.valueOf(i*i));
-
                 }
+
                 try {
                     FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
                     out.write((data.toString()).getBytes());
@@ -239,6 +249,35 @@ public class ReceiptActivity extends AppCompatActivity {
         otherNumber = findViewById(R.id.receiptOtherNumber);
 
         new FetchReceiptsInfoAsyncTask().execute();
+    }
+
+    private void createPdf(Bitmap bitmap, File myDir, String fileName){
+        PdfDocument document = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
+        PdfDocument.Page page = document.startPage(pageInfo);
+
+        Canvas canvas = page.getCanvas();
+
+        Paint paint = new Paint();
+        paint.setColor(Color.parseColor("#ffffff"));
+        canvas.drawPaint(paint);
+
+        paint.setColor(Color.BLUE);
+        canvas.drawBitmap(bitmap, 0, 0 , null);
+        document.finishPage(page);
+
+
+        // write the document content
+        File filePath = new File(myDir, fileName);
+        try {
+            document.writeTo(new FileOutputStream(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Something wrong: " + e.toString(), Toast.LENGTH_LONG).show();
+        }
+
+        // close the document
+        document.close();
     }
 
     private void saveImage(Bitmap finalBitmap, String image_name) {
