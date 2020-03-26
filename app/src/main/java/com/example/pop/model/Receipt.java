@@ -18,6 +18,8 @@ public class Receipt implements Comparable<Receipt> {
     private String location;
     private String barcode;
     private int userId;
+    private double lat;
+    private double lng;
     private List<Item> items;
     private String uuid;
 
@@ -41,7 +43,7 @@ public class Receipt implements Comparable<Receipt> {
         this.userId = userId;
     }
 
-    public Receipt(int id, String date, String time, String vendorName,  double receiptTotal, String barcode, int transactionType, String cashier, Double cash, String location, int userId){
+    public Receipt(int id, String date, String time, String vendorName,  double receiptTotal, String barcode, int transactionType, String cashier, Double cash, String location, double lat, double lng, int userId){
         this.id = id;
         this.date = date;
         this.time = time;
@@ -52,6 +54,8 @@ public class Receipt implements Comparable<Receipt> {
         this.cashier = cashier;
         this.cash = cash;
         this.location = location;
+        this.lat = lat;
+        this.lng = lng;
         this.userId = userId;
     }
 
@@ -110,6 +114,10 @@ public class Receipt implements Comparable<Receipt> {
         return location;
     }
 
+    public double getLat() { return lat; }
+
+    public double getLng() { return lng; }
+
     public String getCashier() {
         return cashier;
     }
@@ -161,6 +169,14 @@ public class Receipt implements Comparable<Receipt> {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
     public void setUuid(String uuid) {

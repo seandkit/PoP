@@ -39,6 +39,7 @@ import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Folder;
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,6 +69,8 @@ public class ReceiptActivity extends AppCompatActivity {
     private TextView time; //Can currently be got from db
     private TextView barcodeNumber;
     private TextView otherNumber;
+    private double lat;
+    private double lng;
 
     private RecyclerView mRecyclerView;
     private ItemListAdapter mAdapter;
@@ -189,18 +192,16 @@ public class ReceiptActivity extends AppCompatActivity {
     }
 
     public void onClick(View v) {
-        Toast.makeText(ReceiptActivity.this, "You are doing this in the right order!", Toast.LENGTH_LONG).show();
-        Double markerLat = 53.9979;
-        Double markerLong = -6.406;
-        String markerTitle = "Tesco Extra";
-        String markerSnippet = "Dublin Rd, Townparks, Dundalk, Co. Louth";
+        double markerLat = receipt.getLat();
+        double markerLong = receipt.getLng();
+        String markerTitle = receipt.getVendorName();
+        String markerSnippet = "Location's Address";
         Intent intent = new Intent(ReceiptActivity.this, Map_Location.class);
         intent.putExtra("title", markerTitle);
         intent.putExtra("snippet", markerSnippet);
         intent.putExtra("lat", markerLat);
         intent.putExtra("long", markerLong);
         startActivity(intent);
-
     }
 
     @Override
@@ -312,6 +313,8 @@ public class ReceiptActivity extends AppCompatActivity {
                         String receiptTime = receiptInfo.getString("time");
                         String receiptVendor = receiptInfo.getString(DBConstants.VENDOR);
                         double receiptTotal = receiptInfo.getDouble(DBConstants.RECEIPT_TOTAL);
+                        double lat = receiptInfo.getDouble("lat");
+                        double lng = receiptInfo.getDouble("lng");
 
                         String location = receiptInfo.getString("location");
                         String barcode = receiptInfo.getString("barcode");
@@ -319,7 +322,7 @@ public class ReceiptActivity extends AppCompatActivity {
                         double cash = receiptInfo.getDouble("cash_given");
                         int transactionType = receiptInfo.getInt("transaction_type");
 
-                        receipt = new Receipt(receiptId, receiptDate, receiptTime, receiptVendor, receiptTotal, barcode, transactionType, cashier, cash, location, session.getUserId());
+                        receipt = new Receipt(receiptId, receiptDate, receiptTime, receiptVendor, receiptTotal, barcode, transactionType, cashier, cash, location, lat, lng, session.getUserId());
                     }
 
                     for (int i = 0; i < itemData.length(); i++) {
@@ -349,12 +352,6 @@ public class ReceiptActivity extends AppCompatActivity {
                 time.setText(receipt.getTime());
                 total.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
                 cash.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
-
-                System.out.println(receipt.getBarcode());
-                System.out.println(receipt.getCash());
-                System.out.println(receipt.getCashier());
-                System.out.println(receipt.getLocation());
-                System.out.println(receipt.getTransactionType());
             }
             else{
                 Toast.makeText(ReceiptActivity.this,"Empty", Toast.LENGTH_LONG).show();
