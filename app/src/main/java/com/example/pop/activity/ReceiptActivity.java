@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,6 +16,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -75,7 +80,9 @@ public class ReceiptActivity extends AppCompatActivity {
     public Receipt receipt;
 
     private Bitmap bitmap;
-    private Button btn_export;
+    private Button btn_export_png;
+    private Button btn_export_csv;
+    private Button btn_export_pdf;
 
     public static List<Folder> folderList = new ArrayList<>();
 
@@ -105,9 +112,11 @@ public class ReceiptActivity extends AppCompatActivity {
 
         relativeLayout = findViewById(R.id.receiptLayout);
 
-        btn_export = (Button) findViewById(R.id.export_btn);
+        btn_export_png = (Button) findViewById(R.id.export_btn_png);
+        btn_export_pdf = (Button) findViewById(R.id.export_btn_pdf);
+        btn_export_csv = (Button) findViewById(R.id.export_btn_csv);
 
-        btn_export.setOnClickListener(new View.OnClickListener() {
+        btn_export_png.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -139,6 +148,80 @@ public class ReceiptActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        btn_export_pdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                requestStoragePermission();
+
+                bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(),
+                        Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                relativeLayout.draw((canvas));
+
+                String root = Environment.getExternalStorageDirectory().toString();
+                File myDir = new File(root + "/PopReceipts");
+                myDir.mkdirs();
+                String fname = "Receipt_"+ System.currentTimeMillis() +".png";
+                File file = new File(myDir, fname);
+
+                if (!file.exists()) {
+                    Log.d("path", file.toString());
+
+                    try {
+                        FileOutputStream fos = new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                        Toast.makeText(getApplicationContext(), "Receipt successfully exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                        fos.flush();
+                        fos.close();
+                    } catch (java.io.IOException e) {
+                        Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+
+
+        btn_export_csv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+
+                StringBuilder data = new StringBuilder();
+                data.append("Item,Quantity,Total");
+
+                for(int i = 0; i<mAdapter.getItemCount(); i++){
+                    data.append("\n"+String.valueOf(i)+","+String.valueOf(i*i));
+
+                }
+                try {
+                    FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
+                    out.write((data.toString()).getBytes());
+                    out.close();
+
+                    Context context = getApplicationContext();
+                    File filelocation = new File(getFilesDir(), "data.csv");
+                    Uri path = FileProvider.getUriForFile(context, "com.example.pop.fileprovider", filelocation);
+                    Intent fileIntent = new Intent(Intent.ACTION_SEND);
+                    fileIntent.setType("text/csv");
+                    fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
+                    fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    fileIntent.putExtra(Intent.EXTRA_STREAM, path);
+                    startActivity(Intent.createChooser(fileIntent, "Send mail"));
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+
+                }
+
+            }
+        });
+
         context = this;
 
         session = new Session(context);

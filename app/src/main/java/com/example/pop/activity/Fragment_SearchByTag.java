@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +42,7 @@ public class Fragment_SearchByTag extends Fragment{
 
     public static RecyclerView mRecyclerView;
     public static ReceiptListAdapter mAdapter;
+    public static ImageView mImageView;
 
     private SearchView searchView;
 
@@ -73,6 +75,8 @@ public class Fragment_SearchByTag extends Fragment{
         session = new Session(context);
 
         setHasOptionsMenu(true);
+
+        mImageView = v.findViewById(R.id.emptyListImg);
 
         flexboxLayout = v.findViewById(R.id.flexboxId);
 
@@ -126,6 +130,11 @@ public class Fragment_SearchByTag extends Fragment{
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        if( mAdapter.getItemCount() != 0 ){
+            mImageView.setVisibility(View.GONE);
+
+        }
     }
 
     private void addTag(String title){
