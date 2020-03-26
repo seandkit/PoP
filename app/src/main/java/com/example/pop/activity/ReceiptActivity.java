@@ -203,10 +203,14 @@ public class ReceiptActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 StringBuilder data = new StringBuilder();
-                data.append("Item,Quantity,Total");
+                data.append("Location,Date,Time,Store,Cashier,Item,Quantity,Price,Total");
+                data.append("\n"+receipt.getVendorName()  + "," +receipt.getDate() + "," + receipt.getTime() + "," +receipt.getId() + "," +receipt.getCashier()+ ","
+                        + mItemList.get(0).getName() + "," + mItemList.get(0).getQuantity() + "," + mItemList.get(0).getPrice() + "," +
+                        receipt.getReceiptTotal());
 
-                for(int i = 0; i < mItemList.size(); i++){
-                    data.append("\n"+String.valueOf(i)+","+String.valueOf(i*i));
+                for(int i = 1; i<mItemList.size(); i++){
+                    data.append("\n"+ ", , , , ," + mItemList.get(i).getName() + "," + mItemList.get(i).getQuantity() + "," + mItemList.get(i).getPrice() + ",");
+
                 }
 
                 try {
