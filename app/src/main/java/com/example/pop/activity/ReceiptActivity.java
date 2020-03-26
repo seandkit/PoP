@@ -195,7 +195,7 @@ public class ReceiptActivity extends AppCompatActivity {
         double markerLat = receipt.getLat();
         double markerLong = receipt.getLng();
         String markerTitle = receipt.getVendorName();
-        String markerSnippet = "Location's Address";
+        String markerSnippet = receipt.getLocation();
         Intent intent = new Intent(ReceiptActivity.this, Map_Location.class);
         intent.putExtra("title", markerTitle);
         intent.putExtra("snippet", markerSnippet);
