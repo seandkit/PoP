@@ -273,6 +273,7 @@ public class FolderActivity extends AppCompatActivity {
 
                 if(success == 1)
                 {
+                    location.clearComposingText();
                     location.setText(receipt.getVendorName());
                     String[] separated = receipt.getDate().split("-");
                     String dateOrdered = separated[2] + "-" + separated[1] + "-" + separated[0];

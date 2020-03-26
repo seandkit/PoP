@@ -3,25 +3,21 @@ package com.example.pop.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,16 +41,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -63,7 +53,8 @@ public class ReceiptActivity extends AppCompatActivity {
     private TextView total; //Can currently be got from db
     private TextView cash;
     private TextView change;
-    private TextView location; //Temporarily Vendor
+    private TextView vendor;
+    private TextView location;
     private TextView date; //Can currently be got from db
     private TextView time; //Can currently be got from db
     private TextView barcodeNumber;
@@ -157,7 +148,8 @@ public class ReceiptActivity extends AppCompatActivity {
         total = findViewById(R.id.receiptTotalText);
         cash = findViewById(R.id.receiptCash);
         change = findViewById(R.id.receiptChangeDue);
-        location = findViewById(R.id.receiptLocation);
+        vendor = findViewById(R.id.receiptLocation);
+        location = findViewById(R.id.storeAddress);
         date = findViewById(R.id.receiptDate);
         time = findViewById(R.id.receiptTime);
         otherNumber = findViewById(R.id.receiptOtherNumber);
@@ -343,11 +335,12 @@ public class ReceiptActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             if(success == 1)
             {
-                location.setText(receipt.getVendorName());
+                vendor.setText(receipt.getVendorName());
                 String[] separated = receipt.getDate().split("-");
                 String dateOrdered = separated[2] + "-" + separated[1] + "-" + separated[0];
                 date.setText(dateOrdered);
                 time.setText(receipt.getTime());
+                location.setText(receipt.getLocation());
                 total.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
                 cash.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
             }
