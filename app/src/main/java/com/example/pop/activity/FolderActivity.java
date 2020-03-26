@@ -231,6 +231,8 @@ public class FolderActivity extends AppCompatActivity {
                             String receiptTime = receiptInfo.getString("time");
                             String receiptVendor = receiptInfo.getString(DBConstants.VENDOR);
                             double receiptTotal = receiptInfo.getDouble(DBConstants.RECEIPT_TOTAL);
+                            double lat = receiptInfo.getDouble("lat");
+                            double lng = receiptInfo.getDouble("lng");
 
                             String location = receiptInfo.getString("location");
                             String barcode = receiptInfo.getString("barcode");
@@ -238,7 +240,7 @@ public class FolderActivity extends AppCompatActivity {
                             double cash = receiptInfo.getDouble("cash_given");
                             int transactionType = receiptInfo.getInt("transaction_type");
 
-                            receipt = new Receipt(receiptId, receiptDate, receiptTime, receiptVendor, receiptTotal, barcode, transactionType, cashier, cash, location, session.getUserId());
+                            receipt = new Receipt(receiptId, receiptDate, receiptTime, receiptVendor, receiptTotal, barcode, transactionType, cashier, cash, location, lat, lng, session.getUserId());
                         }
 
                         mItemList = new ArrayList<>();
