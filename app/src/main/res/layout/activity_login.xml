@@ -71,13 +71,13 @@
 
     <TextView
         android:id="@+id/regLink"
-        android:layout_width="146dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="0dp"
         android:layout_marginBottom="30dp"
-        android:text="Back to Login."
+        android:text="Back to Register."
         android:textAlignment="center"
         android:textColor="#FFFFFF"
         android:textSize="20dp"  />
