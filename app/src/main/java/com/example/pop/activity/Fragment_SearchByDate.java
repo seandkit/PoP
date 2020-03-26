@@ -25,7 +25,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
@@ -59,6 +61,7 @@ public class Fragment_SearchByDate extends Fragment {
 
     public static RecyclerView mRecyclerView;
     public static RecyclerView.Adapter mAdapter;
+    public static ImageView mImageView;
 
     private RecyclerView.LayoutManager mLayoutManager;
     private Object Receipt;
@@ -91,9 +94,12 @@ public class Fragment_SearchByDate extends Fragment {
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mImageView = v.findViewById(R.id.emptyListImg);
 
         mDisplayDateFrom = (TextView) v.findViewById(R.id.tvDateFrom);
         mDisplayDateTo = (TextView) v.findViewById(R.id.tvDateTo);
+
+
 
 
         mDisplayDateFrom.setOnClickListener(new View.OnClickListener(){
@@ -177,6 +183,10 @@ public class Fragment_SearchByDate extends Fragment {
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        if( mAdapter.getItemCount() != 0 ){
+            mImageView.setVisibility(View.GONE);
+        }
     }
 
     public void updateSearchList(List<Receipt> receiptList, String startSearchByDate, String endSearchByDate) throws ParseException {

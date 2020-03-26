@@ -231,21 +231,54 @@
 
 
     <Button
-        android:id="@+id/export_btn"
-        android:layout_width="250dp"
+        android:id="@+id/export_btn_png"
+        android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/export_button"
-        android:text="Export"
+        android:text="PNG"
         android:textAllCaps="false"
         android:textColor="#474545"
         android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/export_btn_pdf"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="10dp"
-        tools:layout_editor_absoluteX="81dp"
-        tools:layout_editor_absoluteY="658dp" />
+        />
+
+    <Button
+        android:id="@+id/export_btn_pdf"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/export_button"
+        android:text="PDF"
+        android:textAllCaps="false"
+        android:textColor="#474545"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@id/export_btn_png"
+        app:layout_constraintEnd_toStartOf="@id/export_btn_csv"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="10dp"
+       />
+
+    <Button
+        android:id="@+id/export_btn_csv"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/export_button"
+        android:text="CSV"
+        android:textAllCaps="false"
+        android:textColor="#474545"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@id/export_btn_pdf"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="10dp"
+    />
 
 </androidx.constraintlayout.widget.ConstraintLayout >

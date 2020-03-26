@@ -3,6 +3,7 @@ package com.example.pop.activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +47,7 @@ public class Fragment_Receipt extends Fragment {
     private SQLiteDatabaseAdapter db;
     public static RecyclerView mRecyclerView;
     public static ReceiptListAdapter mAdapter;
+    public static ImageView mImageView;
 
     private ProgressDialog pDialog;
     private int success;
@@ -71,6 +74,7 @@ public class Fragment_Receipt extends Fragment {
         context = getActivity();
         session = new Session(context);
         mRecyclerView = v.findViewById(R.id.receiptList);
+        mImageView = v.findViewById(R.id.emptyListImg);
 
         db = new SQLiteDatabaseAdapter(context);
 
@@ -84,6 +88,11 @@ public class Fragment_Receipt extends Fragment {
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        if( mAdapter.getItemCount() != 0 ){
+        mImageView.setVisibility(View.GONE);
+
+        }
+
     }
 
     @Override

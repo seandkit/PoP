@@ -115,6 +115,10 @@
         </RelativeLayout>
 
 
+
+
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/receiptList"
         android:layout_width="0dp"
@@ -126,6 +130,15 @@
         tools:listitem="@layout/layout_list_item"
         >
     </androidx.recyclerview.widget.RecyclerView>
+
+    <ImageView
+        android:id="@+id/emptyListImg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/list_empty"
+        tools:layout_editor_absoluteX="157dp" />
 
 
 

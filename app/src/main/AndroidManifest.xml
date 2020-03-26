@@ -24,7 +24,9 @@
         android:roundIcon="@drawable/logo_dark"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.Map_Location"></activity>
+        <activity android:name=".activity.EmptyReceiptList"></activity>
+        <activity android:name=".activity.Map_Location" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyALRfXYO9M3CWVGxhpzdVKppFxprPBifBY" />
@@ -36,8 +38,6 @@
             <intent-filter>
                 <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />
             </intent-filter>
-
-
 
             <meta-data
                 android:name="android.nfc.cardemulation.host_apdu_service"
@@ -79,6 +79,17 @@
         <activity
             android:name=".activity.ExportActivity"
             android:theme="@style/AppTheme.PopMe" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.pop.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
         <activity
             android:name=".activity.BlurActivity"
             android:clearTaskOnLaunch="true"

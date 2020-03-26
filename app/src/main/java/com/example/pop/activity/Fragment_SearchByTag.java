@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ public class Fragment_SearchByTag extends Fragment{
 
     public static RecyclerView mRecyclerView;
     public static ReceiptListAdapter mAdapter;
+    public static ImageView mImageView;
 
     private SearchView searchView;
 
@@ -63,6 +65,8 @@ public class Fragment_SearchByTag extends Fragment{
         session = new Session(context);
 
         setHasOptionsMenu(true);
+
+        mImageView = v.findViewById(R.id.emptyListImg);
 
         mRecyclerView = v.findViewById(R.id.receiptList);
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
@@ -105,6 +109,11 @@ public class Fragment_SearchByTag extends Fragment{
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+        if( mAdapter.getItemCount() != 0 ){
+            mImageView.setVisibility(View.GONE);
+
+        }
     }
 
     //Search Specific classes
