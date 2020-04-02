@@ -576,6 +576,7 @@ public class FolderActivity extends AppCompatActivity {
                 }
             }
             startActivity(intent);
+            finish();
             return false;
         }
     };
