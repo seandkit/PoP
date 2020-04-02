@@ -1,9 +1,11 @@
 package com.example.pop.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.pop.R;
@@ -29,6 +31,21 @@ public class Map_Location extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map__location);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Receipt Origin");
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 onBackPressed();
+             }
+        });
+
         Double latLocation = getIntent().getDoubleExtra("lat", 0);
         Double longLocation = getIntent().getDoubleExtra("long", 0);
         String vendorName = getIntent().getStringExtra("title");

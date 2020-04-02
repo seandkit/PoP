@@ -24,8 +24,12 @@
         android:roundIcon="@drawable/logo_dark"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.EmptyReceiptList"></activity>
-        <activity android:name=".activity.Map_Location" />
+
+        <activity android:name=".activity.EmptyReceiptList"/>
+
+        <activity
+            android:name=".activity.Map_Location"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
