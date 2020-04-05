@@ -6,17 +6,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.biometric.BiometricManager;
-import androidx.biometric.BiometricPrompt;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -36,9 +31,6 @@ import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.media.MediaBrowserCompat;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,12 +38,10 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.pop.DBConstants;
 import com.example.pop.R;
-import com.example.pop.activity.adapter.FolderListAdapter;
 import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
@@ -71,7 +61,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 
 public class FragmentHolder extends AppCompatActivity implements NfcAdapter.ReaderCallback, NavigationView.OnNavigationItemSelectedListener {
 
@@ -181,7 +170,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             startActivity(intent);
         }
 
-        updateReceiptList();
+        updateReceiptListUI();
     }
 
     @Override
@@ -478,7 +467,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             e.printStackTrace();
         }
 
-        updateReceiptList();
+        updateReceiptListUI();
     }
 
     private class linkReceiptAsyncTask extends AsyncTask<String, String, String> {
@@ -519,7 +508,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
     }
 
-    private void updateReceiptList(){
+    private void updateReceiptListUI(){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -564,93 +553,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         protected void onPostExecute(String result) {
             addNewItem(newFolderId, newFolderName);
             Toast.makeText(FragmentHolder.this,"Folder created",Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private class addReceiptToFolderAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("receipt_id", "1");//'1' needs to be changed to some user chosen receipt id
-            httpParams.put("folder_id", "1");//'1' needs to be changed to some user chosen folder id
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "addReceiptToFolder.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                message = jsonObject.getString("message");
-                //Can choose to set values in success '1'- means added successfully, '0'- is otherwise
-                if (success == 1) {
-
-                }
-                else{
-
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            Toast.makeText(FragmentHolder.this, message, Toast.LENGTH_LONG).show();
-            //Can choose execute something in success '1'- means added successfully, '0'- is otherwise
-            if (success == 0) {
-
-            }
-            else{
-
-            }
-        }
-    }
-
-    //This delete method calls a php function which deletes all ReceiptFolder and Folder objects with the same given folder id chosen by the user
-    private class deleteFolderAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("folder_id", String.valueOf(newFolderId));//'1' needs to be changed to some user chosen folder id
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "deleteFolder.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                //Can choose to set values in success '1'- means added successfully, '0'- is otherwise
-                //success 1 means deleted in this case
-                if (success == 1) {
-                }
-                else{
-                    message = jsonObject.getString("message");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            //Can choose execute something in success '1'- means added successfully, '0'- is otherwise
-            if (success == 0) {
-                Toast.makeText(FragmentHolder.this, message, Toast.LENGTH_LONG).show();
-            }
         }
     }
 
