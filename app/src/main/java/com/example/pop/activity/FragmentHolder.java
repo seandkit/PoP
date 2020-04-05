@@ -242,6 +242,9 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
                 Intent i = new Intent(this, LoginActivity.class);
                 startActivity(i);
+                folderList = new ArrayList<>();
+                mReceiptList = new ArrayList<>();
+                finish();
                 break;
 
             case R.id.nav_folder_add_new:
