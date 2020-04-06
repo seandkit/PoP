@@ -247,6 +247,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
             case R.id.nav_folder_add_new:
                 newFolderPopUp();
                 break;
+
+            case R.id.nav_tutorial:
+                Intent tutorial = new Intent(this, Tutorial.class);
+                startActivity(tutorial);
         }
 
         return true;

@@ -24,7 +24,8 @@
         android:roundIcon="@drawable/logo_dark"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.EmptyReceiptList"></activity>
+        <activity android:name=".activity.Tutorial"></activity>
+        <activity android:name=".activity.EmptyReceiptList" />
         <activity android:name=".activity.Map_Location" />
 
         <meta-data
@@ -83,11 +84,11 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.pop.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <activity
