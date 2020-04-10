@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     tools:context=".activity.ReceiptActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <!-- <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         tools:ignore="MissingConstraints"
@@ -17,6 +17,9 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:elevation="4dp"/>
+
+        #### THIS SHIT KEPT MESSING WITH MY EXPORT ###
+    -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/receiptLayout"
@@ -30,9 +33,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="30dp"
             android:layout_marginRight="20dp"
-            android:layout_marginBottom="60dp"
+            android:layout_marginBottom="30dp"
             android:background="@drawable/back_for_receipt"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -214,7 +217,7 @@
             android:id="@+id/receiptOtherNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="60dp"
+            android:layout_marginBottom="30dp"
             android:text="5797  071  9071  2355"
             android:textColor="#000000"
             app:layout_constraintBottom_toBottomOf="parent"

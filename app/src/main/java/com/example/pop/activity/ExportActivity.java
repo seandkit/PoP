@@ -91,7 +91,7 @@ public class ExportActivity extends Activity {
         int width = dm.widthPixels;
         int height = dm.heightPixels;
 
-        getWindow().setLayout((int)(width*.7),(int)(height*.4));
+        getWindow().setLayout((int)(width*.7),(int)(height*.45));
 
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.gravity = Gravity.CENTER;
@@ -220,7 +220,7 @@ public class ExportActivity extends Activity {
                 relativeLayout = v.findViewById(R.id.receiptLayout);
                 ConstraintLayout pageLayout = v.findViewById(R.id.receiptPageContainer);
                 pageLayout.removeView(v.findViewById(R.id.export_btn));
-                //pageLayout.removeView(v.findViewById(R.id.export_btn_pdf));
+                pageLayout.removeView(v.findViewById(R.id.toolbar));
                 //pageLayout.removeView(v.findViewById(R.id.export_btn_csv));
 
                 v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
