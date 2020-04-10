@@ -16,7 +16,7 @@
         tools:ignore="MissingConstraints">
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/linearLayoutReceipt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
@@ -50,12 +50,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="€54.79"
+            android:text="€00000.00"
             android:textColor="#000000"
             android:textSize="18dp"
+            android:textAlignment="textEnd"
             app:layout_constraintBottom_toTopOf="@+id/receiptCash"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.799"
+            app:layout_constraintHorizontal_bias="0.787"
             app:layout_constraintStart_toStartOf="@id/receiptTotal" />
 
         <TextView
@@ -63,8 +64,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="€55.00"
+            android:text="€00000.00"
             android:textColor="#000000"
+            android:textAlignment="textEnd"
             android:textSize="18dp"
             app:layout_constraintBottom_toTopOf="@+id/receiptChangeDue"
             app:layout_constraintEnd_toEndOf="parent"
@@ -158,9 +160,10 @@
             android:text="€0.00"
             android:textColor="#000000"
             android:textSize="18dp"
+            android:textAlignment="textEnd"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.839"
+            app:layout_constraintHorizontal_bias="0.84"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -173,7 +176,7 @@
             android:textSize="18dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.171"
+            app:layout_constraintHorizontal_bias="0.18"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -198,7 +201,7 @@
             android:layout_height="60dp"
             android:layout_marginBottom="30dp"
             android:background="@drawable/barcode"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayoutReceipt"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -230,52 +233,22 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
+
+
     <Button
-        android:id="@+id/export_btn_png"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
+        android:id="@+id/export_btn"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/export_button"
-        android:text="PNG"
+        android:text="Export"
         android:textAllCaps="false"
         android:textColor="#474545"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@id/export_btn_pdf"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="10dp"
-        />
-
-    <Button
-        android:id="@+id/export_btn_pdf"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/export_button"
-        android:text="PDF"
-        android:textAllCaps="false"
-        android:textColor="#474545"
-        android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@id/export_btn_png"
-        app:layout_constraintEnd_toStartOf="@id/export_btn_csv"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="10dp"
-       />
-
-    <Button
-        android:id="@+id/export_btn_csv"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/export_button"
-        android:text="CSV"
-        android:textAllCaps="false"
-        android:textColor="#474545"
-        android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@id/export_btn_pdf"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="10dp"

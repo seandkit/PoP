@@ -26,6 +26,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -55,6 +56,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +92,7 @@ public class ReceiptActivity extends AppCompatActivity {
     private Button btn_export_png;
     private Button btn_export_csv;
     private Button btn_export_pdf;
+    private Button btn_export;
 
     public static List<Folder> folderList = new ArrayList<>();
 
@@ -117,106 +120,34 @@ public class ReceiptActivity extends AppCompatActivity {
             }
         });*/
 
+
+
         relativeLayout = findViewById(R.id.receiptLayout);
 
-        btn_export_png = (Button) findViewById(R.id.export_btn_png);
-        btn_export_pdf = (Button) findViewById(R.id.export_btn_pdf);
-        btn_export_csv = (Button) findViewById(R.id.export_btn_csv);
+        //btn_export_png = (Button) findViewById(R.id.export_btn_png);
+        //btn_export_pdf = (Button) findViewById(R.id.export_btn_pdf);
+        //btn_export_csv = (Button) findViewById(R.id.export_btn_csv);
+        btn_export = (Button) findViewById(R.id.export_btn);
 
-        btn_export_png.setOnClickListener(new View.OnClickListener() {
+
+
+
+        btn_export.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
 
-                boolean ask = requestStoragePermission();
+                boolean permission = requestStoragePermission();
+                Intent intent = new Intent(ReceiptActivity.this, ExportActivity.class);
+                intent.putExtra("itemList", (Serializable) mItemList);
+                intent.putExtra("receiptData", receipt);
+                intent.putExtra("permission", permission);
+                startActivity(intent);
 
-                if(!ask) {
-                    bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(), Bitmap.Config.ARGB_8888);
-                    Canvas canvas = new Canvas(bitmap);
-                    relativeLayout.draw((canvas));
-                    Toast.makeText(ReceiptActivity.this, "Exporting to gallery", Toast.LENGTH_LONG).show();
 
-                    //saveImage(bitmap, "PHOTO");
-
-                    //MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "yourTitle" , "yourDescription");
-                    ScreenCapture.insertImage(getContentResolver(), bitmap, System.currentTimeMillis() + ".jpg", "All Receipts", "All Receipts");
-
-                    /*if (!file.exists()) {
-                        try {
-                            FileOutputStream fos = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                            Toast.makeText(getApplicationContext(), "Receipt successfully exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                            fos.flush();
-                            fos.close();
-                        } catch (java.io.IOException e) {
-                            Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                        }
-                    }*/
-                }
             }
         });
 
 
-        btn_export_pdf.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(View view) {
-
-                requestStoragePermission();
-
-                bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(),
-                        Bitmap.Config.ARGB_8888);
-
-                Canvas canvas = new Canvas(bitmap);
-                relativeLayout.draw((canvas));
-
-                String root = Environment.getExternalStorageDirectory().toString();
-                File myDir = new File(root + "/Pop Receipts/PDF Receipts");
-                myDir.mkdirs();
-                String fname = "Receipt_"+ System.currentTimeMillis() +".pdf";
-                File file = new File(myDir, fname);
-
-
-                createPdf(bitmap, myDir, fname);
-                Toast.makeText(getApplicationContext(), "PDF file Created in: /Pop Receipts/PDF Receipts", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        btn_export_csv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                StringBuilder data = new StringBuilder();
-                data.append("Location,Date,Time,Store,Cashier,Item,Quantity,Price,Total");
-                data.append("\n"+receipt.getVendorName()  + "," +receipt.getDate() + "," + receipt.getTime() + "," +receipt.getId() + "," +receipt.getCashier()+ ","
-                        + mItemList.get(0).getName() + "," + mItemList.get(0).getQuantity() + "," + mItemList.get(0).getPrice() + "," +
-                        receipt.getReceiptTotal());
-
-                for(int i = 1; i<mItemList.size(); i++){
-                    data.append("\n"+ ", , , , ," + mItemList.get(i).getName() + "," + mItemList.get(i).getQuantity() + "," + mItemList.get(i).getPrice() + ",");
-
-                }
-
-                try {
-                    FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
-                    out.write((data.toString()).getBytes());
-                    out.close();
-
-                    Context context = getApplicationContext();
-                    File filelocation = new File(getFilesDir(), "data.csv");
-                    Uri path = FileProvider.getUriForFile(context, "com.example.pop.fileprovider", filelocation);
-                    Intent fileIntent = new Intent(Intent.ACTION_SEND);
-                    fileIntent.setType("text/csv");
-                    fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
-                    fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    fileIntent.putExtra(Intent.EXTRA_STREAM, path);
-                    startActivity(Intent.createChooser(fileIntent, "Send mail"));
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
 
         context = this;
 
@@ -237,52 +168,10 @@ public class ReceiptActivity extends AppCompatActivity {
         new FetchReceiptsInfoAsyncTask().execute();
     }
 
-    private void createPdf(Bitmap bitmap, File myDir, String fileName){
-        PdfDocument document = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
-        PdfDocument.Page page = document.startPage(pageInfo);
 
-        Canvas canvas = page.getCanvas();
 
-        Paint paint = new Paint();
-        paint.setColor(Color.parseColor("#ffffff"));
-        canvas.drawPaint(paint);
 
-        paint.setColor(Color.BLUE);
-        canvas.drawBitmap(bitmap, 0, 0 , null);
-        document.finishPage(page);
 
-        // write the document content
-        File filePath = new File(myDir, fileName);
-        try {
-            document.writeTo(new FileOutputStream(filePath));
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Something wrong: " + e.toString(), Toast.LENGTH_LONG).show();
-        }
-
-        // close the document
-        document.close();
-    }
-
-    private void saveImage(Bitmap finalBitmap, String image_name) {
-
-        String root = Environment.getExternalStorageDirectory().toString();
-        File myDir = new File(root);
-        myDir.mkdirs();
-        String fname = "Image-" + image_name+ ".jpg";
-        File file = new File(myDir, fname);
-        if (file.exists()) file.delete();
-        Log.i("LOAD", root + fname);
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public void onClick(View v) {
         double markerLat = receipt.getLat();

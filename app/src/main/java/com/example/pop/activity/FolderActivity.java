@@ -195,9 +195,9 @@ public class FolderActivity extends AppCompatActivity {
 
                 relativeLayout = v.findViewById(R.id.receiptLayout);
                 ConstraintLayout pageLayout = v.findViewById(R.id.receiptPageContainer);
-                pageLayout.removeView(v.findViewById(R.id.export_btn_png));
-                pageLayout.removeView(v.findViewById(R.id.export_btn_pdf));
-                pageLayout.removeView(v.findViewById(R.id.export_btn_csv));
+                pageLayout.removeView(v.findViewById(R.id.export_btn));
+                //pageLayout.removeView(v.findViewById(R.id.export_btn_pdf));
+                //pageLayout.removeView(v.findViewById(R.id.export_btn_csv));
 
                 v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 

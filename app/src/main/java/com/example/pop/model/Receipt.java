@@ -1,11 +1,15 @@
 package com.example.pop.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.List;
 
-public class Receipt implements Comparable<Receipt> {
+public class Receipt implements Comparable<Receipt>, Parcelable {
 
     private int id;
     private String date;
@@ -66,6 +70,36 @@ public class Receipt implements Comparable<Receipt> {
         this.vendorName = vendorName;
         this.receiptTotal = receiptTotal;
     }
+
+    protected Receipt(Parcel in) {
+        id = in.readInt();
+        date = in.readString();
+        time = in.readString();
+        vendorName = in.readString();
+        transactionType = in.readInt();
+        receiptTotal = in.readDouble();
+        cash = in.readDouble();
+        cashier = in.readString();
+        location = in.readString();
+        barcode = in.readString();
+        userId = in.readInt();
+        lat = in.readDouble();
+        lng = in.readDouble();
+        items = in.createTypedArrayList(Item.CREATOR);
+        uuid = in.readString();
+    }
+
+    public static final Creator<Receipt> CREATOR = new Creator<Receipt>() {
+        @Override
+        public Receipt createFromParcel(Parcel in) {
+            return new Receipt(in);
+        }
+
+        @Override
+        public Receipt[] newArray(int size) {
+            return new Receipt[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -200,5 +234,29 @@ public class Receipt implements Comparable<Receipt> {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(date);
+        parcel.writeString(time);
+        parcel.writeString(vendorName);
+        parcel.writeInt(transactionType);
+        parcel.writeDouble(receiptTotal);
+        parcel.writeDouble(cash);
+        parcel.writeString(cashier);
+        parcel.writeString(location);
+        parcel.writeString(barcode);
+        parcel.writeInt(userId);
+        parcel.writeDouble(lat);
+        parcel.writeDouble(lng);
+        parcel.writeTypedList(items);
+        parcel.writeString(uuid);
     }
 }

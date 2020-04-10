@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/pop_export"
+    android:background="@drawable/export_background"
     tools:context="com.example.pop.activity.ExportActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -23,80 +23,75 @@
         android:textSize="30dp"
         android:textAlignment="center"
         android:gravity="center_vertical"
-        android:textColor="@color/white"
+        android:textColor="@color/colorAccent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="RtlCompat" />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="#000000" />
 
     <Button
-        android:id="@+id/textView3"
+        android:id="@+id/csv_btn"
         android:layout_width="match_parent"
+        android:background="@drawable/export_single_background"
         android:layout_height="40dp"
         android:textAlignment="center"
         android:gravity="center_vertical"
         android:text="CSV"
-        android:textColor="@color/cardview_dark_background"
+        android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
-        />
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="#000000" />
-    <Button
-        android:id="@+id/textView4"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:textAlignment="center"
-        android:gravity="center_vertical"
-        android:text="XML"
-        android:textColor="@color/cardview_dark_background"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        />
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="#000000" />
+        app:layout_constraintTop_toBottomOf="@+id/jpgExport"
+        tools:ignore="RtlCompat" />
 
     <Button
-        android:id="@+id/jpgExport"
+        android:id="@+id/pdf_btn"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:background="@drawable/export_single_background"
         android:textAlignment="center"
         android:gravity="center_vertical"
-        android:text="JPG"
-        android:textColor="@color/cardview_dark_background"
+        android:text="PDF"
+        android:textColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
-        />
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:background="#000000" />
+        app:layout_constraintTop_toBottomOf="@+id/csv_btn"
+        tools:ignore="RtlCompat" />
+
+
+        <Button
+            android:id="@+id/jpgExport"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/export_single_background"
+            android:gravity="center_vertical"
+            android:text="PNG"
+            android:textAlignment="center"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView"
+            tools:ignore="RtlCompat" />
+
+
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/back_btn"
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
         android:background="@drawable/export_button"
         android:text="Back"
-        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintTop_toBottomOf="@+id/pdf_btn"
         tools:layout_editor_absoluteX="145dp"
         tools:layout_editor_absoluteY="447dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="23dp"
         />
 
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
