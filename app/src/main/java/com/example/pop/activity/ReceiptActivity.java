@@ -30,6 +30,7 @@ import android.os.Parcelable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -43,6 +44,7 @@ import android.widget.Toast;
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.adapter.ItemListAdapter;
+import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Folder;
 import com.example.pop.model.Item;
@@ -77,6 +79,8 @@ public class ReceiptActivity extends AppCompatActivity {
     private double lat;
     private double lng;
 
+
+
     private RecyclerView mRecyclerView;
     private ItemListAdapter mAdapter;
     public List<Item> mItemList = new ArrayList<>();
@@ -107,6 +111,9 @@ public class ReceiptActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt);
 
+
+
+
         //toolbar = findViewById(R.id.receiptToolbar);
         //setSupportActionBar(toolbar);
 
@@ -119,6 +126,10 @@ public class ReceiptActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });*/
+
+
+
+
 
 
 
@@ -141,6 +152,8 @@ public class ReceiptActivity extends AppCompatActivity {
                 intent.putExtra("itemList", (Serializable) mItemList);
                 intent.putExtra("receiptData", receipt);
                 intent.putExtra("permission", permission);
+
+
                 startActivity(intent);
 
 
@@ -166,6 +179,9 @@ public class ReceiptActivity extends AppCompatActivity {
         otherNumber = findViewById(R.id.receiptOtherNumber);
 
         new FetchReceiptsInfoAsyncTask().execute();
+
+
+
     }
 
 
@@ -325,6 +341,7 @@ public class ReceiptActivity extends AppCompatActivity {
                         //Populate a list of items to be displayed on receipt
                         mItemList.add(new Item(itemId,itemName,itemPrice,itemQuantity));
                     }
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -352,7 +369,11 @@ public class ReceiptActivity extends AppCompatActivity {
             mAdapter = new ItemListAdapter(context, mItemList);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+            findViewById(R.id.itemList).requestLayout();
+            findViewById(R.id.itemList).getLayoutParams().height = 75 * mItemList.size();
         }
+
     }
 
     private class FetchAllFoldersWithReceiptAsyncTask extends AsyncTask<String, String, String> {

@@ -161,6 +161,8 @@ public class ExportActivity extends Activity {
                     LayoutInflater inflater = LayoutInflater.from(context);
                     v = inflater.inflate(R.layout.activity_receipt, null);
 
+                    v.findViewById(R.id.itemList).requestLayout();
+                    v.findViewById(R.id.itemList).getLayoutParams().height = 75 * mItemList.size();
                     relativeLayout = v.findViewById(R.id.receiptLayout);
                     ConstraintLayout pageLayout = v.findViewById(R.id.receiptPageContainer);
                     pageLayout.removeView(v.findViewById(R.id.export_btn));
@@ -197,6 +199,13 @@ public class ExportActivity extends Activity {
                     v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
                     v.draw(c);
 
+
+                    bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), 1450 + (mItemList.size() * 75),
+                            Bitmap.Config.ARGB_8888);
+
+                    Canvas canvas = new Canvas(bitmap);
+                    relativeLayout.draw((canvas));
+
                     ScreenCapture.insertImage(getContentResolver(), bitmap,System.currentTimeMillis() +".jpg", "All Receipts",  "All Receipts");
                     Toast.makeText(getApplicationContext(), "PNG file saved to: Albums /All Receipts", Toast.LENGTH_SHORT).show();
 
@@ -218,6 +227,8 @@ public class ExportActivity extends Activity {
                 v = inflater.inflate(R.layout.activity_receipt, null);
 
                 relativeLayout = v.findViewById(R.id.receiptLayout);
+                v.findViewById(R.id.itemList).requestLayout();
+                v.findViewById(R.id.itemList).getLayoutParams().height = 75 * mItemList.size();
                 ConstraintLayout pageLayout = v.findViewById(R.id.receiptPageContainer);
                 pageLayout.removeView(v.findViewById(R.id.export_btn));
                 pageLayout.removeView(v.findViewById(R.id.toolbar));
@@ -253,7 +264,7 @@ public class ExportActivity extends Activity {
                 v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
                 v.draw(c);
 
-                bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(),
+                bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), 1450 + (mItemList.size() * 75),
                         Bitmap.Config.ARGB_8888);
 
                 Canvas canvas = new Canvas(bitmap);
