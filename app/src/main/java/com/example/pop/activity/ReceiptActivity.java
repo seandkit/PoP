@@ -21,23 +21,31 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
+import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
+import com.example.pop.activity.adapter.ItemListAdapter;
+import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.adapter.ItemListAdapter;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.helper.ScreenCapture;
@@ -46,6 +54,7 @@ import com.example.pop.helper.Utils;
 import com.example.pop.model.Folder;
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +63,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +99,7 @@ public class ReceiptActivity extends AppCompatActivity {
     private Button btn_export_png;
     private Button btn_export_csv;
     private Button btn_export_pdf;
+    private Button btn_export;
 
     public static List<Folder> folderList = new ArrayList<>();
 
@@ -101,102 +112,56 @@ public class ReceiptActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt);
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+
+        //toolbar = findViewById(R.id.receiptToolbar);
+        //setSupportActionBar(toolbar);
+
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        /*toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
-        });
+        });*/
+
+
+
+
+
+
 
         relativeLayout = findViewById(R.id.receiptLayout);
 
-        btn_export_png = (Button) findViewById(R.id.export_btn_png);
-        btn_export_pdf = (Button) findViewById(R.id.export_btn_pdf);
-        btn_export_csv = (Button) findViewById(R.id.export_btn_csv);
+        //btn_export_png = (Button) findViewById(R.id.export_btn_png);
+        //btn_export_pdf = (Button) findViewById(R.id.export_btn_pdf);
+        //btn_export_csv = (Button) findViewById(R.id.export_btn_csv);
+        btn_export = (Button) findViewById(R.id.export_btn);
 
-        btn_export_png.setOnClickListener(new View.OnClickListener() {
+
+
+
+        btn_export.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
 
-                boolean ask = requestStoragePermission();
+                boolean permission = requestStoragePermission();
+                Intent intent = new Intent(ReceiptActivity.this, ExportActivity.class);
+                intent.putExtra("itemList", (Serializable) mItemList);
+                intent.putExtra("receiptData", receipt);
+                intent.putExtra("permission", permission);
 
-                if(!ask) {
-                    bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(), Bitmap.Config.ARGB_8888);
-                    Canvas canvas = new Canvas(bitmap);
-                    relativeLayout.draw((canvas));
-                    Toast.makeText(ReceiptActivity.this, "Exporting to gallery", Toast.LENGTH_LONG).show();
 
-                    ScreenCapture.insertImage(getContentResolver(), bitmap, System.currentTimeMillis() + ".jpg", "All Receipts", "All Receipts");
-                }
+                startActivity(intent);
+
+
             }
         });
 
 
-        btn_export_pdf.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(View view) {
-
-                requestStoragePermission();
-
-                bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), relativeLayout.getHeight(),
-                        Bitmap.Config.ARGB_8888);
-
-                Canvas canvas = new Canvas(bitmap);
-                relativeLayout.draw((canvas));
-
-                String root = Environment.getExternalStorageDirectory().toString();
-                File myDir = new File(root + "/Pop Receipts/PDF Receipts");
-                myDir.mkdirs();
-                String fname = "Receipt_"+ System.currentTimeMillis() +".pdf";
-                File file = new File(myDir, fname);
-
-                Utils.createPdf(context, bitmap, myDir, fname);
-                Toast.makeText(getApplicationContext(), "PDF file Created in: /Pop Receipts/PDF Receipts", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        btn_export_csv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                StringBuilder data = new StringBuilder();
-                data.append("Location,Date,Time,Store,Cashier,Item,Quantity,Price,Total");
-                data.append("\n"+receipt.getVendorName()  + "," +receipt.getDate() + "," + receipt.getTime() + "," +receipt.getId() + "," +receipt.getCashier()+ ","
-                        + mItemList.get(0).getName() + "," + mItemList.get(0).getQuantity() + "," + mItemList.get(0).getPrice() + "," +
-                        receipt.getReceiptTotal());
-
-                for(int i = 1; i<mItemList.size(); i++){
-                    data.append("\n"+ ", , , , ," + mItemList.get(i).getName() + "," + mItemList.get(i).getQuantity() + "," + mItemList.get(i).getPrice() + ",");
-
-                }
-
-                try {
-                    FileOutputStream out = openFileOutput("data.csv", Context.MODE_PRIVATE);
-                    out.write((data.toString()).getBytes());
-                    out.close();
-
-                    Context context = getApplicationContext();
-                    File filelocation = new File(getFilesDir(), "data.csv");
-                    Uri path = FileProvider.getUriForFile(context, "com.example.pop.fileprovider", filelocation);
-                    Intent fileIntent = new Intent(Intent.ACTION_SEND);
-                    fileIntent.setType("text/csv");
-                    fileIntent.putExtra(Intent.EXTRA_SUBJECT, "Data");
-                    fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    fileIntent.putExtra(Intent.EXTRA_STREAM, path);
-                    startActivity(Intent.createChooser(fileIntent, "Send mail"));
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
 
         context = this;
 
@@ -215,7 +180,15 @@ public class ReceiptActivity extends AppCompatActivity {
         otherNumber = findViewById(R.id.receiptOtherNumber);
 
         new FetchReceiptsInfoAsyncTask().execute();
+
+
+
     }
+
+
+
+
+
 
     public void onClick(View v) {
         double markerLat = receipt.getLat();
@@ -396,6 +369,9 @@ public class ReceiptActivity extends AppCompatActivity {
             mAdapter = new ItemListAdapter(context, mItemList);
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+            findViewById(R.id.itemList).requestLayout();
+            findViewById(R.id.itemList).getLayoutParams().height = 75 * mItemList.size();
         }
     }
 

@@ -23,7 +23,7 @@
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/list_empty"
+        android:background="@drawable/list_empty3"
         tools:layout_editor_absoluteX="157dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

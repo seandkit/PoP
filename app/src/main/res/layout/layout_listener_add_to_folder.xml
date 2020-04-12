@@ -9,8 +9,8 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        app:cardBackgroundColor="@color/colorAccent">
+        android:layout_margin="6dp"
+        app:cardBackgroundColor="@color/colorPrimary">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:padding="5sp"
                 android:textSize="15sp"
-                android:textColor="#ffffff"
+                android:textColor="@color/colorAccent"
                 android:text="Folder Name"/>
 
         </LinearLayout>
