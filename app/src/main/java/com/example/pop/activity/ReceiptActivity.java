@@ -44,8 +44,6 @@ import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
-import com.example.pop.activity.adapter.ItemListAdapter;
-import com.example.pop.activity.adapter.ReceiptListAdapter;
 import com.example.pop.adapter.ItemListAdapter;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.helper.ScreenCapture;

@@ -38,7 +38,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pop.R;
-import com.example.pop.activity.adapter.ItemListAdapter;
+import com.example.pop.adapter.ItemListAdapter;
+import com.example.pop.helper.ScreenCapture;
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
 
