@@ -19,16 +19,11 @@ import java.util.Map;
 public class DeleteFolderAsyncTask extends AsyncTask<String, String, String> {
 
     @SuppressLint("StaticFieldLeak")
-    private Context mContext;
     private int mFolderId;
 
-    public DeleteFolderAsyncTask(Context context, int folderId){
-        mContext = context;
+    public DeleteFolderAsyncTask(int folderId){
         mFolderId = folderId;
     }
-
-    int success;
-    String message;
 
     @Override
     protected void onPreExecute() {
@@ -43,16 +38,12 @@ public class DeleteFolderAsyncTask extends AsyncTask<String, String, String> {
         JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "deleteFolder.php", "POST", httpParams);
 
         try {
-            success = jsonObject.getInt("success");
+            int success = jsonObject.getInt("success");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    protected void onPostExecute(String result) {
-        if (success == 0) {
-            Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
-        }
-    }
+    protected void onPostExecute(String result) {}
 }

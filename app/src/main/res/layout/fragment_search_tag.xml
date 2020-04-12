@@ -70,7 +70,6 @@
                 app:queryHint="Search Tag"
                 app:defaultQueryHint="Search Tag"
                 android:queryHint="Search Tag"
-
                 android:iconifiedByDefault="false"
                 app:iconifiedByDefault="false"
                 android:textColor="#FFFFFF"

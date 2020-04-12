@@ -1,43 +1,24 @@
 package com.example.pop.activity;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.pdf.PdfDocument;
-import android.graphics.pdf.PdfRenderer;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Parcelable;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,22 +26,18 @@ import android.widget.Toast;
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.adapter.ItemListAdapter;
+import com.example.pop.asynctasks.FetchAllFoldersWithReceiptAsyncTask;
 import com.example.pop.helper.HttpJsonParser;
-import com.example.pop.helper.ScreenCapture;
 import com.example.pop.helper.Session;
 import com.example.pop.helper.Utils;
 import com.example.pop.model.Folder;
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,13 +70,9 @@ public class ReceiptActivity extends AppCompatActivity {
 
     public Receipt receipt;
 
-    private Bitmap bitmap;
-    private Button btn_export_png;
-    private Button btn_export_csv;
-    private Button btn_export_pdf;
     private Button btn_export;
 
-    public static List<Folder> folderList = new ArrayList<>();
+    public static List<Folder> receiptFoldersList = new ArrayList<>();
 
     ConstraintLayout relativeLayout;
 
@@ -110,59 +83,39 @@ public class ReceiptActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receipt);
 
+        toolbar = findViewById(R.id.receiptToolbar);
+        setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-
-        //toolbar = findViewById(R.id.receiptToolbar);
-        //setSupportActionBar(toolbar);
-
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        /*toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
-        });*/
-
-
-
-
-
-
+        });
 
         relativeLayout = findViewById(R.id.receiptLayout);
 
-        //btn_export_png = (Button) findViewById(R.id.export_btn_png);
-        //btn_export_pdf = (Button) findViewById(R.id.export_btn_pdf);
-        //btn_export_csv = (Button) findViewById(R.id.export_btn_csv);
-        btn_export = (Button) findViewById(R.id.export_btn);
-
-
-
+        btn_export = findViewById(R.id.export_btn);
 
         btn_export.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                boolean permission = Utils.requestStoragePermission(ReceiptActivity.this);
 
-                boolean permission = requestStoragePermission();
-                Intent intent = new Intent(ReceiptActivity.this, ExportActivity.class);
-                intent.putExtra("itemList", (Serializable) mItemList);
-                intent.putExtra("receiptData", receipt);
-                intent.putExtra("permission", permission);
-
-
-                startActivity(intent);
-
-
+                if(ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(ReceiptActivity.this, ExportActivity.class);
+                    intent.putExtra("itemList", (Serializable) mItemList);
+                    intent.putExtra("receiptData", receipt);
+                    intent.putExtra("permission", permission);
+                    startActivity(intent);
+                }
             }
         });
 
-
-
         context = this;
-
         session = new Session(context);
 
         Intent intent = getIntent();
@@ -178,21 +131,14 @@ public class ReceiptActivity extends AppCompatActivity {
         otherNumber = findViewById(R.id.receiptOtherNumber);
 
         new FetchReceiptsInfoAsyncTask().execute();
-
-
-
     }
-
-
-
-
-
 
     public void onClick(View v) {
         double markerLat = receipt.getLat();
         double markerLong = receipt.getLng();
         String markerTitle = receipt.getVendorName();
         String markerSnippet = receipt.getLocation();
+
         Intent intent = new Intent(ReceiptActivity.this, Map_Location.class);
         intent.putExtra("title", markerTitle);
         intent.putExtra("snippet", markerSnippet);
@@ -208,20 +154,21 @@ public class ReceiptActivity extends AppCompatActivity {
 
         SubMenu subMenu = menu.getItem(0).getSubMenu();
 
-        folderList = new ArrayList<>();
+        receiptFoldersList = new ArrayList<>();
         try {
-            String result = new FetchAllFoldersWithReceiptAsyncTask().execute().get();
+            FetchAllFoldersWithReceiptAsyncTask fetchAllFoldersWithReceiptAsyncTask = new FetchAllFoldersWithReceiptAsyncTask(context, receiptId);
+            String result = fetchAllFoldersWithReceiptAsyncTask.execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        if(folderList.isEmpty()){
+        if(receiptFoldersList.isEmpty()){
             subMenu.add(Menu.NONE, 1, Menu.NONE, "Empty");
         }
         else {
-            for(Folder f : folderList){
+            for(Folder f : receiptFoldersList){
                 subMenu.add(Menu.NONE, f.getId(), Menu.NONE, f.getName()).setOnMenuItemClickListener(folderOnClickListener);
             }
         }
@@ -234,7 +181,7 @@ public class ReceiptActivity extends AppCompatActivity {
         public boolean onMenuItemClick(MenuItem menuItem) {
             Intent intent = new Intent(context, FolderActivity.class);
 
-            for(Folder f : folderList){
+            for(Folder f : receiptFoldersList){
                 if(f.getName().equalsIgnoreCase(String.valueOf(menuItem.getTitle()))){
                     intent.putExtra("folderId", f.getId());
                     intent.putExtra("folderName", f.getName());
@@ -245,34 +192,6 @@ public class ReceiptActivity extends AppCompatActivity {
             return false;
         }
     };
-
-    private boolean requestStoragePermission() {
-        boolean answer = false;
-
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            answer = true;
-            new AlertDialog.Builder(context)
-                    .setTitle("Permission needed")
-                    .setMessage("This permission is needed to export your receipts.")
-                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(ReceiptActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                        }
-                    })
-                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    })
-                    .create().show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        }
-
-        return answer;
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -287,7 +206,6 @@ public class ReceiptActivity extends AppCompatActivity {
     private class FetchReceiptsInfoAsyncTask extends AsyncTask<String, String, String> {
 
         int success;
-        String message;
 
         @Override
         protected void onPreExecute() {
@@ -370,49 +288,6 @@ public class ReceiptActivity extends AppCompatActivity {
 
             findViewById(R.id.itemList).requestLayout();
             findViewById(R.id.itemList).getLayoutParams().height = 75 * mItemList.size();
-        }
-    }
-
-    private class FetchAllFoldersWithReceiptAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("receipt_id", String.valueOf(receiptId));
-            httpParams.put("user_id", String.valueOf(session.getUserId()));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllFoldersWithReceipt.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                JSONArray folders;
-                if (success == 1) {
-                    folders = jsonObject.getJSONArray("data");
-                    //Iterate through the response and populate receipt list
-                    folderList = new ArrayList<>();
-                    for (int i = 0; i < folders.length(); i++) {
-                        JSONObject folder = folders.getJSONObject(i);
-                        folderList.add(new Folder(folder.getInt("folder_id"), folder.getString("folder_name")));
-                    }
-                }
-                else{
-                    message = jsonObject.getString("message");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
         }
     }
 }

@@ -68,7 +68,6 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
     private NavigationView navigationView;
     private DrawerLayout drawer;
-    public static List<Folder> folderList = new ArrayList<>();
 
     public static RecyclerView mRecyclerView;
     public static FolderReceiptListAdapter mAdapter;
@@ -98,8 +97,6 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     private TextView time; //Can currently be got from db
     private TextView barcodeNumber;
     private TextView otherNumber;
-
-    private String newFolderName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +145,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         btn_export.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean ask = requestStoragePermission();
+                boolean ask = Utils.requestStoragePermission(FolderActivity.this);
 
                 if(!ask) {
                     new ExportAsyncTask().execute();
@@ -183,7 +180,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
                 return true;
 
             case R.id.deleteFolder:
-                deleteFolderPopUp();
+                Utils.deleteFolderPopUp(FolderActivity.this, folderId);
                 //finish();
                 return true;
         }
@@ -204,124 +201,17 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
                 Intent i = new Intent(this, LoginActivity.class);
                 startActivity(i);
-                folderList = new ArrayList<>();
+                FragmentHolder.folderList = new ArrayList<>();
                 folderReceiptList = new ArrayList<>();
                 finish();
                 break;
 
             case R.id.nav_folder_add_new:
-                newFolderPopUp();
+                Utils.newFolderPopUp(navigationView, FolderActivity.this);
                 break;
         }
 
         return true;
-    }
-
-    public void newFolderPopUp() {
-        LayoutInflater inflater = getLayoutInflater();
-        View dialoglayout = inflater.inflate(R.layout.new_folder_pop_up, null);
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Create New Folder");
-        builder.setView(dialoglayout);
-
-        final EditText userInput = dialoglayout.findViewById(R.id.newFolderInput);
-
-        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                newFolderName = userInput.getText().toString();
-                boolean exists = false;
-                for(Folder f : folderList){
-                    if (f.getName().equalsIgnoreCase(newFolderName)) {
-                        exists = true;
-                    }
-                }
-                if(!exists){
-                    AddFolderAsyncTask addFolderAsyncTask = new AddFolderAsyncTask(navigationView, context, newFolderName);
-                    addFolderAsyncTask.execute();
-                }
-                else {
-                    Toast.makeText(context,"Folder already exists",Toast.LENGTH_LONG).show();
-                }
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
-
-    public void deleteFolderPopUp() {
-        LayoutInflater inflater = (LayoutInflater) FolderActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialoglayout = inflater.inflate(R.layout.delete_folder_pop_up, null);
-
-        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(dialoglayout.getRootView().getContext());
-
-        builder.setTitle("Delete Folder");
-        builder.setView(dialoglayout);
-
-        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                DeleteFolderAsyncTask deleteFolderAsyncTask = new DeleteFolderAsyncTask(context, folderId);
-                deleteFolderAsyncTask.execute();
-                Toast.makeText(context,"Folder Deleted",Toast.LENGTH_LONG).show();
-
-                finish();
-
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(context,"Cancel",Toast.LENGTH_LONG).show();
-                dialog.dismiss();
-            }
-        });
-
-        android.app.AlertDialog alertDialog = builder.create();
-        //alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        alertDialog.show();
-    }
-
-    private boolean requestStoragePermission() {
-        boolean answer = false;
-
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            answer = true;
-
-            new AlertDialog.Builder(context)
-                    .setTitle("Permission needed")
-                    .setMessage("This permission is needed to export your receipts.")
-                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(FolderActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                        }
-                    })
-                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    })
-                    .create().show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        }
-
-        return answer;
     }
 
     private class ExportAsyncTask extends AsyncTask<String, String, String> {

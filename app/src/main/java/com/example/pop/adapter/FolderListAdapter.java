@@ -34,7 +34,6 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
     private int receiptId;
     private int folderId;
 
-
     private int success;
     private String message;
 
@@ -85,11 +84,11 @@ public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.Fo
         this.mFolderList = folderList;
     }
 
-    class FolderListItemHolder extends RecyclerView.ViewHolder {
-        public final TextView folderNameView;
+    static class FolderListItemHolder extends RecyclerView.ViewHolder {
+        final TextView folderNameView;
         final FolderListAdapter mAdapter;
 
-        public FolderListItemHolder(View itemView, FolderListAdapter adapter) {
+        FolderListItemHolder(View itemView, FolderListAdapter adapter) {
             super(itemView);
 
             folderNameView = itemView.findViewById(R.id.popupFolderName);

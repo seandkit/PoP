@@ -3,44 +3,37 @@ package com.example.pop.asynctasks;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.example.pop.DBConstants;
-import com.example.pop.activity.FragmentHolder;
+import com.example.pop.activity.ReceiptActivity;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.helper.Session;
-import com.example.pop.helper.Utils;
 import com.example.pop.model.Folder;
-import com.google.android.material.navigation.NavigationView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddFolderAsyncTask extends AsyncTask<String, String, String> {
+public class FetchAllFoldersWithReceiptAsyncTask extends AsyncTask<String, String, String> {
 
     @SuppressLint("StaticFieldLeak")
     private Context mContext;
-    @SuppressLint("StaticFieldLeak")
-    private NavigationView mNavigationView;
-    private String mNewFolderName;
+    private int mReceiptId;
 
-    public AddFolderAsyncTask(NavigationView navigationView, Context context, String newFolderName){
-        mNavigationView = navigationView;
+    public FetchAllFoldersWithReceiptAsyncTask(Context context, int receiptId){
         mContext = context;
-        mNewFolderName = newFolderName;
+        mReceiptId = receiptId;
     }
 
     private Session session;
 
-    private int mNewFolderId;
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-
         session = new Session(mContext);
     }
 
@@ -48,16 +41,23 @@ public class AddFolderAsyncTask extends AsyncTask<String, String, String> {
     protected String doInBackground(String... params) {
         HttpJsonParser httpJsonParser = new HttpJsonParser();
         Map<String, String> httpParams = new HashMap<>();
-        httpParams.put("folder_name", mNewFolderName);
+        httpParams.put("receipt_id", String.valueOf(mReceiptId));
         httpParams.put("user_id", String.valueOf(session.getUserId()));
-
-        JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "addFolder.php", "POST", httpParams);
+        JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllFoldersWithReceipt.php", "POST", httpParams);
 
         try {
             int success = jsonObject.getInt("success");
+            JSONArray folders;
             if (success == 1) {
-                mNewFolderId = jsonObject.getInt("data");
-                FragmentHolder.folderList.add(new Folder(mNewFolderId, mNewFolderName));
+                folders = jsonObject.getJSONArray("data");
+                ReceiptActivity.receiptFoldersList = new ArrayList<>();
+                for (int i = 0; i < folders.length(); i++) {
+                    JSONObject folder = folders.getJSONObject(i);
+                    ReceiptActivity.receiptFoldersList.add(new Folder(folder.getInt("folder_id"), folder.getString("folder_name")));
+                }
+            }
+            else{
+                String message = jsonObject.getString("message");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -65,8 +65,5 @@ public class AddFolderAsyncTask extends AsyncTask<String, String, String> {
         return null;
     }
 
-    protected void onPostExecute(String result) {
-        Utils.addDrawerFolder(mNavigationView, mContext, mNewFolderId, mNewFolderName);
-        Toast.makeText(mContext,"Folder created",Toast.LENGTH_LONG).show();
-    }
+    protected void onPostExecute(String result) {}
 }

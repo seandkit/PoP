@@ -24,11 +24,6 @@
         android:roundIcon="@drawable/logo_dark"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.Tutorial"></activity>
-        <activity android:name=".activity.EmptyReceiptList" />
-        <activity android:name=".activity.Map_Location"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -52,9 +47,11 @@
             android:required="true" />
 
         <activity
+            android:name=".activity.Tutorial"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
             android:name=".activity.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
-
         </activity>
         <activity
             android:name=".activity.RegisterActivity"
@@ -69,12 +66,19 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activity.popup.Popup_Blur"
+            android:clearTaskOnLaunch="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".activity.FragmentHolder"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activity.ReceiptActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.Map_Location"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".activity.FolderActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -91,11 +95,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <activity
-            android:name=".activity.popup.Popup_Blur"
-            android:clearTaskOnLaunch="true"
-            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

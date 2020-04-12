@@ -1,6 +1,5 @@
 package com.example.pop.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -15,51 +14,31 @@ import android.widget.ImageView;
 
 import com.example.pop.R;
 import com.example.pop.adapter.ReceiptListAdapter;
-import com.example.pop.helper.Session;
 import com.example.pop.model.Receipt;
-import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class Fragment_Receipt extends Fragment {
 
-    private SQLiteDatabaseAdapter db;
     public static RecyclerView mRecyclerView;
     public static ReceiptListAdapter mAdapter;
     public static ImageView mImageView;
 
-    private ProgressDialog pDialog;
-    private int success;
-    private String message;
-
     private Context context;
-    private Session session;
 
-    private int receiptId;
-    private int recyclerListId;
-
-    public static List<Receipt> mEmptyList = new ArrayList<>();
+    private List<Receipt> mEmptyList = new ArrayList<>();
     private ReceiptListAdapter mEmptyAdapter;
 
-    public Fragment_Receipt() {
-        // Required empty public constructor
-    }
+    public Fragment_Receipt() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_receipt, container, false);
 
         context = getActivity();
-        session = new Session(context);
         mRecyclerView = v.findViewById(R.id.receiptList);
         mImageView = v.findViewById(R.id.emptyListImg);
-
-        db = new SQLiteDatabaseAdapter(context);
 
         return v;
     }
@@ -71,10 +50,10 @@ public class Fragment_Receipt extends Fragment {
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+
         if( mAdapter.getItemCount() != 0 ){
             mImageView.setVisibility(View.GONE);
         }
-
     }
 
     @Override

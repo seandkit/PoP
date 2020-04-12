@@ -35,9 +35,9 @@ import java.util.Map;
 
 public class Fragment_SearchByTag extends Fragment{
 
-    public static RecyclerView mRecyclerView;
-    public static ReceiptListAdapter mAdapter;
-    public static ImageView mImageView;
+    private RecyclerView mRecyclerView;
+    private ReceiptListAdapter mAdapter;
+    private ImageView mImageView;
 
     private SearchView searchView;
 
@@ -46,24 +46,16 @@ public class Fragment_SearchByTag extends Fragment{
     private int success;
     private String message;
 
-    public List<Receipt> mReceiptList = new ArrayList<>();
-    public List<Receipt> mReceiptListTemp = new ArrayList<>();
-
+    private List<Receipt> mReceiptListTemp = new ArrayList<>();
     private FlexboxLayout flexboxLayout;
-
-    public static List<Receipt> mEmptyList = new ArrayList<>();
-    private ReceiptListAdapter mEmptyAdapter;
 
     private String tag = "";
     private String currentString;
 
-    public Fragment_SearchByTag() {
-        // Required empty public constructor
-    }
+    public Fragment_SearchByTag() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_search_tag, container, false);
 
         context = getActivity().getApplicationContext();
@@ -78,6 +70,7 @@ public class Fragment_SearchByTag extends Fragment{
         mRecyclerView = v.findViewById(R.id.receiptList);
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         searchView = v.findViewById(R.id.tagInput);
@@ -106,15 +99,6 @@ public class Fragment_SearchByTag extends Fragment{
             }
         });
 
-        ArrayList tags = new ArrayList();
-        tags.add("Database");
-        tags.add("Data Binding");
-        tags.add("Widgets");
-        tags.add("RecyclerView");
-        tags.add("Activity");
-        tags.add("Services");
-        tags.add("Networking");
-
         return v;
     }
 
@@ -126,9 +110,8 @@ public class Fragment_SearchByTag extends Fragment{
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        if( mAdapter.getItemCount() != 0 ){
+        if(mAdapter.getItemCount() != 0){
             mImageView.setVisibility(View.GONE);
-
         }
     }
 
@@ -137,6 +120,7 @@ public class Fragment_SearchByTag extends Fragment{
                 FlexboxLayout.LayoutParams.WRAP_CONTENT,
                 FlexboxLayout.LayoutParams.WRAP_CONTENT
         );
+
         lparams.setMargins(0,40,40,0);
 
         TextView tv = new TextView(context);
@@ -160,11 +144,13 @@ public class Fragment_SearchByTag extends Fragment{
 
         this.flexboxLayout.addView(tv);
         currentString = "";
+
+        searchView.setQuery("", false);
     }
 
     private void buildSearchString(){
         tag = "";
-        TextView view = null;
+        TextView view;
 
         for( int i = 0; i < flexboxLayout.getChildCount(); i++ ) {
             view = (TextView) flexboxLayout.getChildAt(i);
@@ -173,7 +159,6 @@ public class Fragment_SearchByTag extends Fragment{
         }
     }
 
-    //Search Specific classes
     private void filterReceipts(String s){
         currentString = s;
         boolean vendorTag = false;
@@ -181,7 +166,7 @@ public class Fragment_SearchByTag extends Fragment{
 
         addTag(currentString);
 
-        for(Receipt r: mReceiptList){
+        for(Receipt r: FragmentHolder.mReceiptList){
             if(s.equalsIgnoreCase(r.getVendorName())){
                 vendorTag = true;
                 mReceiptListTemp.add(r);
@@ -218,7 +203,6 @@ public class Fragment_SearchByTag extends Fragment{
                     mReceiptListTemp = new ArrayList<>();
                     receipts = jsonObject.getJSONArray("data");
 
-                    //Iterate through the response and populate receipt list
                     for (int i = 0; i < receipts.length(); i++) {
                         JSONObject receipt = receipts.getJSONObject(i);
                         int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
@@ -260,9 +244,7 @@ public class Fragment_SearchByTag extends Fragment{
 
     public void updateListWithVendors(){
         mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
-        // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
     }
 }
