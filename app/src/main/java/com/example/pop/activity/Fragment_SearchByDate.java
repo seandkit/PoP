@@ -192,7 +192,7 @@ public class Fragment_SearchByDate extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-       
+
         if( mAdapter.getItemCount() != 0 ){
             mImageView.setVisibility(View.GONE);
         }
