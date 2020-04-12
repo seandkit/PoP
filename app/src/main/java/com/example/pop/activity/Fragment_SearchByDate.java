@@ -77,6 +77,7 @@ public class Fragment_SearchByDate extends Fragment {
 
 
     String[] listOfMonths = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    String[] listOfMonthsDigits = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
     public Fragment_SearchByDate() {
         // Required empty public constructor
     }
@@ -126,9 +127,12 @@ public class Fragment_SearchByDate extends Fragment {
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
                 String displayDate = day + " " + listOfMonths[month] + " " + year;
-                String dateValue = year + " " + listOfMonths[month] + " " + day;
+
+                String dateValue = year + "-" + listOfMonthsDigits[month] + "-" + day;
                 mDisplayDateFrom.setText(displayDate);
                 startSearchByDate = dateValue;
+
+
 
                 try {
                     updateSearchList(mReceiptList, startSearchByDate, endSearchByDate);
@@ -163,7 +167,7 @@ public class Fragment_SearchByDate extends Fragment {
 
 
                 String displayDate = day + " " + listOfMonths[month] + " " + year;
-                String dateValue = year + " " + listOfMonths[month]  + " " + day;
+                String dateValue = year + "-" + listOfMonthsDigits[month]  + "-" + day;
                 mDisplayDateTo.setText(displayDate);
                 endSearchByDate = dateValue;
 
@@ -187,6 +191,9 @@ public class Fragment_SearchByDate extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
+        Toast.makeText(getActivity(), String.valueOf(mReceiptList.size()),
+                Toast.LENGTH_LONG).show();
+
         if( mAdapter.getItemCount() != 0 ){
             mImageView.setVisibility(View.GONE);
         }
@@ -198,12 +205,16 @@ public class Fragment_SearchByDate extends Fragment {
         String dtStart = startSearchByDate;
         String dtEnd = endSearchByDate;
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date dateStart = format.parse(dtStart);
         Date dateEnd = format.parse(dtEnd);
 
-        if(startSearchByDate.length() > 0 && endSearchByDate.length() > 0)
+
+
+
+        if(dtStart.length() > 0 && dtEnd.length() > 0)
         {
+
             for (Receipt receipt : receiptList) {
                 Date tempDate = format.parse(receipt.getDate());
 
@@ -214,6 +225,8 @@ public class Fragment_SearchByDate extends Fragment {
 
             }
         }
+
+
 
         // Create an adapter and supply the data to be displayed.
         mAdapter = new ReceiptListAdapter(context, updatedReceiptList);
