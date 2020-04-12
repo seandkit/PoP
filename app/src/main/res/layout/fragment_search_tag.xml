@@ -67,7 +67,12 @@
                 android:layout_centerInParent="true"
                 android:background="@drawable/background_for_searchbox"
                 android:gravity="center"
-                android:hint="Search"
+                app:queryHint="Search Tag"
+                app:defaultQueryHint="Search Tag"
+                android:queryHint="Search Tag"
+
+                android:iconifiedByDefault="false"
+                app:iconifiedByDefault="false"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#000000"
                 android:textSize="20sp" />

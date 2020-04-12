@@ -75,6 +75,8 @@ public class Fragment_SearchByDate extends Fragment {
     public static List<Receipt> mEmptyList = new ArrayList<>();
     private ReceiptListAdapter mEmptyAdapter;
 
+
+    String[] listOfMonths = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     public Fragment_SearchByDate() {
         // Required empty public constructor
     }
@@ -122,9 +124,9 @@ public class Fragment_SearchByDate extends Fragment {
         mDateSetListenerFrom = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                month = month+1;
-                String displayDate = day + "-" + month + "-" + year;
-                String dateValue = year + "-" + month + "-" + day;
+
+                String displayDate = day + " " + listOfMonths[month] + " " + year;
+                String dateValue = year + " " + listOfMonths[month] + " " + day;
                 mDisplayDateFrom.setText(displayDate);
                 startSearchByDate = dateValue;
 
@@ -158,9 +160,10 @@ public class Fragment_SearchByDate extends Fragment {
         mDateSetListenerTo = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                month = month+1;
-                String displayDate = day + "-" + month + "-" + year;
-                String dateValue = year + "-" + month + "-" + day;
+
+
+                String displayDate = day + " " + listOfMonths[month] + " " + year;
+                String dateValue = year + " " + listOfMonths[month]  + " " + day;
                 mDisplayDateTo.setText(displayDate);
                 endSearchByDate = dateValue;
 

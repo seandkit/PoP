@@ -11,9 +11,9 @@
         android:id="@+id/logoPop"
         android:layout_width="120dp"
         android:layout_height="150dp"
-        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/regFirstName"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginBottom="60dp"
         android:contentDescription="TODO"
         app:srcCompat="@drawable/poplogonew"/>
 
@@ -144,9 +144,9 @@
         android:id="@+id/regBtn"
         android:layout_width="250dp"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
+        android:layout_alignBottom="@+id/loginLink"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="50dp"
         android:background="@drawable/custom_button"
         android:text="Sign Up"
         android:textAllCaps="false"

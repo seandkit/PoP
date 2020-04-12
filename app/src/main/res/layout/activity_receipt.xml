@@ -7,37 +7,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activity.ReceiptActivity">
+    <!--
+     #### THIS SHIT KEPT MESSING WITH MY EXPORT ###
 
-    <!-- <androidx.appcompat.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        tools:ignore="MissingConstraints"
-        android:id="@+id/toolbar"
-        android:background="@color/colorAccent"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:elevation="4dp"/>
-
-        #### THIS SHIT KEPT MESSING WITH MY EXPORT ###
-
-
-
-
-
-
-         <LinearLayout
-            android:id="@+id/linearLayoutReceipt"
+         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="600dp"
+            android:layout_height="?attr/actionBarSize"
+            tools:ignore="MissingConstraints"
+            android:id="@+id/toolbar"
+            android:background="@color/colorAccent"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:elevation="4dp"/>
 
-            android:background="@drawable/back_for_receipt"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/receiptLayout">
-        </LinearLayout>
-    -->
+
+
+            -->
 <androidx.core.widget.NestedScrollView
     android:id="@+id/receiptScrole"
     app:layout_constraintStart_toStartOf="parent"
