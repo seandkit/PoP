@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.pop.R;
+import com.example.pop.helper.Session;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,13 +17,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button logBtn;
-        Button regBtn;
+        checkLogin(new Session(getApplicationContext()).getLogin());
 
-        logBtn = findViewById(R.id.loginBtn);
-        regBtn = findViewById(R.id.regBtn);
-
-        logBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.loginBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
@@ -30,12 +27,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        regBtn.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.regBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });
+    }
+
+    private void checkLogin(String login) {
+        if(login.equals("Login")) {
+            Intent i = new Intent(MainActivity.this, FragmentHolder.class);
+            startActivity(i);
+            finish();
+        }
     }
 }

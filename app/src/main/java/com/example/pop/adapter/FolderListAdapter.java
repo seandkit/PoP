@@ -1,36 +1,25 @@
-package com.example.pop.activity.adapter;
+package com.example.pop.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.FragmentHolder;
-import com.example.pop.activity.ReceiptActivity;
-import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.model.Folder;
-import com.example.pop.model.Receipt;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

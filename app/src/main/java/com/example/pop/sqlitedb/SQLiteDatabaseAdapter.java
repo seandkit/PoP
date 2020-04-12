@@ -54,9 +54,11 @@ public class SQLiteDatabaseAdapter {
     }
 
     public boolean dropUnlinkedReceipt(String uuid){
+        System.out.println("DB = " + uuid);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int delCount = db.delete(DBConstants.UNLINKEDRECEIPTS, "uuid = ?", new String[] {uuid});
 
+        System.out.println(delCount);
         return false;
     }
 

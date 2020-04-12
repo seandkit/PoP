@@ -1,4 +1,4 @@
-package com.example.pop.activity;
+package com.example.pop.activity.popup;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,21 +14,13 @@ import androidx.core.content.ContextCompat;
 import com.example.pop.R;
 import java.util.concurrent.Executor;
 
-public class BlurActivity extends AppCompatActivity {
+public class Popup_Blur extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_blur);
-
-        /*DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-        int width = dm.widthPixels;
-        int heigth = dm.heightPixels;
-
-        getWindow().setLayout((int)(width*1), (int)(heigth*0.85));*/
 
         bio();
     }
@@ -49,7 +41,6 @@ public class BlurActivity extends AppCompatActivity {
             public void onAuthenticationError(int errorCode,
                                               @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
-                //Toast.makeText(getApplicationContext(),"Authentication error: " + errString, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.addCategory(Intent.CATEGORY_HOME);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

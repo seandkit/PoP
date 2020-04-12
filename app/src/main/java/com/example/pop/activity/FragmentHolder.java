@@ -31,6 +31,7 @@ import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.UtteranceProgressListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,9 +43,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.pop.DBConstants;
 import com.example.pop.R;
-import com.example.pop.activity.adapter.ReceiptListAdapter;
+import com.example.pop.activity.popup.Popup_Blur;
+import com.example.pop.adapter.ReceiptListAdapter;
+import com.example.pop.asynctasks.AddFolderAsyncTask;
+import com.example.pop.asynctasks.FetchFoldersAsyncTask;
+import com.example.pop.asynctasks.LinkReceiptAsyncTask;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.helper.Session;
+import com.example.pop.helper.Utils;
 import com.example.pop.model.Folder;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
@@ -66,9 +73,10 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
     FrameLayout frameLayout;
     BottomNavigationView bottomNavigationView;
-    NavigationView navigationView;
 
-    private DrawerLayout drawer;
+    public static NavigationView navigationView;
+
+    public static DrawerLayout drawer;
 
     public static List<Folder> folderList = new ArrayList<>();
     private String newFolderName;
@@ -82,20 +90,12 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     private Fragment_SearchByDate searchFragment;
     private Fragment_SearchByTag tagFragment;
 
-    private Context context;
+    private static Context context;
     private Session session;
-    private String receiptUuidphp = "";
-
-    private int receiptID;
 
     public static int addToFolder_ReceiptId;
 
-    private String currentDate;
-    private String vendor;
-    private Double  total;
-    private String uuid;
     Receipt newReceipt;
-    private String unlinkedReceiptUuid;
 
     public static List<Receipt> mReceiptList = new ArrayList<>();
 
@@ -127,7 +127,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         populateDrawerInfo();
 
-        //Fragment initialization
         receiptFragment = new Fragment_Receipt();
         searchFragment = new Fragment_SearchByDate();
         tagFragment = new Fragment_SearchByTag();
@@ -137,20 +136,16 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                //switch to fragment
                 switch(menuItem.getItemId()){
                     case R.id.nav_home :
-                        //Code to be executed when item 1 selected.
                         InitializeFragment(receiptFragment);
                         return true;
 
                     case R.id.nav_search :
-                        //Code to be executed when item 1 selected.
                         InitializeFragment(searchFragment);
                         return true;
 
                     case R.id.nav_data :
-                        //Code to be executed when item 1 selected.
                         InitializeFragment(tagFragment);
                         return true;
                 }
@@ -161,11 +156,18 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        setUp();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
         if(BiometricManager.from(context).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
-            final Intent intent = new Intent(this, BlurActivity.class);
+            final Intent intent = new Intent(this, Popup_Blur.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
         }
@@ -182,28 +184,48 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
     public void setUp(){
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
+            if(db.getUnlinkedReceipts().size() != 0) {
+                Toast.makeText(FragmentHolder.this,"Found unlinked receipts", Toast.LENGTH_LONG).show();
+
+                List<Receipt> receipts = db.getUnlinkedReceipts();
+
+                String unlinkedReceiptUUIDPhp = "";
+                for (Receipt r : receipts) {
+                    unlinkedReceiptUUIDPhp = unlinkedReceiptUUIDPhp +  r.getUuid() + "@";
+                }
+
+                try {
+                    LinkReceiptAsyncTask linkReceiptAsyncTask = new LinkReceiptAsyncTask(context, unlinkedReceiptUUIDPhp);
+                    int newID = linkReceiptAsyncTask.execute().get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             try {
-                String wait1 = new fetchFoldersAsyncTask().execute().get();
+                FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(navigationView, context);
+                String wait = fetchFoldersAsyncTask.execute().get();
                 String wait2 = new fetchReceiptsAsyncTask().execute().get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
-
-            if(db.getUnlinkedReceipts().size() != 0) {
-                List<Receipt> receipts = db.getUnlinkedReceipts();
-
-                Toast.makeText(FragmentHolder.this,"Found unlinked receipts", Toast.LENGTH_LONG).show();
-
-                for (Receipt r : receipts) {
-                    unlinkedReceiptUuid = r.getUuid();
-                    receiptUuidphp = receiptUuidphp.concat(r.getUuid() + "@");
-                }
-
-                new linkReceiptAsyncTask().execute();
             }
         }
     }
@@ -253,8 +275,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         builder.setTitle("Create New Folder");
         builder.setView(dialoglayout);
 
-        final EditText userInput = (EditText) dialoglayout.findViewById(R.id.newFolderInput);
-
+        final EditText userInput = dialoglayout.findViewById(R.id.newFolderInput);
 
         builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             @Override
@@ -267,7 +288,8 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                     }
                 }
                 if(!exists){
-                    new addFolderAsyncTask().execute();
+                    AddFolderAsyncTask addFolderAsyncTask = new AddFolderAsyncTask(navigationView, context, newFolderName);
+                    addFolderAsyncTask.execute();
                 }
                 else {
                     Toast.makeText(FragmentHolder.this,"Folder already exists",Toast.LENGTH_LONG).show();
@@ -287,33 +309,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         alertDialog.show();
     }
 
-    @Override
-    public void onBackPressed() {
-        if(drawer.isDrawerOpen(GravityCompat.START)){
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
-    }
-
-    public boolean addNewItem(int itemId, String itemName){
-        MenuItem myMoveGroupItem = navigationView.getMenu().getItem(1);
-        SubMenu subMenu = myMoveGroupItem.getSubMenu();
-
-        if(session.getCurrentFolder().equalsIgnoreCase(String.valueOf(itemId))){
-            subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.baseline_folder_open_24).setOnMenuItemClickListener(folderOnClickListener);
-        }
-        else{
-            subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.ic_folder_black_24dp).setOnMenuItemClickListener(folderOnClickListener);
-        }
-
-        return true;
-    }
-
-    private MenuItem.OnMenuItemClickListener folderOnClickListener = new MenuItem.OnMenuItemClickListener() {
+    public static MenuItem.OnMenuItemClickListener drawerFolderClickListener = new MenuItem.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
 
@@ -325,71 +321,16 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 if(f.getName().equalsIgnoreCase(String.valueOf(menuItem.getTitle()))){
                     intent.putExtra("folderId", f.getId());
                     intent.putExtra("folderName", f.getName());
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 }
             }
 
-            startActivity(intent);
+            context.startActivity(intent);
 
             return false;
         }
     };
-
-    private void showNotification(String chanelId, String title, String text, int receiptId){
-        String CHANNEL_ID = chanelId;
-        String CHANNEL_NAME = "Notification";
-        Uri soundUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"+ getApplicationContext().getPackageName() + "/" + R.raw.success);
-
-        NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            channel.enableVibration(true);
-            channel.setLightColor(Color.BLUE);
-            channel.enableLights(true);
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                    .build();
-            channel.setSound(soundUri, audioAttributes);
-
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        Intent notificationIntent = new Intent(context, ReceiptActivity.class);
-        NotificationCompat.Builder notificationBuilder;
-
-        if(receiptId != -1) {
-            notificationIntent.putExtra("receiptID", receiptId);
-            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                    .setVibrate(new long[]{0, 100})
-                    .setPriority(Notification.PRIORITY_MAX)
-                    .setLights(Color.BLUE, 3000, 3000)
-                    .setAutoCancel(true)
-                    .setContentIntent(intent)
-                    .setSmallIcon(R.drawable.logo_dark)
-                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
-                            R.drawable.logo_dark))
-                    .setContentTitle(title)
-                    .setContentText(text);
-        }
-        else{
-            notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                    .setVibrate(new long[]{0, 100})
-                    .setPriority(Notification.PRIORITY_MAX)
-                    .setLights(Color.BLUE, 3000, 3000)
-                    .setAutoCancel(true)
-                    .setSmallIcon(R.drawable.logo_dark)
-                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
-                            R.drawable.logo_dark))
-                    .setContentTitle(title)
-                    .setContentText(text);
-        }
-
-        notificationManager.notify(CHANNEL_ID, 1, notificationBuilder.build());
-    }
 
     private void InitializeFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -414,98 +355,52 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         IsoDep isoDep = IsoDep.get(tag);
         try {
             isoDep.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
+
         byte[] response = new byte[0];
         try {
             response = isoDep.transceive(Utils.hexStringToByteArray("00A4040007A0000002471002"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
 
         String stringResponse = "";
 
         try {
             stringResponse = new String(response, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        } catch (UnsupportedEncodingException e) { e.printStackTrace(); }
 
         final String finalStringResponse = stringResponse;
 
         String[] responseArray = finalStringResponse.split(",");
 
-        currentDate = responseArray[0];
-        vendor = responseArray[1];
-        total = Double.valueOf(responseArray[2]);
-        uuid = responseArray[3];
+        String currentDate = responseArray[0];
+        String vendor = responseArray[1];
+        double total = Double.valueOf(responseArray[2]);
+        String uuid = responseArray[3];
 
         newReceipt = new Receipt(currentDate, vendor, total, session.getUserId(), uuid);
 
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
-            receiptUuidphp = receiptUuidphp.concat(newReceipt.getUuid()+"@");
             try {
-                String result = new linkReceiptAsyncTask().execute().get();
-                showNotification("NFC_Channel", "Receipt Received", "Tap to view", newReceipt.getId());
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+                LinkReceiptAsyncTask linkReceiptAsyncTask = new LinkReceiptAsyncTask(context, newReceipt.getUuid());
+                int newReceiptID = linkReceiptAsyncTask.execute().get();
+
+                newReceipt = new Receipt(newReceiptID, currentDate, vendor, total, session.getUserId());
+                Utils.showNotification(context,"NFC_Channel", "Receipt Received", "Tap to view", newReceipt.getId());
+            } catch (ExecutionException e) { e.printStackTrace(); }
+              catch (InterruptedException e) { e.printStackTrace(); }
         }
         else{
             db.addUnlinkedReceipt(newReceipt);
-            showNotification("NFC_Channel", "Receipt Received", "Connect to the internet to view", -1);
+            Utils.showNotification(context,"NFC_Channel", "Receipt Received", "Connect to the internet to view", -1);
         }
 
         mReceiptList.add(newReceipt);
 
         try {
             isoDep.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
 
         updateReceiptListUI();
-    }
-
-    private class linkReceiptAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("uuid", receiptUuidphp);
-            httpParams.put("user_id", String.valueOf(session.getUserId()));
-            httpParams.put("folder_id", String.valueOf(session.getCurrentFolder()));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "uuidNULL.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-
-                if (success == 1) {
-                    receiptID = jsonObject.getInt("receipt_id");
-                    receiptUuidphp = "";
-                    newReceipt = new Receipt(receiptID, currentDate, vendor, total, session.getUserId());
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            boolean answer = db.dropUnlinkedReceipt(unlinkedReceiptUuid);
-        }
     }
 
     private void updateReceiptListUI(){
@@ -517,97 +412,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             }
         });
-    }
-
-    private class addFolderAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("folder_name", newFolderName);
-            httpParams.put("user_id", String.valueOf(session.getUserId()));
-
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "addFolder.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                if (success == 1) {
-                    newFolderId = jsonObject.getInt("data");
-                    folderList.add(new Folder(newFolderId, newFolderName));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            addNewItem(newFolderId, newFolderName);
-            Toast.makeText(FragmentHolder.this,"Folder created",Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private class fetchFoldersAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllFolders.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                JSONArray folders;
-                if (success == 1) {
-                    folders = jsonObject.getJSONArray("data");
-                    //Iterate through the response and populate receipt list
-                    folderList = new ArrayList<>();
-                    for (int i = 0; i < folders.length(); i++) {
-                        JSONObject folder = folders.getJSONObject(i);
-                        folderList.add(new Folder(folder.getInt("folder_id"), folder.getString("folder_name")));
-                    }
-                }
-                else{
-                    message = jsonObject.getString("message");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            if (success == 0) {
-                Toast.makeText(FragmentHolder.this, message, Toast.LENGTH_LONG).show();
-            }
-            else{
-                //If success update xml
-                MenuItem myMoveGroupItem = navigationView.getMenu().getItem(1);
-                SubMenu subMenu = myMoveGroupItem.getSubMenu();
-                subMenu.clear();
-                for(Folder folder: folderList){
-                    addNewItem(folder.getId(), folder.getName());
-                }
-            }
-        }
     }
 
     private class fetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
@@ -652,12 +456,5 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
 
         protected void onPostExecute(String result) {}
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        setUp();
     }
 }

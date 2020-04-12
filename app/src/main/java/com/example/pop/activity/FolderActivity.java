@@ -24,7 +24,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,10 +33,18 @@ import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
-import com.example.pop.activity.adapter.FolderReceiptListAdapter;
-import com.example.pop.activity.adapter.ItemListAdapter;
+import com.example.pop.adapter.FolderReceiptListAdapter;
+import com.example.pop.adapter.ItemListAdapter;
+import com.example.pop.asynctasks.AddFolderAsyncTask;
+import com.example.pop.asynctasks.DeleteFolderAsyncTask;
+import com.example.pop.asynctasks.FetchFolderReceiptsAsyncTask;
+import com.example.pop.asynctasks.FetchFoldersAsyncTask;
+import com.example.pop.asynctasks.SetCurrentFolderAsyncTask;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.helper.ScreenCapture;
+import com.example.pop.helper.Session;
+import com.example.pop.helper.Utils;
 import com.example.pop.model.Folder;
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
@@ -59,15 +66,13 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     Context context;
     Session session;
 
-    boolean firstTime = false;
-
     private NavigationView navigationView;
     private DrawerLayout drawer;
     public static List<Folder> folderList = new ArrayList<>();
 
-    private RecyclerView mRecyclerView;
-    private FolderReceiptListAdapter mAdapter;
-    public List<Receipt> mReceiptList = new ArrayList<>();
+    public static RecyclerView mRecyclerView;
+    public static FolderReceiptListAdapter mAdapter;
+    public static List<Receipt> folderReceiptList = new ArrayList<>();
 
     public static int folderId;
     public static String folderName;
@@ -76,8 +81,6 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     private Receipt receipt;
 
     private Button btn_export;
-    private int STORAGE_PERMISSION_CODE = 1;
-
 
     //Export Variable
     private View v;
@@ -97,7 +100,6 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     private TextView otherNumber;
 
     private String newFolderName;
-    private int newFolderId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +128,10 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
         if (CheckNetworkStatus.isNetworkAvailable(context)) {
             try {
-                String str_result = new FolderActivity.fetchFoldersAsyncTask().execute().get();
-                String str_result2 = new FetchFolderReceiptsAsyncTask().execute().get();
+                FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(navigationView, context);
+                String str_result = fetchFoldersAsyncTask.execute().get();
+                FetchFolderReceiptsAsyncTask fetchFolderReceiptsAsyncTask = new FetchFolderReceiptsAsyncTask(context, folderId);
+                String str_result2 = fetchFolderReceiptsAsyncTask.execute().get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -136,7 +140,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         }
 
         mRecyclerView = findViewById(R.id.receiptList);
-        mAdapter = new FolderReceiptListAdapter(context, mReceiptList);
+        mAdapter = new FolderReceiptListAdapter(context, folderReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
@@ -154,6 +158,143 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         });
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.folder_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.setCurrent:
+                SetCurrentFolderAsyncTask setCurrentFolderAsyncTask = new SetCurrentFolderAsyncTask(navigationView, context, folderId);
+                setCurrentFolderAsyncTask.execute();
+                return true;
+
+            case R.id.deleteFolder:
+                deleteFolderPopUp();
+                //finish();
+                return true;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch(menuItem.getItemId()) {
+            case R.id.nav_logOut:
+                session.setLogin("");
+                session.setUserId(0);
+                session.setFirstName("");
+                session.setLastName("");
+                session.setEmail("");
+
+                drawer.closeDrawer(GravityCompat.START);
+
+                Intent i = new Intent(this, LoginActivity.class);
+                startActivity(i);
+                folderList = new ArrayList<>();
+                folderReceiptList = new ArrayList<>();
+                finish();
+                break;
+
+            case R.id.nav_folder_add_new:
+                newFolderPopUp();
+                break;
+        }
+
+        return true;
+    }
+
+    public void newFolderPopUp() {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.new_folder_pop_up, null);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Create New Folder");
+        builder.setView(dialoglayout);
+
+        final EditText userInput = dialoglayout.findViewById(R.id.newFolderInput);
+
+        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                newFolderName = userInput.getText().toString();
+                boolean exists = false;
+                for(Folder f : folderList){
+                    if (f.getName().equalsIgnoreCase(newFolderName)) {
+                        exists = true;
+                    }
+                }
+                if(!exists){
+                    AddFolderAsyncTask addFolderAsyncTask = new AddFolderAsyncTask(navigationView, context, newFolderName);
+                    addFolderAsyncTask.execute();
+                }
+                else {
+                    Toast.makeText(context,"Folder already exists",Toast.LENGTH_LONG).show();
+                }
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    public void deleteFolderPopUp() {
+        LayoutInflater inflater = (LayoutInflater) FolderActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialoglayout = inflater.inflate(R.layout.delete_folder_pop_up, null);
+
+        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(dialoglayout.getRootView().getContext());
+
+        builder.setTitle("Delete Folder");
+        builder.setView(dialoglayout);
+
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DeleteFolderAsyncTask deleteFolderAsyncTask = new DeleteFolderAsyncTask(context, folderId);
+                deleteFolderAsyncTask.execute();
+                Toast.makeText(context,"Folder Deleted",Toast.LENGTH_LONG).show();
+
+                finish();
+
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(context,"Cancel",Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+            }
+        });
+
+        android.app.AlertDialog alertDialog = builder.create();
+        //alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        alertDialog.show();
+    }
+
     private boolean requestStoragePermission() {
         boolean answer = false;
 
@@ -166,7 +307,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(FolderActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                            ActivityCompat.requestPermissions(FolderActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                         }
                     })
                     .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -177,7 +318,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
                     })
                     .create().show();
         } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
 
         return answer;
@@ -195,7 +336,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
         @Override
         protected String doInBackground(String... params) {
-            for(Receipt r : mReceiptList) {
+            for(Receipt r : folderReceiptList) {
                 LayoutInflater inflater = LayoutInflater.from(context);
                 v = inflater.inflate(R.layout.activity_receipt, null);
 
@@ -296,401 +437,5 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         }
 
         protected void onPostExecute(String result) { }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if(drawer.isDrawerOpen(GravityCompat.START)){
-            drawer.closeDrawer(GravityCompat.START);
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.folder_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.setCurrent:
-                new setCurrentFolderAsyncTask().execute();
-                return true;
-
-            case R.id.deleteFolder:
-                deleteFolderPopUp();
-                return true;
-        }
-        return true;
-    }
-
-    public void deleteFolderPopUp() {
-        LayoutInflater inflater = (LayoutInflater) FolderActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialoglayout = inflater.inflate(R.layout.delete_folder_pop_up, null);
-
-        final android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(dialoglayout.getRootView().getContext());
-
-        builder.setTitle("Delete Folder");
-        builder.setView(dialoglayout);
-
-        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                new deleteFolderAsyncTask().execute();
-                Toast.makeText(context,"Folder Deleted",Toast.LENGTH_LONG).show();
-
-                finish();
-
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(context,"Cancel",Toast.LENGTH_LONG).show();
-                dialog.dismiss();
-            }
-        });
-
-        android.app.AlertDialog alertDialog = builder.create();
-        //alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        alertDialog.show();
-    }
-
-    private class deleteFolderAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("folder_id", String.valueOf(folderId));//'1' needs to be changed to some user chosen folder id
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "deleteFolder.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                //Can choose to set values in success '1'- means added successfully, '0'- is otherwise
-                //success 1 means deleted in this case
-                if (success == 1) {
-                }
-                else{
-                    message = jsonObject.getString("message");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            //Can choose execute something in success '1'- means added successfully, '0'- is otherwise
-            if (success == 0) {
-                Toast.makeText(FolderActivity.this, message, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    private class FetchFolderReceiptsAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("folder_id", String.valueOf(folderId));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceiptsFromFolder.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                JSONArray receipts;
-                if (success == 1) {
-                    mReceiptList = new ArrayList<>();
-                    receipts = jsonObject.getJSONArray("data");
-
-                    //Iterate through the response and populate receipt list
-                    for (int i = 0; i < receipts.length(); i++) {
-                        JSONObject receipt = receipts.getJSONObject(i);
-                        int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
-                        String receiptDate = receipt.getString(DBConstants.DATE);
-                        String receiptVendor = receipt.getString(DBConstants.VENDOR);
-                        double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
-
-                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
-                    }
-                    //Collections.sort(mReceiptList);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            mAdapter = new FolderReceiptListAdapter(context, mReceiptList);
-            // Connect the adapter with the RecyclerView.
-            mRecyclerView.setAdapter(mAdapter);
-            // Give the RecyclerView a default layout manager.
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        }
-    }
-
-    private class fetchFoldersAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllFolders.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                System.out.println("Success: " + success);
-                JSONArray folders;
-                if (success == 1) {
-                    folders = jsonObject.getJSONArray("data");
-                    //Iterate through the response and populate receipt list
-                    folderList = new ArrayList<>();
-                    for (int i = 0; i < folders.length(); i++) {
-                        JSONObject folder = folders.getJSONObject(i);
-                        folderList.add(new Folder(folder.getInt("folder_id"), folder.getString("folder_name")));
-                    }
-                }
-                else{
-                    message = jsonObject.getString("message");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-
-            System.out.println("Success: " + success);
-            if (success == 0) {
-                System.out.println("BROKE");
-                Toast.makeText(FolderActivity.this, message, Toast.LENGTH_LONG).show();
-            }
-            else{
-                //If success update xml
-                for(Folder folder: folderList){
-                    addNewItem(folder.getId(), folder.getName());
-                }
-            }
-        }
-    }
-
-    private class setCurrentFolderAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
-            httpParams.put("folder_id", String.valueOf(folderId));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "assignCurrentFolder.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                if (success == 1) {
-                    session.setCurrentFolder(String.valueOf(folderId));
-                }
-                else{
-                    message = jsonObject.getString("message");
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            if (success == 0) {
-                Toast.makeText(FolderActivity.this, message, Toast.LENGTH_LONG).show();
-            }
-            else{
-                Toast.makeText(FolderActivity.this, "Set To Current", Toast.LENGTH_LONG).show();
-
-                MenuItem myMoveGroupItem = navigationView.getMenu().getItem(1);
-                SubMenu subMenu = myMoveGroupItem.getSubMenu();
-                subMenu.clear();
-                for(Folder folder: folderList){
-                    addNewItem(folder.getId(), folder.getName());
-                }
-            }
-        }
-    }
-
-    public boolean addNewItem(int itemId, String itemName){
-        MenuItem myMoveGroupItem = navigationView.getMenu().getItem(1);
-        SubMenu subMenu = myMoveGroupItem.getSubMenu();
-
-        if(session.getCurrentFolder().equalsIgnoreCase(String.valueOf(itemId))){
-            subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.baseline_folder_open_24).setOnMenuItemClickListener(folderOnClickListener);
-        }
-        else{
-            subMenu.add(Menu.NONE, itemId, Menu.NONE, itemName).setIcon(R.drawable.ic_folder_black_24dp).setOnMenuItemClickListener(folderOnClickListener);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch(menuItem.getItemId()) {
-            case R.id.nav_logOut:
-                session.setLogin("");
-                session.setUserId(0);
-                session.setFirstName("");
-                session.setLastName("");
-                session.setEmail("");
-
-                drawer.closeDrawer(GravityCompat.START);
-
-                Intent i = new Intent(this, LoginActivity.class);
-                startActivity(i);
-                folderList = new ArrayList<>();
-                mReceiptList = new ArrayList<>();
-                finish();
-                break;
-
-            case R.id.nav_folder_add_new:
-                newFolderPopUp();
-                break;
-        }
-
-        return true;
-    }
-
-    private MenuItem.OnMenuItemClickListener folderOnClickListener = new MenuItem.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            Intent intent = new Intent(context, FolderActivity.class);
-
-            for(Folder f : folderList){
-                if(f.getName().equalsIgnoreCase(String.valueOf(menuItem.getTitle()))){
-                    intent.putExtra("folderId", f.getId());
-                    intent.putExtra("folderName", f.getName());
-                }
-            }
-            startActivity(intent);
-            finish();
-            return false;
-        }
-    };
-
-    public void newFolderPopUp() {
-        LayoutInflater inflater = getLayoutInflater();
-        View dialoglayout = inflater.inflate(R.layout.new_folder_pop_up, null);
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Create New Folder");
-        builder.setView(dialoglayout);
-
-        final EditText userInput = (EditText) dialoglayout.findViewById(R.id.newFolderInput);
-
-
-        builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                newFolderName = userInput.getText().toString();
-                boolean exists = false;
-                for(Folder f : folderList){
-                    if (f.getName().equalsIgnoreCase(newFolderName)) {
-                        exists = true;
-                    }
-                }
-                if(!exists){
-                    new addFolderAsyncTask().execute();
-                }
-                else {
-                    Toast.makeText(context,"Folder already exists",Toast.LENGTH_LONG).show();
-                }
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
-
-    private class addFolderAsyncTask extends AsyncTask<String, String, String> {
-
-        int success;
-        String message;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("folder_name", newFolderName);
-            httpParams.put("user_id", String.valueOf(session.getUserId()));
-
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "addFolder.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-                if (success == 1) {
-                    newFolderId = jsonObject.getInt("data");
-                    folderList.add(new Folder(newFolderId, newFolderName));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            addNewItem(newFolderId, newFolderName);
-            Toast.makeText(context,"Folder created",Toast.LENGTH_LONG).show();
-        }
     }
 }

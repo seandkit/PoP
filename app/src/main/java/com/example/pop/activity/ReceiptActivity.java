@@ -21,33 +21,31 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
-import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
-import com.example.pop.activity.adapter.ItemListAdapter;
+import com.example.pop.adapter.ItemListAdapter;
 import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.helper.ScreenCapture;
+import com.example.pop.helper.Session;
+import com.example.pop.helper.Utils;
 import com.example.pop.model.Folder;
 import com.example.pop.model.Item;
 import com.example.pop.model.Receipt;
-import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,8 +94,6 @@ public class ReceiptActivity extends AppCompatActivity {
 
     ConstraintLayout relativeLayout;
 
-    private int STORAGE_PERMISSION_CODE = 1;
-
     private Toolbar toolbar;
 
     @Override
@@ -136,23 +132,7 @@ public class ReceiptActivity extends AppCompatActivity {
                     relativeLayout.draw((canvas));
                     Toast.makeText(ReceiptActivity.this, "Exporting to gallery", Toast.LENGTH_LONG).show();
 
-                    //saveImage(bitmap, "PHOTO");
-
-                    //MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "yourTitle" , "yourDescription");
                     ScreenCapture.insertImage(getContentResolver(), bitmap, System.currentTimeMillis() + ".jpg", "All Receipts", "All Receipts");
-
-                    /*if (!file.exists()) {
-                        try {
-                            FileOutputStream fos = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                            Toast.makeText(getApplicationContext(), "Receipt successfully exported to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                            fos.flush();
-                            fos.close();
-                        } catch (java.io.IOException e) {
-                            Toast.makeText(getApplicationContext(), "Problem exporting receipt", Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                        }
-                    }*/
                 }
             }
         });
@@ -177,8 +157,7 @@ public class ReceiptActivity extends AppCompatActivity {
                 String fname = "Receipt_"+ System.currentTimeMillis() +".pdf";
                 File file = new File(myDir, fname);
 
-
-                createPdf(bitmap, myDir, fname);
+                Utils.createPdf(context, bitmap, myDir, fname);
                 Toast.makeText(getApplicationContext(), "PDF file Created in: /Pop Receipts/PDF Receipts", Toast.LENGTH_SHORT).show();
             }
         });
@@ -236,53 +215,6 @@ public class ReceiptActivity extends AppCompatActivity {
         otherNumber = findViewById(R.id.receiptOtherNumber);
 
         new FetchReceiptsInfoAsyncTask().execute();
-    }
-
-    private void createPdf(Bitmap bitmap, File myDir, String fileName){
-        PdfDocument document = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(bitmap.getWidth(), bitmap.getHeight(), 1).create();
-        PdfDocument.Page page = document.startPage(pageInfo);
-
-        Canvas canvas = page.getCanvas();
-
-        Paint paint = new Paint();
-        paint.setColor(Color.parseColor("#ffffff"));
-        canvas.drawPaint(paint);
-
-        paint.setColor(Color.BLUE);
-        canvas.drawBitmap(bitmap, 0, 0 , null);
-        document.finishPage(page);
-
-        // write the document content
-        File filePath = new File(myDir, fileName);
-        try {
-            document.writeTo(new FileOutputStream(filePath));
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Something wrong: " + e.toString(), Toast.LENGTH_LONG).show();
-        }
-
-        // close the document
-        document.close();
-    }
-
-    private void saveImage(Bitmap finalBitmap, String image_name) {
-
-        String root = Environment.getExternalStorageDirectory().toString();
-        File myDir = new File(root);
-        myDir.mkdirs();
-        String fname = "Image-" + image_name+ ".jpg";
-        File file = new File(myDir, fname);
-        if (file.exists()) file.delete();
-        Log.i("LOAD", root + fname);
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void onClick(View v) {
@@ -354,7 +286,7 @@ public class ReceiptActivity extends AppCompatActivity {
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(ReceiptActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+                            ActivityCompat.requestPermissions(ReceiptActivity.this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                         }
                     })
                     .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -365,7 +297,7 @@ public class ReceiptActivity extends AppCompatActivity {
                     })
                     .create().show();
         } else {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
 
         return answer;
@@ -373,7 +305,7 @@ public class ReceiptActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == STORAGE_PERMISSION_CODE) {
+        if(requestCode == 1) {
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             } else {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();

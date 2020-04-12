@@ -36,7 +36,7 @@
             android:value="AIzaSyALRfXYO9M3CWVGxhpzdVKppFxprPBifBY" />
 
         <service
-            android:name=".activity.HostCardEmulatorService"
+            android:name=".helper.HostCardEmulatorService"
             android:exported="true"
             android:permission="android.permission.BIND_NFC_SERVICE">
             <intent-filter>
@@ -53,10 +53,15 @@
             android:required="true" />
 
         <activity
-            android:name=".activity.startScreen"
+            android:name=".activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
+        <activity
+            android:name=".activity.RegisterActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,12 +69,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.RegisterActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.FragmentHolder"
             android:theme="@style/AppTheme.NoActionBar"
@@ -95,7 +94,7 @@
         </provider>
 
         <activity
-            android:name=".activity.BlurActivity"
+            android:name=".activity.popup.Popup_Blur"
             android:clearTaskOnLaunch="true"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>

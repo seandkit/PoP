@@ -1,8 +1,6 @@
 package com.example.pop.activity;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -13,10 +11,6 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -24,8 +18,9 @@ import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
-import com.example.pop.activity.adapter.ReceiptListAdapter;
+import com.example.pop.adapter.ReceiptListAdapter;
 import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.helper.Session;
 import com.example.pop.model.Receipt;
 import com.google.android.flexbox.FlexboxLayout;
 

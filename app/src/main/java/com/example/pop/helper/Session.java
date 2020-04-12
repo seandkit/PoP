@@ -1,4 +1,4 @@
-package com.example.pop.activity;
+package com.example.pop.helper;
 
 import android.content.Context;
 import android.content.SharedPreferences;
