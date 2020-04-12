@@ -86,6 +86,7 @@ public class Fragment_SearchByDate extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        mReceiptList = FragmentHolder.mReceiptList;
         View v = inflater.inflate(R.layout.fragment_search, container, false);
         Toolbar toolbar = v.findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
@@ -191,9 +192,7 @@ public class Fragment_SearchByDate extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        Toast.makeText(getActivity(), String.valueOf(mReceiptList.size()),
-                Toast.LENGTH_LONG).show();
-
+       
         if( mAdapter.getItemCount() != 0 ){
             mImageView.setVisibility(View.GONE);
         }
