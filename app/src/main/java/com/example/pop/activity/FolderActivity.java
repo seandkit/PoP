@@ -2,19 +2,15 @@ package com.example.pop.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -24,9 +20,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,8 +31,6 @@ import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.adapter.FolderReceiptListAdapter;
 import com.example.pop.adapter.ItemListAdapter;
-import com.example.pop.asynctasks.AddFolderAsyncTask;
-import com.example.pop.asynctasks.DeleteFolderAsyncTask;
 import com.example.pop.asynctasks.FetchFolderReceiptsAsyncTask;
 import com.example.pop.asynctasks.FetchFoldersAsyncTask;
 import com.example.pop.asynctasks.SetCurrentFolderAsyncTask;
@@ -62,11 +56,10 @@ import java.util.concurrent.ExecutionException;
 
 public class FolderActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    FrameLayout frameLayout;
     Context context;
     Session session;
 
-    private NavigationView navigationView;
+    public static NavigationView navigationView;
     private DrawerLayout drawer;
 
     public static RecyclerView mRecyclerView;
@@ -125,9 +118,12 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
         if (CheckNetworkStatus.isNetworkAvailable(context)) {
             try {
-                FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(navigationView, context);
-                String str_result = fetchFoldersAsyncTask.execute().get();
-                FetchFolderReceiptsAsyncTask fetchFolderReceiptsAsyncTask = new FetchFolderReceiptsAsyncTask(context, folderId);
+                //FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(navigationView, context);
+                //String str_result = fetchFoldersAsyncTask.execute().get();
+
+                Utils.updateFolderMenu(navigationView, context);
+
+                FetchFolderReceiptsAsyncTask fetchFolderReceiptsAsyncTask = new FetchFolderReceiptsAsyncTask(FolderActivity.this, context, folderId);
                 String str_result2 = fetchFolderReceiptsAsyncTask.execute().get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
@@ -175,13 +171,12 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.setCurrent:
-                SetCurrentFolderAsyncTask setCurrentFolderAsyncTask = new SetCurrentFolderAsyncTask(navigationView, context, folderId);
+                SetCurrentFolderAsyncTask setCurrentFolderAsyncTask = new SetCurrentFolderAsyncTask(FolderActivity.this, navigationView, context, folderId);
                 setCurrentFolderAsyncTask.execute();
                 return true;
 
             case R.id.deleteFolder:
-                Utils.deleteFolderPopUp(FolderActivity.this, folderId);
-                //finish();
+                Utils.deleteFolderPopUp(FolderActivity.this, navigationView, folderId);
                 return true;
         }
         return true;
@@ -201,7 +196,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
                 Intent i = new Intent(this, LoginActivity.class);
                 startActivity(i);
-                FragmentHolder.folderList = new ArrayList<>();
+                FragmentHolder.globalFolderList = new ArrayList<>();
                 folderReceiptList = new ArrayList<>();
                 finish();
                 break;
@@ -233,8 +228,6 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
                 relativeLayout = v.findViewById(R.id.receiptLayout);
                 ConstraintLayout pageLayout = v.findViewById(R.id.receiptPageContainer);
                 pageLayout.removeView(v.findViewById(R.id.export_btn));
-                //pageLayout.removeView(v.findViewById(R.id.export_btn_pdf));
-                //pageLayout.removeView(v.findViewById(R.id.export_btn_csv));
 
                 v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 

@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -27,26 +28,20 @@
             android:layout_height="match_parent"
             android:id="@+id/fragment_container">
 
-
-
         </FrameLayout>
 
     </LinearLayout>
 
-
-
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:id="@+id/textboxtest"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             tools:ignore="MissingConstraints"
-            android:background="@color/main_background_colour"
-            >
+            android:background="@color/main_background_colour">
 
             <RelativeLayout
                 android:id="@+id/linearLayout"
@@ -78,9 +73,6 @@
                     android:textColor="#474545"
                     android:textSize="15dp" />
 
-
-
-
                 <TextView
                     android:id="@+id/tvDateFrom"
                     android:layout_width="140dp"
@@ -109,40 +101,20 @@
                     android:gravity="center"
                     android:textColor="#000000"/>
 
-
             </RelativeLayout>
 
         </RelativeLayout>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/receiptList"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textboxtest"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/layout_list_item"/>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/receiptList"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textboxtest"
-        android:scrollbars="vertical"
-        tools:listitem="@layout/layout_list_item"
-        >
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <ImageView
-        android:id="@+id/emptyListImg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/list_empty3"
-        tools:layout_editor_absoluteX="157dp" />
-
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-
-    </RelativeLayout>
+</RelativeLayout>

@@ -19,4 +19,10 @@ public class Tutorial extends AppCompatActivity {
         ImageAdapter adapter = new ImageAdapter(this);
         viewPager.setAdapter(adapter);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
+    }
 }

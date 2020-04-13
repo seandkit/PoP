@@ -109,10 +109,6 @@ public class Fragment_SearchByTag extends Fragment{
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-        if(mAdapter.getItemCount() != 0){
-            mImageView.setVisibility(View.GONE);
-        }
     }
 
     private void addTag(String title){

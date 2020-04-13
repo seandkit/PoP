@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -155,14 +156,9 @@ public class ReceiptActivity extends AppCompatActivity {
         SubMenu subMenu = menu.getItem(0).getSubMenu();
 
         receiptFoldersList = new ArrayList<>();
-        try {
-            FetchAllFoldersWithReceiptAsyncTask fetchAllFoldersWithReceiptAsyncTask = new FetchAllFoldersWithReceiptAsyncTask(context, receiptId);
-            String result = fetchAllFoldersWithReceiptAsyncTask.execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        FetchAllFoldersWithReceiptAsyncTask fetchAllFoldersWithReceiptAsyncTask = new FetchAllFoldersWithReceiptAsyncTask(ReceiptActivity.this, context, receiptId);
+        fetchAllFoldersWithReceiptAsyncTask.execute();
 
         if(receiptFoldersList.isEmpty()){
             subMenu.add(Menu.NONE, 1, Menu.NONE, "Empty");
@@ -205,11 +201,18 @@ public class ReceiptActivity extends AppCompatActivity {
 
     private class FetchReceiptsInfoAsyncTask extends AsyncTask<String, String, String> {
 
+        ProgressDialog pDialog;
         int success;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+            pDialog = new ProgressDialog(ReceiptActivity.this);
+            pDialog.setMessage("Checking Database. Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
         }
 
         @Override
@@ -255,7 +258,6 @@ public class ReceiptActivity extends AppCompatActivity {
                         double itemPrice = item.getDouble(DBConstants.PRICE);
                         int itemQuantity = item.getInt(DBConstants.QUANTITY);
 
-                        //Populate a list of items to be displayed on receipt
                         mItemList.add(new Item(itemId,itemName,itemPrice,itemQuantity));
                     }
                 }
@@ -266,6 +268,8 @@ public class ReceiptActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute(String result) {
+            pDialog.dismiss();
+
             if(success == 1)
             {
                 vendor.setText(receipt.getVendorName());

@@ -1,6 +1,7 @@
 package com.example.pop.helper;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -20,6 +21,8 @@ import android.graphics.pdf.PdfDocument;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,11 +36,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.pop.R;
-import com.example.pop.activity.FolderActivity;
 import com.example.pop.activity.FragmentHolder;
+import com.example.pop.activity.Fragment_Receipt;
 import com.example.pop.activity.ReceiptActivity;
+import com.example.pop.adapter.ReceiptListAdapter;
 import com.example.pop.asynctasks.AddFolderAsyncTask;
 import com.example.pop.asynctasks.DeleteFolderAsyncTask;
 import com.example.pop.model.Folder;
@@ -46,6 +51,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public class Utils extends AppCompatActivity {
 
@@ -192,13 +198,13 @@ public class Utils extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 String newFolderName = userInput.getText().toString();
                 boolean exists = false;
-                for(Folder f : FragmentHolder.folderList){
+                for(Folder f : FragmentHolder.globalFolderList){
                     if (f.getName().equalsIgnoreCase(newFolderName)) {
                         exists = true;
                     }
                 }
                 if(!exists){
-                    AddFolderAsyncTask addFolderAsyncTask = new AddFolderAsyncTask(navigationView, acc, newFolderName);
+                    AddFolderAsyncTask addFolderAsyncTask = new AddFolderAsyncTask(acc, navigationView, newFolderName);
                     addFolderAsyncTask.execute();
                 }
                 else {
@@ -219,7 +225,7 @@ public class Utils extends AppCompatActivity {
         alertDialog.show();
     }
 
-    public static void deleteFolderPopUp(final Activity acc, final int folderId) {
+    public static void deleteFolderPopUp(final Activity acc, final NavigationView navigationView, final int folderId) {
         LayoutInflater inflater = (LayoutInflater) acc.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialoglayout = inflater.inflate(R.layout.delete_folder_pop_up, null);
 
@@ -231,8 +237,17 @@ public class Utils extends AppCompatActivity {
         builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                DeleteFolderAsyncTask deleteFolderAsyncTask = new DeleteFolderAsyncTask(folderId);
-                deleteFolderAsyncTask.execute();
+                DeleteFolderAsyncTask deleteFolderAsyncTask = new DeleteFolderAsyncTask(acc, folderId);
+                try {
+                    String wait = deleteFolderAsyncTask.execute().get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                updateFolderMenu(navigationView, acc);
+
                 Toast.makeText(acc,"Folder Deleted",Toast.LENGTH_LONG).show();
 
                 acc.finish();
@@ -279,5 +294,14 @@ public class Utils extends AppCompatActivity {
         }
 
         return answer;
+    }
+
+    public static void updateFolderMenu(NavigationView navigationView, Context context){
+        MenuItem myMoveGroupItem = navigationView.getMenu().getItem(1);
+        SubMenu subMenu = myMoveGroupItem.getSubMenu();
+        subMenu.clear();
+        for(Folder folder: FragmentHolder.globalFolderList){
+            Utils.addDrawerFolder(navigationView, context, folder.getId(), folder.getName());
+        }
     }
 }

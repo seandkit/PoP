@@ -1,6 +1,8 @@
 package com.example.pop.asynctasks;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -21,19 +23,22 @@ import java.util.Map;
 
 public class AddFolderAsyncTask extends AsyncTask<String, String, String> {
 
+    private Activity mAcc;
     @SuppressLint("StaticFieldLeak")
     private Context mContext;
     @SuppressLint("StaticFieldLeak")
     private NavigationView mNavigationView;
     private String mNewFolderName;
 
-    public AddFolderAsyncTask(NavigationView navigationView, Context context, String newFolderName){
+    public AddFolderAsyncTask(Activity acc, NavigationView navigationView, String newFolderName){
+        mAcc = acc;
         mNavigationView = navigationView;
-        mContext = context;
+        mContext = acc.getApplicationContext();
         mNewFolderName = newFolderName;
     }
 
     private Session session;
+    private ProgressDialog pDialog;
 
     private int mNewFolderId;
 
@@ -42,6 +47,12 @@ public class AddFolderAsyncTask extends AsyncTask<String, String, String> {
         super.onPreExecute();
 
         session = new Session(mContext);
+
+        pDialog = new ProgressDialog(mAcc);
+        pDialog.setMessage("Creating Folder. Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
     }
 
     @Override
@@ -57,7 +68,7 @@ public class AddFolderAsyncTask extends AsyncTask<String, String, String> {
             int success = jsonObject.getInt("success");
             if (success == 1) {
                 mNewFolderId = jsonObject.getInt("data");
-                FragmentHolder.folderList.add(new Folder(mNewFolderId, mNewFolderName));
+                FragmentHolder.globalFolderList.add(new Folder(mNewFolderId, mNewFolderName));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -67,6 +78,7 @@ public class AddFolderAsyncTask extends AsyncTask<String, String, String> {
 
     protected void onPostExecute(String result) {
         Utils.addDrawerFolder(mNavigationView, mContext, mNewFolderId, mNewFolderName);
+        pDialog.dismiss();
         Toast.makeText(mContext,"Folder created",Toast.LENGTH_LONG).show();
     }
 }

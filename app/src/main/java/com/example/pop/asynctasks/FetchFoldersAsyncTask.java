@@ -1,6 +1,8 @@
 package com.example.pop.asynctasks;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.MenuItem;
@@ -25,17 +27,20 @@ import java.util.Map;
 
 public class FetchFoldersAsyncTask extends AsyncTask<String, String, String> {
 
+    private Activity mAcc;
     @SuppressLint("StaticFieldLeak")
     private Context mContext;
     @SuppressLint("StaticFieldLeak")
     private NavigationView mNavigationView;
 
-    public FetchFoldersAsyncTask(NavigationView navigationView, Context context){
+    public FetchFoldersAsyncTask(Activity acc, NavigationView navigationView, Context context){
+        mAcc = acc;
         mNavigationView = navigationView;
         mContext = context;
     }
 
     private Session session;
+    private ProgressDialog pDialog;
 
     private int success;
     private String message;
@@ -45,6 +50,12 @@ public class FetchFoldersAsyncTask extends AsyncTask<String, String, String> {
         super.onPreExecute();
 
         session = new Session(mContext);
+
+        pDialog = new ProgressDialog(mAcc);
+        pDialog.setMessage("Getting Folders. Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
     }
 
     @Override
@@ -60,10 +71,10 @@ public class FetchFoldersAsyncTask extends AsyncTask<String, String, String> {
             if (success == 1) {
                 folders = jsonObject.getJSONArray("data");
                 //Iterate through the response and populate receipt list
-                FragmentHolder.folderList = new ArrayList<>();
+                FragmentHolder.globalFolderList = new ArrayList<>();
                 for (int i = 0; i < folders.length(); i++) {
                     JSONObject folder = folders.getJSONObject(i);
-                    FragmentHolder.folderList.add(new Folder(folder.getInt("folder_id"), folder.getString("folder_name")));
+                    FragmentHolder.globalFolderList.add(new Folder(folder.getInt("folder_id"), folder.getString("folder_name")));
                 }
             }
             else{
@@ -76,15 +87,16 @@ public class FetchFoldersAsyncTask extends AsyncTask<String, String, String> {
     }
 
     protected void onPostExecute(String result) {
+        pDialog.dismiss();
+
         if (success == 0) {
             Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
         }
         else{
-            //If success update xml
             MenuItem myMoveGroupItem = FragmentHolder.navigationView.getMenu().getItem(1);
             SubMenu subMenu = myMoveGroupItem.getSubMenu();
             subMenu.clear();
-            for(Folder folder: FragmentHolder.folderList){
+            for(Folder folder: FragmentHolder.globalFolderList){
                 Utils.addDrawerFolder(mNavigationView, mContext, folder.getId(), folder.getName());
             }
         }

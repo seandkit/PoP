@@ -28,7 +28,7 @@ public class Popup_Folder_List extends BottomSheetDialogFragment {
         context = getActivity().getApplicationContext();
 
         mPopupFolderRecyclerView = v.findViewById(R.id.popupFolderList);
-        mPopupFolderAdapter = new FolderListAdapter(context, FragmentHolder.folderList);
+        mPopupFolderAdapter = new FolderListAdapter(context, FragmentHolder.globalFolderList);
         mPopupFolderRecyclerView.setAdapter(mPopupFolderAdapter);
         mPopupFolderRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 

@@ -1,8 +1,11 @@
 package com.example.pop.asynctasks;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.ProgressBar;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -23,25 +26,30 @@ import java.util.Map;
 
 public class FetchFolderReceiptsAsyncTask extends AsyncTask<String, String, String> {
 
+    private Activity mAcc;
     @SuppressLint("StaticFieldLeak")
     private Context mContext;
     private int mFolderId;
 
-    public FetchFolderReceiptsAsyncTask(Context context, int folderId){
+    public FetchFolderReceiptsAsyncTask(Activity acc, Context context, int folderId){
+        mAcc = acc;
         mContext = context;
         mFolderId = folderId;
     }
 
-    Session session;
-
-    int success;
-    String message;
+    private Session session;
+    private ProgressDialog pDialog;
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-
         session = new Session(mContext);
+
+        pDialog = new ProgressDialog(mAcc);
+        pDialog.setMessage("Getting Folder Receipts. Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
     }
 
     @Override
@@ -52,7 +60,7 @@ public class FetchFolderReceiptsAsyncTask extends AsyncTask<String, String, Stri
         JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceiptsFromFolder.php", "POST", httpParams);
 
         try {
-            success = jsonObject.getInt("success");
+            int success = jsonObject.getInt("success");
             JSONArray receipts;
             if (success == 1) {
                 FolderActivity.folderReceiptList = new ArrayList<>();
@@ -78,5 +86,7 @@ public class FetchFolderReceiptsAsyncTask extends AsyncTask<String, String, Stri
         FolderActivity.mAdapter = new FolderReceiptListAdapter(mContext, FolderActivity.folderReceiptList);
         FolderActivity.mRecyclerView.setAdapter(FolderActivity.mAdapter);
         FolderActivity.mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+
+        pDialog.dismiss();
     }
 }

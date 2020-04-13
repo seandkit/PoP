@@ -2,7 +2,6 @@ package com.example.pop.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.biometric.BiometricManager;
@@ -14,23 +13,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.pop.R;
 import com.example.pop.activity.popup.Popup_Blur;
 import com.example.pop.adapter.ReceiptListAdapter;
-import com.example.pop.asynctasks.AddFolderAsyncTask;
 import com.example.pop.asynctasks.FetchFoldersAsyncTask;
 import com.example.pop.asynctasks.FetchReceiptsAsyncTask;
 import com.example.pop.asynctasks.LinkReceiptAsyncTask;
@@ -44,7 +38,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,12 +49,11 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     public static NavigationView navigationView;
     public static DrawerLayout drawer;
 
-    public static List<Folder> folderList = new ArrayList<>();
+    public static List<Folder> globalFolderList = new ArrayList<>();
 
     private NfcAdapter nfcAdapter = null;
     private SQLiteDatabaseAdapter db;
 
-    //Initialize fragments
     private Fragment_Receipt receiptFragment;
     private Fragment_SearchByDate searchFragment;
     private Fragment_SearchByTag tagFragment;
@@ -79,15 +71,6 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_holder);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        drawer = findViewById(R.id.drawer_layout);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
         context = getApplicationContext();
         session = new Session(context);
 
@@ -95,37 +78,11 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         db = new SQLiteDatabaseAdapter(this);
 
-        navigationView = findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        populateDrawerInfo();
-
-        receiptFragment = new Fragment_Receipt();
-        searchFragment = new Fragment_SearchByDate();
-        tagFragment = new Fragment_SearchByTag();
+        setupDrawer();
+        setupBottomNavigation();
 
         InitializeFragment(receiptFragment);
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch(menuItem.getItemId()){
-                    case R.id.nav_home :
-                        InitializeFragment(receiptFragment);
-                        return true;
-
-                    case R.id.nav_search :
-                        InitializeFragment(searchFragment);
-                        return true;
-
-                    case R.id.nav_data :
-                        InitializeFragment(tagFragment);
-                        return true;
-                }
-                return false;
-            }
-        });
         setUp();
     }
 
@@ -138,7 +95,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     @Override
     protected void onResume() {
         super.onResume();
-        setUp();
+        Utils.updateFolderMenu(navigationView, context);
     }
 
     @Override
@@ -148,7 +105,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         if(BiometricManager.from(context).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
             final Intent intent = new Intent(this, Popup_Blur.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
+            //startActivity(intent);
         }
 
         updateReceiptListUI();
@@ -181,7 +138,55 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
         }
     }
 
-    public void setUp(){
+    private void setupDrawer(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawer = findViewById(R.id.drawer_layout);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView drawerUsername = headerView.findViewById(R.id.drawer_username);
+        String drawerUsernameValue = session.getFirstName() + " " + session.getLastName();
+        drawerUsername.setText(drawerUsernameValue.toUpperCase());
+        TextView drawerEmail = headerView.findViewById(R.id.drawer_email);
+        drawerEmail.setText(session.getEmail());
+    }
+
+    private void setupBottomNavigation(){
+        receiptFragment = new Fragment_Receipt();
+        searchFragment = new Fragment_SearchByDate();
+        tagFragment = new Fragment_SearchByTag();
+
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch(menuItem.getItemId()){
+                    case R.id.nav_home :
+                        InitializeFragment(receiptFragment);
+                        return true;
+
+                    case R.id.nav_search :
+                        InitializeFragment(searchFragment);
+                        return true;
+
+                    case R.id.nav_data :
+                        InitializeFragment(tagFragment);
+                        return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void setUp(){
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
             if(db.getUnlinkedReceipts().size() != 0) {
                 Toast.makeText(FragmentHolder.this,"Found unlinked receipts", Toast.LENGTH_LONG).show();
@@ -194,31 +199,18 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 }
 
                 try {
-                    LinkReceiptAsyncTask linkReceiptAsyncTask = new LinkReceiptAsyncTask(context, unlinkedReceiptUUIDPhp);
+                    LinkReceiptAsyncTask linkReceiptAsyncTask = new LinkReceiptAsyncTask(FragmentHolder.this, context, unlinkedReceiptUUIDPhp);
                     int newID = linkReceiptAsyncTask.execute().get();
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
-            try {
-                FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(navigationView, context);
-                String wait = fetchFoldersAsyncTask.execute().get();
-                FetchReceiptsAsyncTask fetchReceiptsAsyncTask = new FetchReceiptsAsyncTask(context);
-                String wait2 = fetchReceiptsAsyncTask.execute().get();
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
+            FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(FragmentHolder.this, navigationView, context);
+            fetchFoldersAsyncTask.execute();
+            FetchReceiptsAsyncTask fetchReceiptsAsyncTask = new FetchReceiptsAsyncTask(FragmentHolder.this, context);
+            fetchReceiptsAsyncTask.execute();
         }
-    }
-
-    private void populateDrawerInfo(){
-        View headerView = navigationView.getHeaderView(0);
-        TextView drawerUsername = headerView.findViewById(R.id.drawer_username);
-        String drawerUsernameValue = session.getFirstName() + " " + session.getLastName();
-        drawerUsername.setText(drawerUsernameValue.toUpperCase());
-        TextView drawerEmail = headerView.findViewById(R.id.drawer_email);
-        drawerEmail.setText(session.getEmail());
     }
 
     @Override
@@ -235,7 +227,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
                 Intent i = new Intent(this, LoginActivity.class);
                 startActivity(i);
-                folderList = new ArrayList<>();
+                globalFolderList = new ArrayList<>();
                 mReceiptList = new ArrayList<>();
                 finish();
                 break;
@@ -259,7 +251,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
             Intent intent = new Intent(context, FolderActivity.class);
 
-            for(Folder f : folderList){
+            for(Folder f : globalFolderList){
                 if(f.getName().equalsIgnoreCase(String.valueOf(menuItem.getTitle()))){
                     intent.putExtra("folderId", f.getId());
                     intent.putExtra("folderName", f.getName());
@@ -308,7 +300,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
             try {
-                LinkReceiptAsyncTask linkReceiptAsyncTask = new LinkReceiptAsyncTask(context, newReceipt.getUuid());
+                LinkReceiptAsyncTask linkReceiptAsyncTask = new LinkReceiptAsyncTask(FragmentHolder.this, context, newReceipt.getUuid());
                 int newReceiptID = linkReceiptAsyncTask.execute().get();
 
                 newReceipt = new Receipt(newReceiptID, currentDate, vendor, total, session.getUserId());

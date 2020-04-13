@@ -141,6 +141,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         protected void onPostExecute(String result) {
             pDialog.dismiss();
+
             if (success == 1) {
                 session.setLogin("Login");
                 session.setUserId(user.getId());

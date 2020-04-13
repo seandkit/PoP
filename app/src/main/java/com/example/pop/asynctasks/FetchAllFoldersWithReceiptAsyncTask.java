@@ -1,6 +1,8 @@
 package com.example.pop.asynctasks;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -20,21 +22,30 @@ import java.util.Map;
 
 public class FetchAllFoldersWithReceiptAsyncTask extends AsyncTask<String, String, String> {
 
+    private Activity mAcc;
     @SuppressLint("StaticFieldLeak")
     private Context mContext;
     private int mReceiptId;
 
-    public FetchAllFoldersWithReceiptAsyncTask(Context context, int receiptId){
+    public FetchAllFoldersWithReceiptAsyncTask(Activity acc, Context context, int receiptId){
+        mAcc = acc;
         mContext = context;
         mReceiptId = receiptId;
     }
 
     private Session session;
+    private ProgressDialog pDialog;
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         session = new Session(mContext);
+
+        pDialog = new ProgressDialog(mAcc);
+        pDialog.setMessage("Getting Related Folders. Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
     }
 
     @Override
@@ -65,5 +76,7 @@ public class FetchAllFoldersWithReceiptAsyncTask extends AsyncTask<String, Strin
         return null;
     }
 
-    protected void onPostExecute(String result) {}
+    protected void onPostExecute(String result) {
+        pDialog.dismiss();
+    }
 }

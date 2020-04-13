@@ -28,7 +28,6 @@ public class Fragment_Receipt extends Fragment {
     private Context context;
 
     private List<Receipt> mEmptyList = new ArrayList<>();
-    private ReceiptListAdapter mEmptyAdapter;
 
     public Fragment_Receipt() {}
 
@@ -50,17 +49,13 @@ public class Fragment_Receipt extends Fragment {
         mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-
-        if( mAdapter.getItemCount() != 0 ){
-            mImageView.setVisibility(View.GONE);
-        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        mEmptyAdapter = new ReceiptListAdapter(context, mEmptyList);
+        ReceiptListAdapter mEmptyAdapter = new ReceiptListAdapter(context, mEmptyList);
         mRecyclerView.setAdapter(mEmptyAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
     }

@@ -1,15 +1,23 @@
 package com.example.pop.asynctasks;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.ImageView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.pop.DBConstants;
+import com.example.pop.R;
 import com.example.pop.activity.FragmentHolder;
+import com.example.pop.activity.Fragment_Receipt;
+import com.example.pop.adapter.ReceiptListAdapter;
 import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.helper.Session;
 import com.example.pop.model.Receipt;
-import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,19 +29,28 @@ import java.util.Map;
 
 public class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
 
+    private Activity mAcc;
     @SuppressLint("StaticFieldLeak")
     private Context mContext;
 
-    public FetchReceiptsAsyncTask(Context context){
+    public FetchReceiptsAsyncTask(Activity acc, Context context){
+        mAcc = acc;
         mContext = context;
     }
 
     private Session session;
+    private ProgressDialog pDialog;
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         session = new Session(mContext);
+
+        pDialog = new ProgressDialog(mAcc);
+        pDialog.setMessage("Getting Receipts. Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
     }
 
     @Override
@@ -66,5 +83,21 @@ public class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
         return null;
     }
 
-    protected void onPostExecute(String result) {}
+    protected void onPostExecute(String result) {
+        if(FragmentHolder.mReceiptList.size() == 0){
+            ImageView iv = mAcc.findViewById(R.id.emptyListImg);
+            iv.setVisibility(View.VISIBLE);
+        } else {
+            mAcc.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Fragment_Receipt.mAdapter = new ReceiptListAdapter(mContext, FragmentHolder.mReceiptList);
+                    Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
+                    Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+                }
+            });
+        }
+
+        pDialog.dismiss();
+    }
 }

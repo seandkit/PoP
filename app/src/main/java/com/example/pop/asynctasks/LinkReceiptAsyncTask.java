@@ -1,7 +1,11 @@
 package com.example.pop.asynctasks;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.ProgressBar;
 
 import com.example.pop.DBConstants;
 import com.example.pop.helper.HttpJsonParser;
@@ -16,17 +20,21 @@ import java.util.Map;
 
 public class LinkReceiptAsyncTask extends AsyncTask<String, String, Integer> {
 
+    private Activity mAcc;
+    @SuppressLint("StaticFieldLeak")
     private Context mContext;
     private String mReceiptUuidphp;
 
-    public LinkReceiptAsyncTask(Context context, String receiptUuidphp){
+    public LinkReceiptAsyncTask(Activity acc, Context context, String receiptUuidphp){
+        mAcc = acc;
         mContext = context;
         mReceiptUuidphp = receiptUuidphp;
     }
 
     private Session session;
     private SQLiteDatabaseAdapter db;
-    private int success;
+    private ProgressDialog pDialog;
+
     private int newID;
 
     @Override
@@ -34,6 +42,12 @@ public class LinkReceiptAsyncTask extends AsyncTask<String, String, Integer> {
         super.onPreExecute();
         session = new Session(mContext);
         db = new SQLiteDatabaseAdapter(mContext);
+
+        pDialog = new ProgressDialog(mAcc);
+        pDialog.setMessage("Linking Receipts. Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
     }
 
     @Override
@@ -46,7 +60,7 @@ public class LinkReceiptAsyncTask extends AsyncTask<String, String, Integer> {
         JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "uuidNULL.php", "POST", httpParams);
 
         try {
-            success = jsonObject.getInt("success");
+            int success = jsonObject.getInt("success");
             if (success == 1) {
                 newID = jsonObject.getInt("receipt_id");
             }
@@ -62,5 +76,7 @@ public class LinkReceiptAsyncTask extends AsyncTask<String, String, Integer> {
         for(String uuid : uuids) {
             db.dropUnlinkedReceipt(uuid);
         }
+
+        pDialog.dismiss();
     }
 }
