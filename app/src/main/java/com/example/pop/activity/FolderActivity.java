@@ -117,19 +117,10 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         navigationView.setNavigationItemSelectedListener(this);
 
         if (CheckNetworkStatus.isNetworkAvailable(context)) {
-            try {
-                //FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(navigationView, context);
-                //String str_result = fetchFoldersAsyncTask.execute().get();
+            Utils.updateFolderMenu(navigationView, context);
 
-                Utils.updateFolderMenu(navigationView, context);
-
-                FetchFolderReceiptsAsyncTask fetchFolderReceiptsAsyncTask = new FetchFolderReceiptsAsyncTask(FolderActivity.this, context, folderId);
-                String str_result2 = fetchFolderReceiptsAsyncTask.execute().get();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            FetchFolderReceiptsAsyncTask fetchFolderReceiptsAsyncTask = new FetchFolderReceiptsAsyncTask(FolderActivity.this, context, folderId);
+            fetchFolderReceiptsAsyncTask.execute();
         }
 
         mRecyclerView = findViewById(R.id.receiptList);

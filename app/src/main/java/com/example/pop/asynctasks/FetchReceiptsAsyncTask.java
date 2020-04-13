@@ -88,14 +88,9 @@ public class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
             ImageView iv = mAcc.findViewById(R.id.emptyListImg);
             iv.setVisibility(View.VISIBLE);
         } else {
-            mAcc.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Fragment_Receipt.mAdapter = new ReceiptListAdapter(mContext, FragmentHolder.mReceiptList);
-                    Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
-                    Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-                }
-            });
+            Fragment_Receipt.mAdapter = new ReceiptListAdapter(mContext, FragmentHolder.mReceiptList);
+            Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
+            Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         }
 
         pDialog.dismiss();

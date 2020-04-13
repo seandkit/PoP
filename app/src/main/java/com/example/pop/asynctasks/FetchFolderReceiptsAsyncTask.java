@@ -62,8 +62,10 @@ public class FetchFolderReceiptsAsyncTask extends AsyncTask<String, String, Stri
         try {
             int success = jsonObject.getInt("success");
             JSONArray receipts;
+
+            FolderActivity.folderReceiptList = new ArrayList<>();
+
             if (success == 1) {
-                FolderActivity.folderReceiptList = new ArrayList<>();
                 receipts = jsonObject.getJSONArray("data");
 
                 for (int i = 0; i < receipts.length(); i++) {
