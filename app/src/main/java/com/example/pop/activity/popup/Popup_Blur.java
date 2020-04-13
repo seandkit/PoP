@@ -12,6 +12,8 @@ import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 import com.example.pop.R;
+import com.example.pop.activity.FragmentHolder;
+
 import java.util.concurrent.Executor;
 
 public class Popup_Blur extends AppCompatActivity {
@@ -23,13 +25,6 @@ public class Popup_Blur extends AppCompatActivity {
         setContentView(R.layout.activity_blur);
 
         bio();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        finish();
     }
 
     public void bio(){
@@ -52,6 +47,8 @@ public class Popup_Blur extends AppCompatActivity {
                     @NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
 
+                FragmentHolder.authentic = true;
+
                 finish();
             }
 
@@ -64,7 +61,8 @@ public class Popup_Blur extends AppCompatActivity {
 
         biometricPrompt.authenticate(new BiometricPrompt.PromptInfo.Builder()
                 .setTitle("Authenticate")
-                .setNegativeButtonText("Cancel")
+                .setDeviceCredentialAllowed(true)
+                //.setNegativeButtonText("Cancel")
                 .build());
     }
 }

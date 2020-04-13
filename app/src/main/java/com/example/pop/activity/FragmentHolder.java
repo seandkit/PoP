@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
@@ -54,6 +55,8 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     private NfcAdapter nfcAdapter = null;
     private SQLiteDatabaseAdapter db;
 
+    public static boolean authentic = false;
+
     private Fragment_Receipt receiptFragment;
     private Fragment_SearchByDate searchFragment;
     private Fragment_SearchByTag tagFragment;
@@ -69,6 +72,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.fragment_holder);
 
         context = getApplicationContext();
@@ -95,6 +99,7 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     @Override
     protected void onResume() {
         super.onResume();
+
         Utils.updateFolderMenu(navigationView, context);
     }
 
@@ -102,11 +107,13 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     protected void onStart() {
         super.onStart();
 
-        if(BiometricManager.from(context).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
-            final Intent intent = new Intent(this, Popup_Blur.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            //startActivity(intent);
+        if(!authentic){
+            if(BiometricManager.from(getApplicationContext()).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
+                Intent intent = new Intent(this, Popup_Blur.class);
+                startActivity(intent);
+            }
         }
+        authentic = false;
 
         updateReceiptListUI();
     }
