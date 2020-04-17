@@ -52,7 +52,6 @@ public class ScreenCapture {
         cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 
-
     private static String createDirectoryAndSaveFile(Bitmap imageToSave, String fileName, String folderName) {
 
         File directory = new File(Environment.getExternalStorageDirectory() + "/PoP Receipts/" + folderName);

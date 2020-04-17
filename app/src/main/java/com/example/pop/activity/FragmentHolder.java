@@ -213,9 +213,9 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 }
             }
 
-            FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(FragmentHolder.this, navigationView, context);
+            FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(FragmentHolder.this, navigationView, FragmentHolder.this);
             fetchFoldersAsyncTask.execute();
-            FetchReceiptsAsyncTask fetchReceiptsAsyncTask = new FetchReceiptsAsyncTask(FragmentHolder.this, context);
+            FetchReceiptsAsyncTask fetchReceiptsAsyncTask = new FetchReceiptsAsyncTask(FragmentHolder.this, FragmentHolder.this);
             fetchReceiptsAsyncTask.execute();
         }
     }
