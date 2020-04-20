@@ -2,10 +2,8 @@ package com.example.pop.asynctasks;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.ProgressBar;
 
 import com.example.pop.DBConstants;
 import com.example.pop.helper.HttpJsonParser;
@@ -33,7 +31,6 @@ public class LinkReceiptAsyncTask extends AsyncTask<String, String, Integer> {
 
     private Session session;
     private SQLiteDatabaseAdapter db;
-    private ProgressDialog pDialog;
 
     private int newID;
 
@@ -42,12 +39,6 @@ public class LinkReceiptAsyncTask extends AsyncTask<String, String, Integer> {
         super.onPreExecute();
         session = new Session(mContext);
         db = new SQLiteDatabaseAdapter(mContext);
-
-        pDialog = new ProgressDialog(mAcc);
-        pDialog.setMessage("Linking Receipts. Please wait...");
-        pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
-        pDialog.show();
     }
 
     @Override
@@ -76,7 +67,5 @@ public class LinkReceiptAsyncTask extends AsyncTask<String, String, Integer> {
         for(String uuid : uuids) {
             db.dropUnlinkedReceipt(uuid);
         }
-
-        pDialog.dismiss();
     }
 }

@@ -12,17 +12,22 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Application;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.popup.Popup_Blur;
 import com.example.pop.adapter.ReceiptListAdapter;
@@ -30,6 +35,7 @@ import com.example.pop.asynctasks.FetchFoldersAsyncTask;
 import com.example.pop.asynctasks.FetchReceiptsAsyncTask;
 import com.example.pop.asynctasks.LinkReceiptAsyncTask;
 import com.example.pop.helper.CheckNetworkStatus;
+import com.example.pop.helper.HttpJsonParser;
 import com.example.pop.helper.Session;
 import com.example.pop.helper.Utils;
 import com.example.pop.model.Folder;
@@ -38,10 +44,15 @@ import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class FragmentHolder extends AppCompatActivity implements NfcAdapter.ReaderCallback, NavigationView.OnNavigationItemSelectedListener {
