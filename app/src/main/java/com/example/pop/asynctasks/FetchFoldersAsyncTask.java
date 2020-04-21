@@ -89,10 +89,7 @@ public class FetchFoldersAsyncTask extends AsyncTask<String, String, String> {
     protected void onPostExecute(String result) {
         pDialog.dismiss();
 
-        if (success == 0) {
-            Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
-        }
-        else{
+        if (success == 1) {
             MenuItem myMoveGroupItem = FragmentHolder.navigationView.getMenu().getItem(1);
             SubMenu subMenu = myMoveGroupItem.getSubMenu();
             subMenu.clear();
