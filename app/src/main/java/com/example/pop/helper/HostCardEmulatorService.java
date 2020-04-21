@@ -1,10 +1,10 @@
-package com.example.pop.activity;
+package com.example.pop.helper;
 
 import android.nfc.cardemulation.HostApduService;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.pop.activity.Utils;
+import com.example.pop.helper.Utils;
 
 public class HostCardEmulatorService extends HostApduService {
 

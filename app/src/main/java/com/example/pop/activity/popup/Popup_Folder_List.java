@@ -1,28 +1,20 @@
-package com.example.pop.activity;
+package com.example.pop.activity.popup;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pop.R;
-import com.example.pop.activity.adapter.FolderListAdapter;
-import com.example.pop.model.Folder;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.example.pop.activity.FragmentHolder;
+import com.example.pop.adapter.FolderListAdapter;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.List;
-
-public class Fragment_Popup_Folders extends BottomSheetDialogFragment {
+public class Popup_Folder_List extends BottomSheetDialogFragment {
 
     Context context;
 
@@ -36,13 +28,9 @@ public class Fragment_Popup_Folders extends BottomSheetDialogFragment {
         context = getActivity().getApplicationContext();
 
         mPopupFolderRecyclerView = v.findViewById(R.id.popupFolderList);
-        // Create an adapter and supply the data to be displayed.
-        mPopupFolderAdapter = new FolderListAdapter(context, FragmentHolder.folderList);
-        // Connect the adapter with the RecyclerView.
+        mPopupFolderAdapter = new FolderListAdapter(context, FragmentHolder.globalFolderList);
         mPopupFolderRecyclerView.setAdapter(mPopupFolderAdapter);
-        // Give the RecyclerView a default layout manager.
         mPopupFolderRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-
 
         mPopupFolderAdapter.setOnClick(new FolderListAdapter.OnItemClicked() {
             @Override

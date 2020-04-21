@@ -1,8 +1,6 @@
-package com.example.pop.activity.adapter;
+package com.example.pop.adapter;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.view.ContextMenu;
@@ -10,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.PopupMenu;
@@ -19,15 +16,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.FolderActivity;
-import com.example.pop.activity.FragmentHolder;
-import com.example.pop.activity.Fragment_Popup_Folders;
 import com.example.pop.activity.ReceiptActivity;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;

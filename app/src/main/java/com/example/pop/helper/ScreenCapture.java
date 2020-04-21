@@ -1,4 +1,4 @@
-package com.example.pop.activity;
+package com.example.pop.helper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,7 +51,6 @@ public class ScreenCapture {
 
         cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
-
 
     private static String createDirectoryAndSaveFile(Bitmap imageToSave, String fileName, String folderName) {
 

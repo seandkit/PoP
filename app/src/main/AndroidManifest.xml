@@ -3,6 +3,7 @@
     package="com.example.pop">
 
     <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
     <uses-feature
         android:name="android.hardware.nfc.hce"
@@ -24,18 +25,13 @@
         android:roundIcon="@drawable/logo_dark"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.Tutorial"></activity>
-        <activity android:name=".activity.EmptyReceiptList" />
-        <activity android:name=".activity.Map_Location"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyALRfXYO9M3CWVGxhpzdVKppFxprPBifBY" />
 
         <service
-            android:name=".activity.HostCardEmulatorService"
+            android:name=".helper.HostCardEmulatorService"
             android:exported="true"
             android:permission="android.permission.BIND_NFC_SERVICE">
             <intent-filter>
@@ -52,10 +48,17 @@
             android:required="true" />
 
         <activity
-            android:name=".activity.startScreen"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".activity.Tutorial"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,10 +67,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.RegisterActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.popup.Popup_Blur"
+            android:clearTaskOnLaunch="true"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.FragmentHolder"
@@ -76,6 +77,9 @@
         <activity
             android:name=".activity.ReceiptActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.Map_Location"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".activity.FolderActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -92,11 +96,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <activity
-            android:name=".activity.BlurActivity"
-            android:clearTaskOnLaunch="true"
-            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

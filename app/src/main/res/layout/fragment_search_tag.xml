@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -39,89 +40,75 @@
         app:menu="@menu/drawer_menu"/>
 
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <RelativeLayout
-        android:id="@+id/textboxtest"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:ignore="MissingConstraints"
-        android:background="@color/main_background_colour"
-        >
+        android:layout_height="match_parent">
 
         <RelativeLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="380dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="12dp"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/background_for_search_background"
-            android:orientation="horizontal">
+            android:id="@+id/textboxtest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints"
+            android:background="@color/main_background_colour">
 
-            <SearchView
-                android:id="@+id/tagInput"
-                android:layout_width="250dp"
-                android:layout_height="30dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/background_for_searchbox"
-                android:gravity="center"
-                app:queryHint="Search Tag"
-                app:defaultQueryHint="Search Tag"
-                android:queryHint="Search Tag"
+            <RelativeLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="380dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="12dp"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/background_for_search_background"
+                android:orientation="horizontal">
 
-                android:iconifiedByDefault="false"
-                app:iconifiedByDefault="false"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#000000"
-                android:textSize="20sp" />
+                <SearchView
+                    android:id="@+id/tagInput"
+                    android:layout_width="250dp"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/background_for_searchbox"
+                    android:gravity="center"
+                    app:queryHint="Search Tag"
+                    app:defaultQueryHint="Search Tag"
+                    android:queryHint="Search Tag"
+                    android:iconifiedByDefault="false"
+                    app:iconifiedByDefault="false"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#000000"
+                    android:textSize="20sp" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/tagContainer"
+                android:layout_below="@+id/linearLayout"
+                android:layout_width="380dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal">
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/flexboxId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:flexWrap="wrap"
+                    app:alignItems="stretch"
+                    android:layout_marginBottom="20dp"
+                    app:alignContent="stretch" />
+
+            </LinearLayout>
 
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/tagContainer"
-            android:layout_below="@+id/linearLayout"
-            android:layout_width="380dp"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/receiptList"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:orientation="horizontal">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textboxtest"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/layout_list_item"/>
 
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/flexboxId"
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:flexWrap="wrap"
-                app:alignItems="stretch"
-                android:layout_marginBottom="20dp"
-                app:alignContent="stretch" />
-        </LinearLayout>
-
-    </RelativeLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/receiptList"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textboxtest"
-        android:scrollbars="vertical"
-        tools:listitem="@layout/receipt_list_item"></androidx.recyclerview.widget.RecyclerView>
-
-    <ImageView
-        android:id="@+id/emptyListImg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/list_empty3"
-        tools:layout_editor_absoluteX="157dp" />
-
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

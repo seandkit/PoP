@@ -6,7 +6,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 
 import com.example.pop.R;
-import com.example.pop.activity.adapter.ImageAdapter;
+import com.example.pop.adapter.ImageAdapter;
 
 public class Tutorial extends AppCompatActivity {
 
@@ -18,5 +18,11 @@ public class Tutorial extends AppCompatActivity {
         ViewPager viewPager = findViewById(R.id.viewPager);
         ImageAdapter adapter = new ImageAdapter(this);
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 }

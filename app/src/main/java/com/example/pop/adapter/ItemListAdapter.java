@@ -1,4 +1,4 @@
-package com.example.pop.activity.adapter;
+package com.example.pop.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

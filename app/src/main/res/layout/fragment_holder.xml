@@ -39,7 +39,19 @@
             app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/emptyListImg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/list_empty3"
+            tools:layout_editor_absoluteX="157dp" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"

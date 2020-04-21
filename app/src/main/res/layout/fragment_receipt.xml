@@ -16,16 +16,6 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/receipt_list_item"/>
 
-    <ImageView
-        android:id="@+id/emptyListImg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/list_empty3"
-        tools:layout_editor_absoluteX="157dp" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -1,18 +1,15 @@
-package com.example.pop.activity.adapter;
+package com.example.pop.adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.os.AsyncTask;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.PopupMenu;
@@ -28,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.activity.FragmentHolder;
-import com.example.pop.activity.Fragment_Popup_Folders;
+import com.example.pop.activity.popup.Popup_Folder_List;
 import com.example.pop.activity.ReceiptActivity;
 import com.example.pop.helper.CheckNetworkStatus;
 import com.example.pop.helper.HttpJsonParser;
@@ -42,8 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.content.Context.WINDOW_SERVICE;
-
 public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.ReceiptListItemHolder> implements Filterable {
 
     private List<Receipt> mReceiptList;
@@ -55,7 +50,6 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
     private int receiptId;
     private int recyclerListId;
     private int success;
-    private String message;
 
     @NonNull
     @Override
@@ -114,7 +108,7 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
 
                             case R.id.addToFolder:
                                 FragmentHolder.addToFolder_ReceiptId = receipt.getId();
-                                Fragment_Popup_Folders fragment_popup_folders = new Fragment_Popup_Folders();
+                                Popup_Folder_List fragment_popup_folders = new Popup_Folder_List();
                                 FragmentActivity activity = (FragmentActivity)(context);
                                 FragmentManager fm = activity.getSupportFragmentManager();
                                 fragment_popup_folders.show(fm,"Add To Folder Popup");
@@ -139,7 +133,7 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         });
     }
 
-    public void deleteReceiptPopUp(final int deleteReceiptId) {
+    private void deleteReceiptPopUp(final int deleteReceiptId) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialoglayout = inflater.inflate(R.layout.delete_receipt_pop_up, null);
 
@@ -174,7 +168,6 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         });
 
         AlertDialog alertDialog = builder.create();
-        //alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alertDialog.show();
     }
 
@@ -190,14 +183,14 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         this.mReceiptList = receiptList;
     }
 
-    class ReceiptListItemHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-        public final TextView receiptDateView;
-        public final TextView receiptShopView;
-        public final TextView receiptTotalView;
-        public final CardView cardView;
+    static class ReceiptListItemHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+        final TextView receiptDateView;
+        final TextView receiptShopView;
+        final TextView receiptTotalView;
+        final CardView cardView;
         final ReceiptListAdapter mAdapter;
 
-        public ReceiptListItemHolder(View itemView, ReceiptListAdapter adapter) {
+        ReceiptListItemHolder(View itemView, ReceiptListAdapter adapter) {
             super(itemView);
 
             receiptDateView = itemView.findViewById(R.id.receiptDate);
@@ -265,12 +258,12 @@ public class ReceiptListAdapter extends RecyclerView.Adapter<ReceiptListAdapter.
         protected String doInBackground(String... params) {
             HttpJsonParser httpJsonParser = new HttpJsonParser();
             Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("receipt_id", String.valueOf(receiptId));//'1' has to be changed to a user chosen receipt id
+            httpParams.put("receipt_id", String.valueOf(receiptId));
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "deleteReceipt.php", "POST", httpParams);
             try {
                 success = jsonObject.getInt("success");
                 if (success == 0) {
-                    message = jsonObject.getString("message");
+                    Toast.makeText(context,jsonObject.getString("message"),Toast.LENGTH_LONG).show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
