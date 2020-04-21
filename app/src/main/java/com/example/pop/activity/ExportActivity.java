@@ -208,8 +208,10 @@ public class ExportActivity extends Activity {
             @Override
             public void onClick(View view) {
                 StringBuilder data = new StringBuilder();
-                data.append("Location,Date,Time,Store,Cashier,Item,Quantity,Price,Total");
-                data.append("\n"+receipt.getVendorName()  + "," +receipt.getDate() + "," + receipt.getTime() + "," +receipt.getId() + "," +receipt.getCashier()+ ","
+                data.append("Store,Date,Time,Address,Cashier,Item,Quantity,Price,Total");
+
+                String formattedLocation = receipt.getLocation().replace(",", " ");
+                data.append("\n"+receipt.getVendorName()  + "," +receipt.getDate() + "," + receipt.getTime() + "," +formattedLocation + "," +receipt.getCashier()+ ","
                         + mItemList.get(0).getName() + "," + mItemList.get(0).getQuantity() + "," + mItemList.get(0).getPrice() + "," +
                         receipt.getReceiptTotal());
 
