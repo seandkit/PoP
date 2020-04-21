@@ -127,7 +127,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textboxtest"
         android:scrollbars="vertical"
-        tools:listitem="@layout/layout_list_item"
+        tools:listitem="@layout/receipt_list_item"
         >
     </androidx.recyclerview.widget.RecyclerView>
 

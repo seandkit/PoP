@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="€00000.00"
+            android:text="€23.57"
             android:textColor="#000000"
             android:textSize="18dp"
             android:textAlignment="textEnd"
@@ -86,7 +86,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="€00000.00"
+            android:text="€23.57"
             android:textColor="#000000"
             android:textAlignment="textEnd"
             android:textSize="18dp"
@@ -152,7 +152,7 @@
             android:id="@+id/storeAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0000000000000000000000000000000000000000000"
+            android:text="Kings court, Dundalk, Ireland"
             android:textColor="#000000"
             android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
@@ -180,7 +180,7 @@
             android:textAlignment="textEnd"
             app:layout_constraintBottom_toTopOf="@+id/receiptBarcodeNumber"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.84"
+            app:layout_constraintHorizontal_bias="0.83"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -202,7 +202,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="00000000000000000000"
+            android:text="Tesco"
             android:gravity="center"
             android:textColor="#000000"
             android:textSize="30dp"
@@ -243,7 +243,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/itemList"
             android:layout_width="360dp"
-            android:layout_height="9999dp"
+            android:layout_height="80dp"
             app:layout_constraintBottom_toTopOf="@+id/receiptTotal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
