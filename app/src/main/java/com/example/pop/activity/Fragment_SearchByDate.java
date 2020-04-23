@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class Fragment_SearchByDate extends Fragment {
 
@@ -68,6 +69,10 @@ public class Fragment_SearchByDate extends Fragment {
 
         mDisplayDateFrom = v.findViewById(R.id.tvDateFrom);
         mDisplayDateTo = v.findViewById(R.id.tvDateTo);
+
+
+        String date = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(new Date());
+        mDisplayDateTo.setText(date);
 
         mDisplayDateFrom.setOnClickListener(new View.OnClickListener(){
             @SuppressLint("ResourceAsColor")
