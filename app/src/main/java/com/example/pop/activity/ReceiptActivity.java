@@ -158,7 +158,13 @@ public class ReceiptActivity extends AppCompatActivity {
         receiptFoldersList = new ArrayList<>();
 
         FetchAllFoldersWithReceiptAsyncTask fetchAllFoldersWithReceiptAsyncTask = new FetchAllFoldersWithReceiptAsyncTask(ReceiptActivity.this, context, receiptId);
-        fetchAllFoldersWithReceiptAsyncTask.execute();
+        try {
+            String wait = fetchAllFoldersWithReceiptAsyncTask.execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         if(receiptFoldersList.isEmpty()){
             subMenu.add(Menu.NONE, 1, Menu.NONE, "Empty");
