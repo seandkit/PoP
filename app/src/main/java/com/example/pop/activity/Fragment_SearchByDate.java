@@ -62,9 +62,9 @@ public class Fragment_SearchByDate extends Fragment {
         context = getActivity().getApplicationContext();
 
         mRecyclerView = v.findViewById(R.id.receiptList);
-        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
+        mAdapter = new ReceiptListAdapter(getActivity(), FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mImageView = v.findViewById(R.id.emptyListImg);
 
         mDisplayDateFrom = v.findViewById(R.id.tvDateFrom);
@@ -147,9 +147,9 @@ public class Fragment_SearchByDate extends Fragment {
     public void onStart() {
         super.onStart();
 
-        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
+        mAdapter = new ReceiptListAdapter(getActivity(), FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     private void updateSearchList(List<Receipt> receiptList, String startSearchByDate, String endSearchByDate) throws ParseException {
@@ -174,8 +174,8 @@ public class Fragment_SearchByDate extends Fragment {
             }
         }
 
-        mAdapter = new ReceiptListAdapter(context, updatedReceiptList);
+        mAdapter = new ReceiptListAdapter(getActivity(), updatedReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 }

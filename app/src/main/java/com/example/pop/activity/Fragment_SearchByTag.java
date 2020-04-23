@@ -106,9 +106,9 @@ public class Fragment_SearchByTag extends Fragment{
     public void onStart() {
         super.onStart();
 
-        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
+        mAdapter = new ReceiptListAdapter(getActivity(), FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     private void addTag(String title){
@@ -136,9 +136,9 @@ public class Fragment_SearchByTag extends Fragment{
                 buildSearchString();
 
                 if(flexboxLayout.getChildCount() == 0){
-                    mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
+                    mAdapter = new ReceiptListAdapter(getActivity(), FragmentHolder.mReceiptList);
                     mRecyclerView.setAdapter(mAdapter);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 }
                 else{
                     new FetchFilteredReceiptsAsyncTask().execute();
@@ -228,18 +228,18 @@ public class Fragment_SearchByTag extends Fragment{
 
         protected void onPostExecute(String result) {
             if (success == 1) {
-                mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
+                mAdapter = new ReceiptListAdapter(getActivity(), mReceiptListTemp);
                 mRecyclerView.setAdapter(mAdapter);
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             }
             else{
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 
                 List<Receipt> emptyList = new ArrayList<>();
 
-                mAdapter = new ReceiptListAdapter(context, emptyList);
+                mAdapter = new ReceiptListAdapter(getActivity(), emptyList);
                 mRecyclerView.setAdapter(mAdapter);
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             }
 
             success = 0;
@@ -247,8 +247,8 @@ public class Fragment_SearchByTag extends Fragment{
     }
 
     public void updateListWithVendors(){
-        mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
+        mAdapter = new ReceiptListAdapter(getActivity(), mReceiptListTemp);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 }
