@@ -134,7 +134,15 @@ public class Fragment_SearchByTag extends Fragment{
             public void onClick(View v) {
                 flexboxLayout.removeView(v);
                 buildSearchString();
-                new FetchFilteredReceiptsAsyncTask().execute();
+
+                if(flexboxLayout.getChildCount() == 0){
+                    mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
+                    mRecyclerView.setAdapter(mAdapter);
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                }
+                else{
+                    new FetchFilteredReceiptsAsyncTask().execute();
+                }
             }
         });
 

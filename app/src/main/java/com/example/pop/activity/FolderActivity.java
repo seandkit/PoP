@@ -203,6 +203,10 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
             case R.id.nav_folder_add_new:
                 Utils.newFolderPopUp(navigationView, FolderActivity.this);
                 break;
+
+            case R.id.nav_tutorial:
+                Intent tutorial = new Intent(this, Tutorial.class);
+                startActivity(tutorial);
         }
 
         return true;
