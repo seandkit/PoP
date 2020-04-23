@@ -12,10 +12,12 @@ import com.example.pop.R;
 
 public class ImageAdapter extends PagerAdapter {
     private Context mContext;
-    private int[] mImageIds = new int[] {R.drawable.home_tut, R.drawable.date_tut, R.drawable.tag_tut,
-            R.drawable.drawer_tut, R.drawable.folder_option_tut,
-            R.drawable.extra_options_tut,
-            R.drawable.export_tut, R.drawable.map_tut};
+    private int[] mImageIds = new int[] {R.drawable.view_all_receipts, R.drawable.view_search_by_date, R.drawable.view_search_by_tag,
+            R.drawable.open_navigation_drawer, R.drawable.create_new_folder, R.drawable.open_folder_menu,
+            R.drawable.open_receipt,
+            R.drawable.open_export_receipt_options, R.drawable.export_receipt,
+            R.drawable.open_map_of_location, R.drawable.map,
+            R.drawable.log_out};
 
     public ImageAdapter(Context context) {
         mContext = context;

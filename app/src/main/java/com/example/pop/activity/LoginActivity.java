@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.example.pop.DBConstants;
 import com.example.pop.R;
 import com.example.pop.helper.CheckNetworkStatus;
@@ -23,6 +24,7 @@ import com.example.pop.helper.Session;
 import com.example.pop.helper.Utils;
 import com.example.pop.model.User;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
+import com.spark.submitbutton.SubmitButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -79,7 +81,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
     }

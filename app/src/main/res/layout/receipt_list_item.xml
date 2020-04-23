@@ -10,6 +10,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/receiptListCardView"
             android:layout_margin="5dp"
+
             >
 
                 <RelativeLayout
