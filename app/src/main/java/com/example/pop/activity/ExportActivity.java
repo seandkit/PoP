@@ -141,7 +141,7 @@ public class ExportActivity extends Activity {
                     relativeLayout.draw((canvas));
 
                     ScreenCapture.insertImage(getContentResolver(), bitmap,System.currentTimeMillis() +".jpg", "All Receipts",  "All Receipts");
-                    Toast.makeText(getApplicationContext(), "PNG file saved to: Albums /All Receipts", Toast.LENGTH_SHORT).show();
+                    Utils.showNotification(context,"JPG_Channel", "Receipt Exported", "PNG file saved to: Albums /All Receipts in Gallery", -1);
                 }
             }
         });
@@ -200,7 +200,7 @@ public class ExportActivity extends Activity {
                 String fname = "Receipt_"+ System.currentTimeMillis() +".pdf";
 
                 Utils.createPdf(context, bitmap, myDir, fname);
-                Toast.makeText(getApplicationContext(), "PDF file Created in: /Pop Receipts/PDF Receipts", Toast.LENGTH_SHORT).show();
+                Utils.showNotification(context,"PDF_Channel", "Receipt Exported", "PDF file saved to:  /Pop Receipts/PDF Receipts (File Manager)", -1);
             }
         });
 

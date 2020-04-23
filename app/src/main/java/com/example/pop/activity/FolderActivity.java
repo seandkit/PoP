@@ -136,6 +136,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
                 if(!ask) {
                     new ExportAsyncTask().execute();
+                    Utils.showNotification(context,"Album_Channel", "Folder Exported", "Album Created in Gallery", -1);
                     Toast.makeText(FolderActivity.this, "Exporting to gallery", Toast.LENGTH_LONG).show();
                 }
             }
@@ -203,7 +204,6 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     private class ExportAsyncTask extends AsyncTask<String, String, String> {
 
         int success;
-        String message;
 
         @Override
         protected void onPreExecute() {
@@ -219,8 +219,6 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
                 relativeLayout = v.findViewById(R.id.receiptLayout);
                 ConstraintLayout pageLayout = v.findViewById(R.id.receiptPageContainer);
                 pageLayout.removeView(v.findViewById(R.id.export_btn));
-
-                v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
                 vendor = v.findViewById(R.id.receiptLocation);
                 location = v.findViewById(R.id.storeAddress);
@@ -295,6 +293,10 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
                     cash.setText("€" + String.format("%.2f", receipt.getReceiptTotal()));
                 }
 
+                v.findViewById(R.id.itemList).requestLayout();
+                v.findViewById(R.id.itemList).getLayoutParams().height = 75 * mItemList.size();
+                v.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
                 mItemAdapter = new ItemListAdapter(context, mItemList);
                 mItemRecyclerView.setAdapter(mItemAdapter);
                 mItemRecyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -304,12 +306,15 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
                 v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
                 v.draw(c);
 
+                bitmap = Bitmap.createBitmap(relativeLayout.getWidth(), 1450 + (mItemList.size() * 75), Bitmap.Config.ARGB_8888);
+
+                Canvas canvas = new Canvas(bitmap);
+                relativeLayout.draw((canvas));
+
                 ScreenCapture.insertImage(getContentResolver(), bitmap,System.currentTimeMillis() +".jpg", folderName, folderName + " Receipts");
             }
 
             return null;
         }
-
-        protected void onPostExecute(String result) { }
     }
 }
