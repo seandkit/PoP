@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class Fragment_SearchByDate extends Fragment {
 
@@ -61,13 +62,17 @@ public class Fragment_SearchByDate extends Fragment {
         context = getActivity().getApplicationContext();
 
         mRecyclerView = v.findViewById(R.id.receiptList);
-        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
+        mAdapter = new ReceiptListAdapter(getActivity(), FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mImageView = v.findViewById(R.id.emptyListImg);
 
         mDisplayDateFrom = v.findViewById(R.id.tvDateFrom);
         mDisplayDateTo = v.findViewById(R.id.tvDateTo);
+
+
+        String date = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(new Date());
+        mDisplayDateTo.setText(date);
 
         mDisplayDateFrom.setOnClickListener(new View.OnClickListener(){
             @SuppressLint("ResourceAsColor")
@@ -142,9 +147,9 @@ public class Fragment_SearchByDate extends Fragment {
     public void onStart() {
         super.onStart();
 
-        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
+        mAdapter = new ReceiptListAdapter(getActivity(), FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     private void updateSearchList(List<Receipt> receiptList, String startSearchByDate, String endSearchByDate) throws ParseException {
@@ -169,8 +174,8 @@ public class Fragment_SearchByDate extends Fragment {
             }
         }
 
-        mAdapter = new ReceiptListAdapter(context, updatedReceiptList);
+        mAdapter = new ReceiptListAdapter(getActivity(), updatedReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 }
