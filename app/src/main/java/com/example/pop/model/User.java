@@ -7,30 +7,34 @@ public class User {
     private String lastName;
     private String email;
     private String password;
+    private String currentFolder;
 
     public User(){
 
     }
 
-    public User(int id,String firstName, String lastName, String email){
+    public User(int id,String firstName, String lastName, String email, String currentFolder){
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.currentFolder = currentFolder;
     }
 
-    public User(String firstName, String lastName, String email, String password){
+    public User(String firstName, String lastName, String email, String password, String currentFolder){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.currentFolder = currentFolder;
     }
-    public User(int id, String firstName, String lastName, String email, String password){
+    public User(int id, String firstName, String lastName, String email, String password, String currentFolder){
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.currentFolder = currentFolder;
     }
 
     public int getId() {
@@ -51,6 +55,9 @@ public class User {
     public String getPassword() {
         return password;
     }
+    public String getCurrentFolder() {
+        return currentFolder;
+    }
 
     public void setId(int id) {
         this.id = id;
@@ -69,6 +76,9 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    public void setCurrentFolder(String currentFolder) {
+        this.currentFolder = currentFolder;
     }
 
 }

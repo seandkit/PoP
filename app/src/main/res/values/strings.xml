@@ -2,7 +2,7 @@
     <string name="app_name">PoP</string>
     <string name="search_nav">Date</string>
     <string name="data_nav">Tag</string>
-    <string name="home_nav">home</string>
+    <string name="home_nav">Home</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

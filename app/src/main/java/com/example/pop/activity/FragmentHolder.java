@@ -4,86 +4,77 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.biometric.BiometricManager;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.FrameLayout;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
-import com.example.pop.DBConstants;
+
 import com.example.pop.R;
+import com.example.pop.activity.popup.Popup_Blur;
+import com.example.pop.adapter.ReceiptListAdapter;
+import com.example.pop.asynctasks.FetchFoldersAsyncTask;
+import com.example.pop.asynctasks.FetchReceiptsAsyncTask;
+import com.example.pop.asynctasks.LinkReceiptAsyncTask;
 import com.example.pop.helper.CheckNetworkStatus;
-import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.helper.Session;
+import com.example.pop.helper.Utils;
+import com.example.pop.model.Folder;
 import com.example.pop.model.Receipt;
 import com.example.pop.sqlitedb.SQLiteDatabaseAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class FragmentHolder extends AppCompatActivity implements NfcAdapter.ReaderCallback, NavigationView.OnNavigationItemSelectedListener {
-
-    FrameLayout frameLayout;
     BottomNavigationView bottomNavigationView;
 
-    private DrawerLayout drawer;
+    public static NavigationView navigationView;
+    public static DrawerLayout drawer;
+
+    public static List<Folder> globalFolderList = new ArrayList<>();
 
     private NfcAdapter nfcAdapter = null;
     private SQLiteDatabaseAdapter db;
 
-    //fragments:
+    public static boolean authentic = false;
+
     private Fragment_Receipt receiptFragment;
     private Fragment_SearchByDate searchFragment;
     private Fragment_SearchByTag tagFragment;
 
-    private Context context;
+    @SuppressLint("StaticFieldLeak")
+    private static Context context;
     private Session session;
-    private String receiptUuidphp = "";
 
-    int success;
-    private int receiptID;
+    public static int addToFolder_ReceiptId;
 
-    private String currentDate;
-    private String vendor;
-    private Double  total;
-    private String uuid;
-
-    Receipt newReceipt;
-
-    private String unlinkedReceiptUuid;
+    public static List<Receipt> mReceiptList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.fragment_holder);
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        frameLayout = findViewById(R.id.frameLayout);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
 
         context = getApplicationContext();
         session = new Session(context);
@@ -92,56 +83,142 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
 
         db = new SQLiteDatabaseAdapter(this);
 
-        if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
-            if(db.getUnlinkedReceipts().size() != 0) {
-                List<Receipt> receipts = db.getUnlinkedReceipts();
+        setupDrawer();
+        setupBottomNavigation();
 
-                System.out.println("SIZE = " + receipts.size());
-                System.out.println("FIRST UUID = " + receipts.get(0).getUuid());
-                System.out.println("FIRST NAME = " + receipts.get(0).getVendorName());
-                System.out.println("FIRST TOTAL = " + receipts.get(0).getReceiptTotal());
+        InitializeFragment(receiptFragment);
 
-                Toast.makeText(FragmentHolder.this,"Found unlinked receipts", Toast.LENGTH_LONG).show();
+        setUp();
+    }
 
-                for (Receipt r : receipts) {
-                    unlinkedReceiptUuid = r.getUuid();
-                    receiptUuidphp = receiptUuidphp.concat(r.getUuid() + "@");
-                }
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        nfcAdapter.enableReaderMode(this, this, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
+    }
 
-                new linkReceiptAsyncTask().execute();
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Utils.updateFolderMenu(navigationView, context);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(!authentic){
+            if(BiometricManager.from(getApplicationContext()).canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS) {
+                Intent intent = new Intent(this, Popup_Blur.class);
+                startActivity(intent);
             }
         }
+        authentic = false;
 
-        //Fragment initialization
+        updateReceiptListUI();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        nfcAdapter.disableReaderMode(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawer.isDrawerOpen(GravityCompat.START)){
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
+
+    private void setupDrawer(){
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        drawer = findViewById(R.id.drawer_layout);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView drawerUsername = headerView.findViewById(R.id.drawer_username);
+        String drawerUsernameValue = session.getFirstName() + " " + session.getLastName();
+        drawerUsername.setText(drawerUsernameValue.toUpperCase());
+        TextView drawerEmail = headerView.findViewById(R.id.drawer_email);
+        drawerEmail.setText(session.getEmail());
+    }
+
+    private void setupBottomNavigation(){
         receiptFragment = new Fragment_Receipt();
         searchFragment = new Fragment_SearchByDate();
         tagFragment = new Fragment_SearchByTag();
 
-        InitializeFragment(receiptFragment);
-
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                //switch to fragment
                 switch(menuItem.getItemId()){
                     case R.id.nav_home :
-                        //Code to be executed when item 1 selected.
                         InitializeFragment(receiptFragment);
                         return true;
 
                     case R.id.nav_search :
-                        //Code to be executed when item 1 selected.
                         InitializeFragment(searchFragment);
                         return true;
 
                     case R.id.nav_data :
-                        //Code to be executed when item 1 selected.
                         InitializeFragment(tagFragment);
                         return true;
                 }
                 return false;
             }
         });
+    }
+
+    private void setUp(){
+        if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
+            if(db.getUnlinkedReceipts().size() != 0) {
+                Toast.makeText(FragmentHolder.this,"Found unlinked receipts", Toast.LENGTH_LONG).show();
+
+                List<Receipt> receipts = db.getUnlinkedReceipts();
+
+                String unlinkedReceiptUUIDPhp = "";
+                for (Receipt r : receipts) {
+                    unlinkedReceiptUUIDPhp = unlinkedReceiptUUIDPhp +  r.getUuid() + "@";
+                }
+
+                try {
+                    LinkReceiptAsyncTask linkReceiptAsyncTask = new LinkReceiptAsyncTask(FragmentHolder.this, context, unlinkedReceiptUUIDPhp);
+                    int newID = linkReceiptAsyncTask.execute().get();
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            FetchFoldersAsyncTask fetchFoldersAsyncTask = new FetchFoldersAsyncTask(FragmentHolder.this, navigationView, FragmentHolder.this);
+            fetchFoldersAsyncTask.execute();
+            FetchReceiptsAsyncTask fetchReceiptsAsyncTask = new FetchReceiptsAsyncTask(FragmentHolder.this, FragmentHolder.this);
+            fetchReceiptsAsyncTask.execute();
+        }
     }
 
     @Override
@@ -154,22 +231,47 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
                 session.setLastName("");
                 session.setEmail("");
 
+                drawer.closeDrawer(GravityCompat.START);
+
                 Intent i = new Intent(this, LoginActivity.class);
                 startActivity(i);
+                globalFolderList = new ArrayList<>();
+                mReceiptList = new ArrayList<>();
+                finish();
                 break;
+
+            case R.id.nav_folder_add_new:
+                Utils.newFolderPopUp(navigationView, FragmentHolder.this);
+                break;
+
+            case R.id.nav_tutorial:
+                Intent tutorial = new Intent(this, Tutorial.class);
+                startActivity(tutorial);
         }
-        drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        if(drawer.isDrawerOpen(GravityCompat.START)){
+    public static MenuItem.OnMenuItemClickListener drawerFolderClickListener = new MenuItem.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+
+            Intent intent = new Intent(context, FolderActivity.class);
+
+            for(Folder f : globalFolderList){
+                if(f.getName().equalsIgnoreCase(String.valueOf(menuItem.getTitle()))){
+                    intent.putExtra("folderId", f.getId());
+                    intent.putExtra("folderName", f.getName());
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                }
+            }
+            context.startActivity(intent);
+
+            return false;
         }
-    }
+    };
 
     private void InitializeFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -178,119 +280,66 @@ public class FragmentHolder extends AppCompatActivity implements NfcAdapter.Read
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        return true;
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        nfcAdapter.enableReaderMode(this, this, NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK, null);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        nfcAdapter.disableReaderMode(this);
-    }
-
-    @Override
     public void onTagDiscovered(Tag tag) {
         IsoDep isoDep = IsoDep.get(tag);
         try {
             isoDep.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
+
         byte[] response = new byte[0];
         try {
             response = isoDep.transceive(Utils.hexStringToByteArray("00A4040007A0000002471002"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
 
         String stringResponse = "";
 
-        try {
-            stringResponse = new String(response, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        stringResponse = new String(response, StandardCharsets.UTF_8);
 
         final String finalStringResponse = stringResponse;
 
         String[] responseArray = finalStringResponse.split(",");
 
-        currentDate = responseArray[0];
-        vendor = responseArray[1];
-        total = Double.valueOf(responseArray[2]);
-        uuid = responseArray[3];
+        String currentDate = responseArray[0];
+        String vendor = responseArray[1];
+        double total = Double.parseDouble(responseArray[2]);
+        String uuid = responseArray[3];
 
-        newReceipt = new Receipt(currentDate, vendor, total, session.getUserId(), uuid);
+        Receipt newReceipt = new Receipt(currentDate, vendor, total, session.getUserId(), uuid);
 
         if (CheckNetworkStatus.isNetworkAvailable(getApplicationContext())) {
-            receiptUuidphp = receiptUuidphp.concat(newReceipt.getUuid()+"@");
             try {
-                String result = new linkReceiptAsyncTask().execute().get();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+                LinkReceiptAsyncTask linkReceiptAsyncTask = new LinkReceiptAsyncTask(FragmentHolder.this, context, newReceipt.getUuid());
+                int newReceiptID = linkReceiptAsyncTask.execute().get();
+
+                newReceipt = new Receipt(newReceiptID, currentDate, vendor, total, session.getUserId());
+                Utils.showNotification(context,"NFC_Channel", "Receipt Received", "Tap to view", newReceipt.getId());
+            } catch (ExecutionException | InterruptedException e) { e.printStackTrace(); }
         }
         else{
             db.addUnlinkedReceipt(newReceipt);
+            Utils.showNotification(context,"NFC_Channel", "Receipt Received", "Connect to the internet to view", -1);
         }
 
-        runOnUiThread(new Runnable()
-        {
-            public void run()
-            {
-                addItem(newReceipt);
-            }
-        });
+        mReceiptList.add(newReceipt);
 
         try {
             isoDep.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
+
+        updateReceiptListUI();
     }
 
-    void addItem(Receipt receipt){
-        receiptFragment.addItemToList(receipt);
-    }
+    private void updateReceiptListUI(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ImageView iv = findViewById(R.id.emptyListImg);
+                iv.setVisibility(View.INVISIBLE);
 
-    private class linkReceiptAsyncTask extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put("uuid", receiptUuidphp);
-            httpParams.put("user_id", String.valueOf(session.getUserId()));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "uuidNULL.php", "POST", httpParams);
-
-            try {
-                success = jsonObject.getInt("success");
-
-                if (success == 1) {
-                    receiptID = jsonObject.getInt("receipt_id");
-                    receiptUuidphp = "";
-                    newReceipt = new Receipt(receiptID, currentDate, vendor, total, session.getUserId());
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+                Fragment_Receipt.mAdapter = new ReceiptListAdapter(FragmentHolder.this, FragmentHolder.mReceiptList);
+                Fragment_Receipt.mRecyclerView.setAdapter(Fragment_Receipt.mAdapter);
+                Fragment_Receipt.mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             }
-            return null;
-        }
-
-        protected void onPostExecute(String result) {
-            boolean answer = db.dropUnlinkedReceipt(unlinkedReceiptUuid);
-        }
+        });
     }
 }

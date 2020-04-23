@@ -66,6 +66,7 @@ public class HttpJsonParser {
                 sb.append(line + "\n");
             }
             is.close();
+            urlConnection.disconnect();
             json = sb.toString();
             jObj = new JSONObject(json);
 

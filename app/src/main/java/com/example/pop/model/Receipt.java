@@ -1,19 +1,29 @@
 package com.example.pop.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.List;
 
-public class Receipt implements Comparable<Receipt> {
+public class Receipt implements Comparable<Receipt>, Parcelable {
 
     private int id;
     private String date;
     private String time;
     private String vendorName;
-    private int cardTrans;
+    private int transactionType;
     private double receiptTotal;
+    private double cash;
+    private String cashier;
+    private String location;
+    private String barcode;
     private int userId;
+    private double lat;
+    private double lng;
     private List<Item> items;
     private String uuid;
 
@@ -37,6 +47,22 @@ public class Receipt implements Comparable<Receipt> {
         this.userId = userId;
     }
 
+    public Receipt(int id, String date, String time, String vendorName,  double receiptTotal, String barcode, int transactionType, String cashier, Double cash, String location, double lat, double lng, int userId){
+        this.id = id;
+        this.date = date;
+        this.time = time;
+        this.vendorName = vendorName;
+        this.receiptTotal = receiptTotal;
+        this.barcode = barcode;
+        this.transactionType = transactionType;
+        this.cashier = cashier;
+        this.cash = cash;
+        this.location = location;
+        this.lat = lat;
+        this.lng = lng;
+        this.userId = userId;
+    }
+
     public Receipt(int id, String date, String time, String vendorName,  double receiptTotal){
         this.id = id;
         this.date = date;
@@ -44,6 +70,36 @@ public class Receipt implements Comparable<Receipt> {
         this.vendorName = vendorName;
         this.receiptTotal = receiptTotal;
     }
+
+    protected Receipt(Parcel in) {
+        id = in.readInt();
+        date = in.readString();
+        time = in.readString();
+        vendorName = in.readString();
+        transactionType = in.readInt();
+        receiptTotal = in.readDouble();
+        cash = in.readDouble();
+        cashier = in.readString();
+        location = in.readString();
+        barcode = in.readString();
+        userId = in.readInt();
+        lat = in.readDouble();
+        lng = in.readDouble();
+        items = in.createTypedArrayList(Item.CREATOR);
+        uuid = in.readString();
+    }
+
+    public static final Creator<Receipt> CREATOR = new Creator<Receipt>() {
+        @Override
+        public Receipt createFromParcel(Parcel in) {
+            return new Receipt(in);
+        }
+
+        @Override
+        public Receipt[] newArray(int size) {
+            return new Receipt[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -60,12 +116,16 @@ public class Receipt implements Comparable<Receipt> {
         return vendorName;
     }
 
-    public int isCardTrans() {
-        return cardTrans;
+    public int getTransactionType() {
+        return transactionType;
     }
 
     public double getReceiptTotal() {
         return Double.valueOf(String.format("%.2f", receiptTotal));
+    }
+
+    public double getCash() {
+        return Double.valueOf(String.format("%.2f", cash));
     }
 
     public int getUserId() {
@@ -75,18 +135,36 @@ public class Receipt implements Comparable<Receipt> {
     public List<Item> getItems() {
         return items;
     }
+
     public String getUuid() {
         return uuid;
     }
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public double getLat() { return lat; }
+
+    public double getLng() { return lng; }
+
+    public String getCashier() {
+        return cashier;
+    }
+
 
     public void setId(int id) {
         this.id = id;
     }
 
-
     public void setDate(String date) {
         this.date = date;
     }
+
     public void setTime(String time) {
         this.time = time;
     }
@@ -95,12 +173,28 @@ public class Receipt implements Comparable<Receipt> {
         this.vendorName = vendorName;
     }
 
-    public void setCardTrans(int cardTrans) {
-        this.cardTrans = cardTrans;
+    public void setTransactionType(int transactionType) {
+        this.transactionType = transactionType;
     }
 
     public void setReceiptTotal(double receiptTotal) {
         this.receiptTotal = receiptTotal;
+    }
+
+    public void setCash(double cash) {
+        this.cash = cash;
+    }
+
+    public void setCashier(String cashier) {
+        this.cashier = cashier;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public void setUserId(int userId) {
@@ -109,6 +203,14 @@ public class Receipt implements Comparable<Receipt> {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
     public void setUuid(String uuid) {
@@ -132,5 +234,29 @@ public class Receipt implements Comparable<Receipt> {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(date);
+        parcel.writeString(time);
+        parcel.writeString(vendorName);
+        parcel.writeInt(transactionType);
+        parcel.writeDouble(receiptTotal);
+        parcel.writeDouble(cash);
+        parcel.writeString(cashier);
+        parcel.writeString(location);
+        parcel.writeString(barcode);
+        parcel.writeInt(userId);
+        parcel.writeDouble(lat);
+        parcel.writeDouble(lng);
+        parcel.writeTypedList(items);
+        parcel.writeString(uuid);
     }
 }

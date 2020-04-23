@@ -1,25 +1,28 @@
 package com.example.pop.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pop.DBConstants;
 import com.example.pop.R;
-import com.example.pop.activity.adapter.ReceiptListAdapter;
-import com.example.pop.helper.CheckNetworkStatus;
+import com.example.pop.adapter.ReceiptListAdapter;
 import com.example.pop.helper.HttpJsonParser;
+import com.example.pop.helper.Session;
 import com.example.pop.model.Receipt;
+import com.google.android.flexbox.FlexboxLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +37,8 @@ public class Fragment_SearchByTag extends Fragment{
 
     private RecyclerView mRecyclerView;
     private ReceiptListAdapter mAdapter;
+    private ImageView mImageView;
+
     private SearchView searchView;
 
     private Context context;
@@ -41,41 +46,45 @@ public class Fragment_SearchByTag extends Fragment{
     private int success;
     private String message;
 
-    public List<Receipt> mReceiptList = new ArrayList<>();
-    public List<Receipt> mReceiptListTemp = new ArrayList<>();
+    private List<Receipt> mReceiptListTemp = new ArrayList<>();
+    private FlexboxLayout flexboxLayout;
 
     private String tag = "";
+    private String currentString;
 
-    public Fragment_SearchByTag() {
-        // Required empty public constructor
-    }
+    public Fragment_SearchByTag() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_search_tag, container, false);
-        //Toolbar toolbar = v.findViewById(R.id.toolbar);
-        //((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         context = getActivity().getApplicationContext();
         session = new Session(context);
 
         setHasOptionsMenu(true);
 
-        if (CheckNetworkStatus.isNetworkAvailable(context)) {
-            new Fragment_SearchByTag.FetchReceiptsAsyncTask().execute();
-        }
+        mImageView = v.findViewById(R.id.emptyListImg);
 
-        // Get a handle to the RecyclerView.
+        flexboxLayout = v.findViewById(R.id.flexboxId);
+
         mRecyclerView = v.findViewById(R.id.receiptList);
-        // Create an adapter and supply the data to be displayed.
-        mAdapter = new ReceiptListAdapter(context, mReceiptList);
-        // Connect the adapter with the RecyclerView.
+        mAdapter = new ReceiptListAdapter(context, FragmentHolder.mReceiptList);
         mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
         searchView = v.findViewById(R.id.tagInput);
+
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.tagInput:
+                        searchView.onActionViewExpanded();
+                        break;
+                }
+            }
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -93,57 +102,75 @@ public class Fragment_SearchByTag extends Fragment{
         return v;
     }
 
-    private class FetchReceiptsAsyncTask extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
+    @Override
+    public void onStart() {
+        super.onStart();
 
-        @Override
-        protected String doInBackground(String... params) {
-            HttpJsonParser httpJsonParser = new HttpJsonParser();
-            Map<String, String> httpParams = new HashMap<>();
-            httpParams.put(DBConstants.USER_ID, String.valueOf(session.getUserId()));
-            JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "fetchAllReceipts.php", "POST", httpParams);
+        mAdapter = new ReceiptListAdapter(getActivity(), FragmentHolder.mReceiptList);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+    }
 
-            try {
-                success = jsonObject.getInt("success");
-                JSONArray receipts;
-                if (success == 1) {
-                    mReceiptList = new ArrayList<>();
-                    receipts = jsonObject.getJSONArray("data");
-                    //Iterate through the response and populate receipt list
-                    for (int i = 0; i < receipts.length(); i++) {
-                        JSONObject receipt = receipts.getJSONObject(i);
-                        int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
-                        String receiptDate = receipt.getString(DBConstants.DATE);
-                        String receiptVendor = receipt.getString(DBConstants.VENDOR);
-                        double receiptTotal = receipt.getDouble(DBConstants.RECEIPT_TOTAL);
+    private void addTag(String title){
+        FlexboxLayout.LayoutParams lparams = new FlexboxLayout.LayoutParams(
+                FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                FlexboxLayout.LayoutParams.WRAP_CONTENT
+        );
 
-                        mReceiptList.add(new Receipt(receiptId,receiptDate,receiptVendor,receiptTotal, session.getUserId()));
-                    }
+        lparams.setMargins(0,40,40,0);
+
+        TextView tv = new TextView(context);
+        tv.setLayoutParams(lparams);
+        tv.setBackgroundResource(R.drawable.round_corner);
+
+        StringBuilder s = new StringBuilder(100);
+        s.append(title);
+        s.append(" <b>X</b>");
+
+        tv.setText(Html.fromHtml(s.toString()));
+
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flexboxLayout.removeView(v);
+                buildSearchString();
+
+                if(flexboxLayout.getChildCount() == 0){
+                    mAdapter = new ReceiptListAdapter(getActivity(), FragmentHolder.mReceiptList);
+                    mRecyclerView.setAdapter(mAdapter);
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+                else{
+                    new FetchFilteredReceiptsAsyncTask().execute();
+                }
             }
-            return null;
-        }
+        });
 
-        protected void onPostExecute(String result) {
-            success = 0;
-            mAdapter = new ReceiptListAdapter(context, mReceiptList);
-            // Connect the adapter with the RecyclerView.
-            mRecyclerView.setAdapter(mAdapter);
-            // Give the RecyclerView a default layout manager.
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        this.flexboxLayout.addView(tv);
+        currentString = "";
+
+        searchView.setQuery("", false);
+    }
+
+    private void buildSearchString(){
+        tag = "";
+        TextView view;
+
+        for( int i = 0; i < flexboxLayout.getChildCount(); i++ ) {
+            view = (TextView) flexboxLayout.getChildAt(i);
+            String temp = view.getText().toString();
+            tag = tag.concat(temp.subSequence(0, view.getText().toString().length() - 2) + "@");
         }
     }
 
-    //Search Specific classes
     private void filterReceipts(String s){
+        currentString = s;
         boolean vendorTag = false;
         mReceiptListTemp = new ArrayList<>();
-        for(Receipt r: mReceiptList){
+
+        addTag(currentString);
+
+        for(Receipt r: FragmentHolder.mReceiptList){
             if(s.equalsIgnoreCase(r.getVendorName())){
                 vendorTag = true;
                 mReceiptListTemp.add(r);
@@ -151,7 +178,7 @@ public class Fragment_SearchByTag extends Fragment{
         }
 
         if(!vendorTag){
-            tag = tag.concat(s+"@");
+            tag = tag.concat(s + "@");
             new FetchFilteredReceiptsAsyncTask().execute();
         }
         else {
@@ -171,19 +198,15 @@ public class Fragment_SearchByTag extends Fragment{
             Map<String, String> httpParams = new HashMap<>();
             httpParams.put("user_id", String.valueOf(session.getUserId()));
             httpParams.put("tags", tag);
-            System.out.println(session.getUserId());
-            System.out.println(tag);
             JSONObject jsonObject = httpJsonParser.makeHttpRequest(DBConstants.BASE_URL + "receiptFilterByTag.php", "POST", httpParams);
 
             try {
                 success = jsonObject.getInt("success");
                 JSONArray receipts;
-                tag = "";
                 if (success == 1) {
                     mReceiptListTemp = new ArrayList<>();
                     receipts = jsonObject.getJSONArray("data");
 
-                    //Iterate through the response and populate receipt list
                     for (int i = 0; i < receipts.length(); i++) {
                         JSONObject receipt = receipts.getJSONObject(i);
                         int receiptId = receipt.getInt(DBConstants.RECEIPT_ID);
@@ -205,14 +228,18 @@ public class Fragment_SearchByTag extends Fragment{
 
         protected void onPostExecute(String result) {
             if (success == 1) {
-                mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
-                // Connect the adapter with the RecyclerView.
+                mAdapter = new ReceiptListAdapter(getActivity(), mReceiptListTemp);
                 mRecyclerView.setAdapter(mAdapter);
-                // Give the RecyclerView a default layout manager.
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             }
             else{
                 Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+
+                List<Receipt> emptyList = new ArrayList<>();
+
+                mAdapter = new ReceiptListAdapter(getActivity(), emptyList);
+                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             }
 
             success = 0;
@@ -220,10 +247,8 @@ public class Fragment_SearchByTag extends Fragment{
     }
 
     public void updateListWithVendors(){
-        mAdapter = new ReceiptListAdapter(context, mReceiptListTemp);
-        // Connect the adapter with the RecyclerView.
+        mAdapter = new ReceiptListAdapter(getActivity(), mReceiptListTemp);
         mRecyclerView.setAdapter(mAdapter);
-        // Give the RecyclerView a default layout manager.
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 }

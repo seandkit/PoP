@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient"
+    android:background="@drawable/background_for_mainpage"
     tools:context=".activity.MainActivity">
 
 
@@ -25,15 +25,15 @@
 
     <ImageView
         android:id="@+id/logoPop"
-        android:layout_width="150dp"
-        android:layout_height="108dp"
+        android:layout_width="206dp"
+        android:layout_height="147dp"
         android:layout_above="@+id/regBtn"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="254dp"
-        android:layout_marginBottom="177dp"
+        android:layout_marginBottom="138dp"
         android:contentDescription="TODO"
-        app:srcCompat="@drawable/poplogo" />
+        app:srcCompat="@drawable/poplogonew" />
 
     <Button
         android:id="@+id/regBtn"

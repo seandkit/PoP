@@ -54,11 +54,11 @@ public class SQLiteDatabaseAdapter {
     }
 
     public boolean dropUnlinkedReceipt(String uuid){
+        System.out.println("DB = " + uuid);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        System.out.println("ID = " + uuid);
         int delCount = db.delete(DBConstants.UNLINKEDRECEIPTS, "uuid = ?", new String[] {uuid});
-        System.out.println("deleted rows count = " + delCount);
 
+        System.out.println(delCount);
         return false;
     }
 
