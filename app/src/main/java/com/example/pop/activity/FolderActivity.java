@@ -141,6 +141,13 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
                 }
             }
         });
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView drawerUsername = headerView.findViewById(R.id.drawer_username);
+        String drawerUsernameValue = session.getFirstName() + " " + session.getLastName();
+        drawerUsername.setText(drawerUsernameValue.toUpperCase());
+        TextView drawerEmail = headerView.findViewById(R.id.drawer_email);
+        drawerEmail.setText(session.getEmail());
     }
 
     @Override
