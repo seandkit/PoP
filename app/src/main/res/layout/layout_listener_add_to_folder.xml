@@ -10,24 +10,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="6dp"
-        app:cardBackgroundColor="@color/colorPrimary">
+        app:cardBackgroundColor="@color/colorPrimary"
+        android:elevation="2dp">
+        
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/popupFolderName"
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5sp"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 android:textColor="@color/colorAccent"
                 android:text="Folder Name"/>
 
+
         </LinearLayout>
+
+
+
     </androidx.cardview.widget.CardView>
+
 
 </LinearLayout>
